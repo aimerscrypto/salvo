@@ -53,24 +53,28 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 6b5b469d4f347bd4e944d78a00fcdfd8, type: 3}
   - {fileID: 8300000, guid: b06cde37104e3ce4d97d908226103a08, type: 3}
   - {fileID: 8300000, guid: 9dec1f3a19d0c524da46dcfa10dd7892, type: 3}
+  - {fileID: 8300000, guid: ead9c09f092ce1648adea19c133fd4b5, type: 3}
   stepsStone:
   - {fileID: 8300000, guid: e7c9f30d611ccc54eb76fa258b657054, type: 3}
   - {fileID: 8300000, guid: 28e0be4b9a30d00469629ad6103e5112, type: 3}
   - {fileID: 8300000, guid: 22b82117814afec4c8889c1cd8cf7a55, type: 3}
   - {fileID: 8300000, guid: 368b5d23162fbd3459b7c3ea0023e421, type: 3}
   - {fileID: 8300000, guid: 974df596fecf9874aaff5f8abd754634, type: 3}
+  - {fileID: 8300000, guid: aa4860cb871657648912b083f4d41813, type: 3}
   stepsWood:
   - {fileID: 8300000, guid: a0c4f4f732618b147936c7610e7143a8, type: 3}
   - {fileID: 8300000, guid: b22f0150fd68d354ea562399a9618bfd, type: 3}
   - {fileID: 8300000, guid: d185b944b9b06b44581cdf9f1da77942, type: 3}
   - {fileID: 8300000, guid: f6f162810bf13b146925a97a6957942a, type: 3}
   - {fileID: 8300000, guid: afdfa143cce2f1a49bb16a88d7f9e996, type: 3}
+  - {fileID: 8300000, guid: 18cd996e38f977c44bcd15b2f6c5f89d, type: 3}
   stepsMetal:
   - {fileID: 8300000, guid: 7a67f5e1616e8204eab20915e08e6041, type: 3}
   - {fileID: 8300000, guid: f554972bb495181428b5c8da35947992, type: 3}
   - {fileID: 8300000, guid: 13dd6f455b66c3b4ca2ec49adf7374eb, type: 3}
   - {fileID: 8300000, guid: f4d6d5d58d790d14b8293bfb72038b84, type: 3}
   - {fileID: 8300000, guid: e4c0e9ec3197dd74e85ca988cc800745, type: 3}
+  - {fileID: 8300000, guid: 0ec505057c53fed4db189ab0f4c5cdc1, type: 3}
   impactsSand:
   - {fileID: 8300000, guid: b634be7da4c301640bb01ec01703e740, type: 3}
   - {fileID: 8300000, guid: 3b4b8eba0c106744184046d11d5766b7, type: 3}

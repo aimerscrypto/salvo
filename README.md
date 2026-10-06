@@ -4,8 +4,9 @@ A fast, bright, low-poly-but-soft multiplayer FPS built with **Unity 6 (6000.6) 
 **Netcode for GameObjects**. Inspired by browser arena shooters like venge.io: snappy movement,
 readable silhouettes, warm stylized lighting, short drop-in matches.
 
-Every asset in the project is generated from source in this repo — models (Blender Python),
-textures (numpy), and all audio (procedural synthesis). No third-party art or sound packs.
+Every model (Blender Python) and texture (numpy) is generated from source in this repo. Gunfire,
+weapon handling, footsteps and impacts are CC0 field recordings from Freesound
+(`Tools/SoundSources/CREDITS.md`); UI sounds, music and ambience are synthesized.
 
 ## Features
 
@@ -29,6 +30,9 @@ textures (numpy), and all audio (procedural synthesis). No third-party art or so
 - **Progression & economy:** XP and levels (1–60), coins from kills/headshots/assists/wins,
   level-up bonuses, daily login streak, weapon unlocks, 11 weapon finishes (rarities, camo patterns),
   squad colors, career stats. Local profile is HMAC-signed against casual tampering.
+- **Audio:** distance falloff with air absorption, muffling through walls, gunfire arriving at
+  the speed of sound with a distant rumble and an echo shaped by nearby walls, footsteps / landings /
+  bullet impacts per surface (sand, stone, wood, metal).
 - **UI:** main menu over a cinematic map fly-through, play/loadout (live 3D preview)/shop/profile/
   settings, HUD with dynamic crosshair, hit markers, damage numbers, direction indicators, kill feed,
   streaks, scoreboard, pause, end-of-match rewards.
@@ -92,6 +96,7 @@ Tools/
 "C:/Program Files/Blender Foundation/Blender 5.2/blender.exe" -b --factory-startup --python Tools/Blender/render_icons.py
 python Tools/gen_textures.py
 python Tools/gen_audio.py
+python Tools/process_sounds.py   # slices/levels the CC0 recordings, overrides the synthesized placeholders
 ```
 
 Then in Unity: **SALVO → Setup → Configure Project**, **SALVO → Build → Content**,
