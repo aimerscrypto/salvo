@@ -372,7 +372,7 @@ namespace Salvo
 
             // health
             int hp = me.Health.Value;
-            healthNum.text = hp.ToString();
+            if (hp != shownHp) { shownHp = hp; healthNum.text = hp.ToString(); }
             float frac = hp / (float)GameRules.MaxHealth;
             healthFill.style.width = Length.Percent(frac * 100f);
             healthFill.style.backgroundColor = frac > 0.5f ? new Color(0.49f, 0.79f, 0.42f) : frac > 0.25f ? new Color(0.95f, 0.7f, 0.24f) : new Color(0.89f, 0.38f, 0.31f);
@@ -384,10 +384,15 @@ namespace Salvo
             // ammo
             if (def != null && st != null)
             {
-                weaponName.text = def.displayName.ToUpperInvariant();
+                bool weaponChanged = def != shownDef;
+                if (weaponChanged) { shownDef = def; weaponName.text = def.displayName.ToUpperInvariant(); }
                 bool melee = def.fireMode == FireMode.Melee;
-                ammoMag.text = melee ? "-" : st.mag.ToString();
-                ammoRes.text = melee ? "" : "/ " + st.reserve;
+                if (weaponChanged || st.mag != shownMag || st.reserve != shownRes)
+                {
+                    shownMag = st.mag; shownRes = st.reserve;
+                    ammoMag.text = melee ? "-" : st.mag.ToString();
+                    ammoRes.text = melee ? "" : "/ " + st.reserve;
+                }
                 ammoMag.style.color = !melee && st.mag <= Mathf.Max(1, def.magSize / 4) ? new Color(0.89f, 0.38f, 0.31f) : new Color(0.96f, 0.94f, 0.9f);
                 bool needReload = !melee && st.mag == 0 && !w.Reloading;
                 hint.EnableInClassList("hidden", !(needReload || w.Reloading));
@@ -416,19 +421,23 @@ namespace Salvo
             var mm = MatchManager.I;
             if (mm != null && mm.IsSpawned)
             {
-                timer.text = mm.MatchPhase == MatchPhase.Ended ? "0:00" : SalvoMath.FormatTime(mm.TimeLeft);
+                int secs = mm.MatchPhase == MatchPhase.Ended ? 0 : Mathf.CeilToInt(Mathf.Max(0, mm.TimeLeft));
+                if (secs != shownSecs) { shownSecs = secs; timer.text = SalvoMath.FormatTime(secs); }
+                infoTimer -= Time.unscaledDeltaTime;
+                bool refreshInfo = infoTimer <= 0f;
+                if (refreshInfo) infoTimer = 0.25f;
                 timer.style.color = mm.TimeLeft < 30f && mm.MatchPhase == MatchPhase.Live ? new Color(0.89f, 0.38f, 0.31f) : new Color(0.96f, 0.94f, 0.9f);
                 if (mm.IsTeamMode)
                 {
-                    scoreRed.text = mm.RedScore.Value.ToString();
-                    scoreBlue.text = mm.BlueScore.Value.ToString();
-                    ffaInfo.text = "FIRST TO " + mm.ScoreLimit.Value + (me.Team == Team.Red ? "  -  YOU ARE RED" : me.Team == Team.Blue ? "  -  YOU ARE BLUE" : "");
+                    if (refreshInfo) scoreRed.text = mm.RedScore.Value.ToString();
+                    if (refreshInfo) scoreBlue.text = mm.BlueScore.Value.ToString();
+                    if (refreshInfo) ffaInfo.text = "FIRST TO " + mm.ScoreLimit.Value + (me.Team == Team.Red ? "  -  YOU ARE RED" : me.Team == Team.Blue ? "  -  YOU ARE BLUE" : "");
                 }
                 else
                 {
                     var best = mm.BestEntry();
                     mm.TryGetScore(me.NetworkObjectId, out var mine);
-                    ffaInfo.text = $"#{mm.PlacementOf(me.NetworkObjectId)}  -  {mine.kills} / {mm.ScoreLimit.Value}  -  LEADER {best.name} ({best.kills})";
+                    if (refreshInfo) ffaInfo.text = $"#{mm.PlacementOf(me.NetworkObjectId)}  -  {mine.kills} / {mm.ScoreLimit.Value}  -  LEADER {best.name} ({best.kills})";
                 }
                 if (mm.MatchPhase == MatchPhase.Ended)
                     ui.Q<Label>("end-next").text = "NEXT MATCH IN " + Mathf.CeilToInt(Mathf.Max(0, mm.TimeLeft));
@@ -440,7 +449,8 @@ namespace Salvo
             if (dead)
             {
                 float left = GameRules.RespawnDelay - (Time.time - deathTime);
-                respawnTimer.text = Mathf.Max(1, Mathf.CeilToInt(left)).ToString();
+                int rs = Mathf.Max(1, Mathf.CeilToInt(left));
+                if (rs != shownRespawn) { shownRespawn = rs; respawnTimer.text = rs.ToString(); }
             }
             else deathTime = Time.time;
 
@@ -450,7 +460,9 @@ namespace Salvo
             UpdatePost(dt, frac);
         }
 
-        float deathTime;
+        float deathTime, infoTimer;
+        int shownHp = -1, shownMag = -1, shownRes = -1, shownSecs = -1, shownRespawn = -1;
+        WeaponDef shownDef;
 
         void UpdateCrosshair(WeaponDef def, WeaponController w)
         {
@@ -556,7 +568,7 @@ namespace Salvo
                 plate.style.left = vp.x * W;
                 plate.style.top = (1f - vp.y) * H - 24f;
                 var lbl = plate[0] as Label;
-                lbl.text = c.Name;
+                if (string.IsNullOrEmpty(lbl.text)) lbl.text = c.Name;
                 lbl.style.color = ally ? GameConfig.TeamColor(c.Team, c.ColorNV.Value) : new Color(1f, 0.55f, 0.48f);
                 var fillEl = plate[1][0];
                 fillEl.style.width = Length.Percent(c.Health.Value);

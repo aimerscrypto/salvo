@@ -485,7 +485,6 @@ namespace Salvo
                     box.Add(UIRoot.Row("Anti-aliasing", UIRoot.Cycler(new[] { "OFF", "MSAA 2X", "MSAA 4X" }, () => d.msaa >= 4 ? 2 : d.msaa >= 2 ? 1 : 0, v => { d.msaa = v == 0 ? 1 : v == 1 ? 2 : 4; custom(); })));
                     box.Add(UIRoot.Row("Shadows", UIRoot.Cycler(new[] { "OFF", "HARD", "SOFT" }, () => d.shadows, v => { d.shadows = v; custom(); })));
                     box.Add(UIRoot.Row("Shadow distance", UIRoot.SliderControl(20f, 80f, () => d.shadowDistance, v => { d.shadowDistance = v; custom(); }, "0")));
-                    box.Add(UIRoot.Row("Ambient occlusion", UIRoot.Cycler(new[] { "OFF", "ON" }, () => d.ambientOcclusion ? 1 : 0, v => { d.ambientOcclusion = v == 1; custom(); })));
                     box.Add(UIRoot.Row("Frame rate limit", UIRoot.Cycler(new[] { "30", "60", "90", "120", "144", "240", "UNLIMITED" }, () => Array.IndexOf(new[] { 30, 60, 90, 120, 144, 240, 0 }, d.fpsCap) < 0 ? 4 : Array.IndexOf(new[] { 30, 60, 90, 120, 144, 240, 0 }, d.fpsCap),
                         v => { d.fpsCap = new[] { 30, 60, 90, 120, 144, 240, 0 }[v]; apply(); })));
                     box.Add(UIRoot.Row("V-Sync", UIRoot.Cycler(new[] { "OFF", "ON" }, () => d.vsync ? 1 : 0, v => { d.vsync = v == 1; apply(); })));

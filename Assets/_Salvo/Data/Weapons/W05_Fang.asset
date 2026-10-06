@@ -61,7 +61,7 @@ MonoBehaviour:
   viewScale: 0.5
   tracerColor: {r: 1, g: 0.9, b: 0.6, a: 1}
   shakeOnFire: 0.15
-  icon: {fileID: 0}
+  icon: {fileID: 2800000, guid: b4e8a5dfa32f70a4c81412ca4e5686cd, type: 3}
   fireSound: {fileID: 0}
   reloadOut: {fileID: 0}
   reloadIn: {fileID: 0}

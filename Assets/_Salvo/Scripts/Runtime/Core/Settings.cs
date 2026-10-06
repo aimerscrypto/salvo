@@ -114,11 +114,6 @@ namespace Salvo
                 urp.msaaSampleCount = d.msaa >= 4 ? 4 : d.msaa >= 2 ? 2 : 1;
                 urp.shadowDistance = d.shadows == 0 ? 0f : d.shadowDistance;
             }
-            var rd = GameConfig.I != null ? GameConfig.I.rendererData : null;
-            if (rd != null)
-                foreach (var f in rd.rendererFeatures)
-                    if (f != null && f.GetType().Name == "ScreenSpaceAmbientOcclusion") f.SetActive(d.ambientOcclusion);
-
             ApplySun();
             QualitySettings.vSyncCount = d.vsync ? 1 : 0;
             Application.targetFrameRate = d.vsync ? -1 : (d.fpsCap <= 0 ? -1 : d.fpsCap);
@@ -150,10 +145,6 @@ namespace Salvo
                 {
                     urp.renderScale = 1f; urp.msaaSampleCount = 2; urp.shadowDistance = 55f;
                 }
-                var rd = GameConfig.I != null ? GameConfig.I.rendererData : null;
-                if (rd != null)
-                    foreach (var f in rd.rendererFeatures)
-                        if (f != null && f.GetType().Name == "ScreenSpaceAmbientOcclusion") f.SetActive(false);
             };
         }
 #endif

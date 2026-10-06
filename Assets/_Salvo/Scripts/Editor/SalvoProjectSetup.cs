@@ -128,26 +128,20 @@ namespace Salvo.EditorTools
             var ims = rso.FindProperty("m_IntermediateTextureMode"); if (ims != null) ims.intValue = 0; // Auto
             rso.ApplyModifiedPropertiesWithoutUndo();
 
-            // SSAO: keep the feature but make it cheap; the Settings menu toggles it at runtime.
-            var ssao = rd.rendererFeatures.FirstOrDefault(f => f != null && f.GetType().Name == "ScreenSpaceAmbientOcclusion");
-            if (ssao != null)
+            // No SSAO: occlusion is baked into vertex alpha by the Blender pipeline (and an inactive
+            // SSAO feature gets its shaders stripped from player builds, breaking renderer creation).
+            var feats = rso.FindProperty("m_RendererFeatures");
+            var featMap = rso.FindProperty("m_RendererFeatureMap");
+            for (int i = rd.rendererFeatures.Count - 1; i >= 0; i--)
             {
-                var s = new SerializedObject(ssao);
-                void SI(string p, int v) { var sp = s.FindProperty(p); if (sp != null) sp.intValue = v; }
-                void SF(string p, float v) { var sp = s.FindProperty(p); if (sp != null) sp.floatValue = v; }
-                void SB(string p, bool v) { var sp = s.FindProperty(p); if (sp != null) sp.boolValue = v; }
-                SB("m_Settings.Downsample", true);
-                SB("m_Settings.AfterOpaque", false);
-                SI("m_Settings.Source", 1);          // depth normals
-                SI("m_Settings.NormalSamples", 0);   // low
-                SF("m_Settings.Intensity", 0.6f);
-                SF("m_Settings.DirectLightingStrength", 0.15f);
-                SF("m_Settings.Radius", 0.25f);
-                SI("m_Settings.Samples", 2);         // low
-                SI("m_Settings.BlurQuality", 2);     // low
-                SF("m_Settings.Falloff", 40f);
-                s.ApplyModifiedPropertiesWithoutUndo();
-                ssao.SetActive(false); // off by default; enabled by the High preset
+                var f = rd.rendererFeatures[i];
+                if (f == null || f.GetType().Name != "ScreenSpaceAmbientOcclusion") continue;
+                feats.DeleteArrayElementAtIndex(i);
+                if (featMap != null && i < featMap.arraySize) featMap.DeleteArrayElementAtIndex(i);
+                rso.ApplyModifiedPropertiesWithoutUndo();
+                AssetDatabase.RemoveObjectFromAsset(f);
+                Object.DestroyImmediate(f, true);
+                log.AppendLine("removed SSAO feature");
             }
             EditorUtility.SetDirty(urp);
             EditorUtility.SetDirty(rd);
