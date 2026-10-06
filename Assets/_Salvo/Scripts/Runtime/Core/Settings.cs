@@ -16,8 +16,6 @@ namespace Salvo
         public int msaa = 2;               // 1, 2, 4
         public int shadows = 2;            // 0 off, 1 hard, 2 soft
         public float shadowDistance = 45f;
-        public bool ambientOcclusion;
-        public bool postProcessing = true;
         public int fpsCap = 144;           // 0 = unlimited
         public bool vsync;
         public int fullscreen = 1;         // 0 windowed, 1 borderless, 2 exclusive
@@ -96,11 +94,11 @@ namespace Salvo
             switch (p)
             {
                 case GraphicsPreset.Performance:
-                    d.renderScale = 0.85f; d.msaa = 1; d.shadows = 1; d.shadowDistance = 30f; d.ambientOcclusion = false; d.postProcessing = true; break;
+                    d.renderScale = 0.85f; d.msaa = 1; d.shadows = 1; d.shadowDistance = 30f; break;
                 case GraphicsPreset.Balanced:
-                    d.renderScale = 1f; d.msaa = 2; d.shadows = 2; d.shadowDistance = 45f; d.ambientOcclusion = false; d.postProcessing = true; break;
+                    d.renderScale = 1f; d.msaa = 2; d.shadows = 2; d.shadowDistance = 45f; break;
                 case GraphicsPreset.Quality:
-                    d.renderScale = 1f; d.msaa = 4; d.shadows = 2; d.shadowDistance = 60f; d.ambientOcclusion = true; d.postProcessing = true; break;
+                    d.renderScale = 1f; d.msaa = 4; d.shadows = 2; d.shadowDistance = 60f; break;
             }
             if (apply) Apply();
         }
@@ -111,10 +109,13 @@ namespace Salvo
             if (GraphicsSettings.currentRenderPipeline is UniversalRenderPipelineAsset urp)
             {
                 urp.renderScale = Mathf.Clamp(d.renderScale, 0.5f, 1f);
-                // below native, FSR's edge-adaptive upscale + sharpening stays far crisper than bilinear
-                urp.upscalingFilter = urp.renderScale < 0.99f ? UpscalingFilterSelection.FSR : UpscalingFilterSelection.Auto;
+                // plain bilinear: FSR's extra passes cost more than they save on integrated GPUs (measured +3 ms)
+                urp.upscalingFilter = UpscalingFilterSelection.Linear;
                 urp.msaaSampleCount = d.msaa >= 4 ? 4 : d.msaa >= 2 ? 2 : 1;
                 urp.shadowDistance = d.shadows == 0 ? 0f : d.shadowDistance;
+                // hard = one 1024 cascade (~3 ms cheaper on integrated GPUs), soft = two 2048 cascades
+                urp.shadowCascadeCount = d.shadows >= 2 ? 2 : 1;
+                urp.mainLightShadowmapResolution = d.shadows >= 2 ? 2048 : 1024;
             }
             ApplySun();
             QualitySettings.vSyncCount = d.vsync ? 1 : 0;
@@ -144,8 +145,15 @@ namespace Salvo
                 int w = Mathf.Min(1600, Mathf.RoundToInt(nw * 0.85f));
                 Screen.SetResolution(w, Mathf.RoundToInt(w * nh / (float)nw), mode);
             }
-            else if (Screen.fullScreenMode != mode || Screen.width != nw || Screen.height != nh)
-                Screen.SetResolution(nw, nh, mode);
+            else
+            {
+                // exclusive full screen may switch the display mode: use the panel's largest mode
+                if (mode == FullScreenMode.ExclusiveFullScreen)
+                    foreach (var r in Screen.resolutions)
+                        if (r.width * r.height > nw * nh) { nw = r.width; nh = r.height; }
+                if (Screen.fullScreenMode != mode || Screen.width != nw || Screen.height != nh)
+                    Screen.SetResolution(nw, nh, mode);
+            }
         }
 
         /// <summary>Called when a map loads (its sun is the only light).</summary>
@@ -166,6 +174,7 @@ namespace Salvo
                 if (GraphicsSettings.currentRenderPipeline is UniversalRenderPipelineAsset urp)
                 {
                     urp.renderScale = 1f; urp.msaaSampleCount = 2; urp.shadowDistance = 55f;
+                    urp.shadowCascadeCount = 2; urp.mainLightShadowmapResolution = 2048; urp.upscalingFilter = UpscalingFilterSelection.Auto;
                 }
             };
         }

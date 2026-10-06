@@ -21,6 +21,9 @@ textures (numpy), and all audio (procedural synthesis). No third-party art or so
 - **Weapons:** Viper pistol, Hornet SMG, Ranger rifle, Bulldog pump shotgun, Longbow bolt sniper
   (scoped), Fang knife (backstabs). Spread/bloom, recoil with recovery, damage falloff, headshots,
   magazine and per-shell reloads, procedural view-model animation.
+- **Hands:** gloved, fully posed hands generated per weapon — fingers wrap the actual grip,
+  handguard, pump or foregrip, trigger finger on the trigger, cupped two-hand pistol grip, knife
+  fist. The same poses are used in first person, on other players and on the menu showcase.
 - **Bots:** NavMesh pathing, line-of-sight perception, reaction time and human-like aim error,
   strafing, seeking health when hurt. Easy / Normal / Hard.
 - **Progression & economy:** XP and levels (1–60), coins from kills/headshots/assists/wins,
@@ -29,8 +32,8 @@ textures (numpy), and all audio (procedural synthesis). No third-party art or so
 - **UI:** main menu over a cinematic map fly-through, play/loadout (live 3D preview)/shop/profile/
   settings, HUD with dynamic crosshair, hit markers, damage numbers, direction indicators, kill feed,
   streaks, scoreboard, pause, end-of-match rewards.
-- **Settings:** quality presets (auto-detected), render scale, MSAA, shadows, SSAO, FPS cap, V-Sync,
-  display mode, sensitivity/ADS sensitivity, invert Y, hold/toggle aim & crouch, **key rebinding**,
+- **Settings:** quality presets (auto-detected), render scale, MSAA, shadows (off / hard / soft),
+  FPS cap, V-Sync, display mode (full screen always uses the monitor's native resolution), sensitivity/ADS sensitivity, invert Y, hold/toggle aim & crouch, **key rebinding**,
   FOV, crosshair color/size, audio mixes.
 
 ## Controls
@@ -49,11 +52,13 @@ textures (numpy), and all audio (procedural synthesis). No third-party art or so
 ## Performance
 
 Built and tuned on an Intel Celeron + UHD integrated GPU:
-- One sun light, no additional-light loop; forward renderer; 2 shadow cascades; 32-bit HDR.
+- One sun light, no additional-light loop; forward renderer; 32-bit HDR. Hard shadows use a single
+  1024 cascade, soft shadows two 2048 cascades (the biggest GPU cost on integrated graphics).
 - Custom `Salvo/StylizedLit` shader: albedo from vertex colors, ambient occlusion **baked into
   vertex alpha** in Blender (zero runtime cost), soft light ramp, optional triplanar grain.
   One shared material for the whole world → SRP Batcher + static batching.
-- Procedural animation on segmented characters (no skinning, no Animator).
+- Procedural animation on segmented characters (no skinning, no Animator); posed hand variants snap
+  onto the weapon grip markers and a two-bone IK brings each wrist to its hand.
 - All combat FX run through a handful of world-space particle systems (one draw call each).
 - View model rendered by the main camera (no camera stacking), scaled so it never clips walls.
 
@@ -71,7 +76,8 @@ Assets/_Salvo/
   Scripts/Editor   import rules, project setup, content/scene/player builders
   UI               Salvo.uxml + Salvo.uss (UI Toolkit)
 Tools/
-  Blender/*.py     procedural asset pipeline (salvo_lib.py is the shared kit)
+  Blender/*.py     procedural asset pipeline (salvo_lib.py is the shared kit, salvo_hands.py the
+                   posed-hand generator, hands_preview.py renders weapon + hands for look-dev)
   gen_audio.py, gen_textures.py
 ```
 
@@ -106,13 +112,17 @@ LAN/direct-IP play uses UDP port **7777** on the host. Offline practice needs no
 
 The player accepts command-line flags for automated tests:
 `-salvo-practice`, `-salvo-host` (LAN), `-salvo-join <ip[:port]>`, `-salvo-online-host`,
-`-salvo-code <CODE>`, `-salvo-name <name>` (session only), `-salvo-bots <n>`, `-salvo-map <Outpost|Harbor>`.
+`-salvo-code <CODE>`, `-salvo-name <name>` (session only), `-salvo-bots <n>`, `-salvo-map <Outpost|Harbor>`,
+`-salvo-preset <Performance|Balanced|Quality>` (session only). Development builds also log a frame
+budget (C# vs GPU time) every 10 s and accept `-salvo-gfx "post=0,msaa=1,shadows=1,..."` for GPU
+cost experiments (`Tools/gfxbench.sh`).
 
 ## Verified
 
-- Performance on an Intel Celeron 5205U + UHD Graphics (dev build, 6-combatant bot match):
-  Outpost ~85–88 FPS, Harbor ~87–103 FPS steady, worst frames 15–21 ms after warm-up.
-  Fonts are pre-rasterized and shader variants pre-warmed at boot to avoid mid-fight hitches.
+- Performance on an Intel Celeron 5205U + UHD Graphics at 1280x720 (dev build, 6-combatant bot
+  match on Outpost): Performance preset holds a 60 FPS cap (~9 ms GPU), Balanced ~46 FPS,
+  Quality ~44 FPS. C# scripts take ~1.1 ms per frame. Fonts are pre-rasterized and shader
+  variants pre-warmed at boot to avoid mid-fight hitches.
 - LAN: player-build host + Editor client — movement, hit claims, server damage, kills, kill feed,
   scoreboard and respawns replicate correctly.
 - Online: Editor hosts a Relay session, player build joins with the 6-letter code.

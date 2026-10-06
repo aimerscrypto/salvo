@@ -56,6 +56,10 @@ namespace Salvo
             {
                 switch (args[i])
                 {
+                    case "-salvo-preset" when i + 1 < args.Length && System.Enum.TryParse(args[i + 1], true, out GraphicsPreset gp): Settings.ApplyPreset(gp); break; // session only
+#if DEVELOPMENT_BUILD
+                    case "-salvo-gfx" when i + 1 < args.Length: StartCoroutine(DevGraphics(args[i + 1])); break;
+#endif
                     case "-salvo-name" when i + 1 < args.Length: NetSession.NameOverride = NetSession.SanitizeName(args[i + 1]); break;
                     case "-salvo-host": autoStarted = true; GameFlow.StartLocal(new MatchSettings { fillWithBots = bots, map = map, rotateMaps = false }, true); break;
                     case "-salvo-practice": autoStarted = true; GameFlow.StartLocal(new MatchSettings { fillWithBots = 6, offline = true, map = map, rotateMaps = false }, false); break;
@@ -67,6 +71,32 @@ namespace Salvo
         }
 
 #if DEVELOPMENT_BUILD
+        /// <summary>Profiling hook: -salvo-gfx "hdr=0,post=0,msaa=1,scale=0.8,fsr=0,shadowres=1024,cascades=1,shadowdist=30,shadows=1"</summary>
+        System.Collections.IEnumerator DevGraphics(string spec)
+        {
+            yield return new WaitForSeconds(8f); // after the match scene and settings are applied
+            var urp = UnityEngine.Rendering.GraphicsSettings.currentRenderPipeline as UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset;
+            var camData = Camera.main != null ? Camera.main.GetComponent<UnityEngine.Rendering.Universal.UniversalAdditionalCameraData>() : null;
+            foreach (var kv in spec.Split(','))
+            {
+                var p = kv.Split('=');
+                if (p.Length != 2 || !float.TryParse(p[1], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float v)) continue;
+                switch (p[0])
+                {
+                    case "hdr": urp.supportsHDR = v > 0; break;
+                    case "msaa": urp.msaaSampleCount = (int)v; break;
+                    case "scale": urp.renderScale = v; break;
+                    case "fsr": urp.upscalingFilter = v > 0 ? UnityEngine.Rendering.Universal.UpscalingFilterSelection.FSR : UnityEngine.Rendering.Universal.UpscalingFilterSelection.Linear; break;
+                    case "shadowres": urp.mainLightShadowmapResolution = (int)v; break;
+                    case "cascades": urp.shadowCascadeCount = (int)v; break;
+                    case "shadowdist": urp.shadowDistance = v; break;
+                    case "shadows": if (RenderSettings.sun != null) RenderSettings.sun.shadows = v <= 0 ? LightShadows.None : v < 2 ? LightShadows.Hard : LightShadows.Soft; break;
+                    case "post": if (camData != null) camData.renderPostProcessing = v > 0; break;
+                }
+            }
+            Debug.Log("[SALVO] dev gfx " + spec + $" (scale {urp.renderScale}, msaa {urp.msaaSampleCount}, hdr {urp.supportsHDR}, cascades {urp.shadowCascadeCount}, res {urp.mainLightShadowmapResolution})");
+        }
+
         float perfTimer; int perfFrames; float perfWorst; int lastGc;
         public static int FrameRebuilds, FrameBreaks, FrameShots;
         // frame budget split: C# script time (what the scripting backend affects) vs GPU time
