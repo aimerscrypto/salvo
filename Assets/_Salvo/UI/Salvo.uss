@@ -67,6 +67,8 @@
 }
 .btn:hover { translate: 0 -2px; background-color: rgb(250, 196, 86); }
 .btn:active { translate: 0 3px; border-bottom-width: 3px; }
+.btn:focus { border-left-width: 3px; border-right-width: 3px; border-top-width: 3px; border-left-color: rgb(255,255,255); border-right-color: rgb(255,255,255); border-top-color: rgb(255,255,255); }
+.menu-btn:focus { color: var(--c-accent); translate: 8px 0; }
 .btn:disabled { opacity: 0.45; }
 .btn.secondary { background-color: var(--c-panel-3); color: var(--c-text); border-color: rgba(0,0,0,0.4); }
 .btn.secondary:hover { background-color: rgb(66, 79, 106); }

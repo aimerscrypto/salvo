@@ -144,6 +144,7 @@ namespace Salvo
         {
             paused = p;
             ui.Show("pause", p);
+            if (p) ui.FocusFirst("pause");
             if (!p) { ui.Show("settings", false); ui.Show("loadout", false); }
         }
 

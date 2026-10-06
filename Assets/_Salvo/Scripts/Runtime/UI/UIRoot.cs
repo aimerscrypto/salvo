@@ -91,6 +91,19 @@ namespace Salvo
         {
             foreach (var p in MenuPages) Show(p, p == page);
             MenuBackdrop.SetShowcase(page == "loadout");
+            FocusFirst(page);
+        }
+
+        /// <summary>Give keyboard/gamepad navigation a starting point when a page opens.</summary>
+        public void FocusFirst(string screen, Focusable preferred = null)
+        {
+            var e = Root.Q(screen);
+            if (e == null) return;
+            e.schedule.Execute(() =>
+            {
+                var target = preferred ?? e.Query<Button>().Where(b => b.enabledInHierarchy && b.resolvedStyle.display != DisplayStyle.None).First();
+                target?.Focus();
+            }).StartingIn(30);
         }
 
         public void HideMenuPages()
@@ -167,6 +180,7 @@ namespace Salvo
             modalCancel = onCancel;
             Show("modal", true);
             modal.BringToFront();
+            FocusFirst("modal", okB);
             toastLayer.BringToFront();
         }
 
