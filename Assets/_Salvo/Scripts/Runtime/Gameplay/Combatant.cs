@@ -207,7 +207,8 @@ namespace Salvo
         void Update()
         {
             if (!IsServer || !IsSpawned || !Alive) return;
-            if (transform.position.y < GameRules.KillHeight) { ServerKillVolume(); return; }
+            float kill = MapInfo.I != null ? MapInfo.I.killHeight : GameRules.KillHeight;
+            if (transform.position.y < kill) { ServerKillVolume(); return; }
             if (Health.Value < GameRules.MaxHealth && Time.time - lastDamageTime > GameRules.RegenDelay)
             {
                 regenAccum += GameRules.RegenPerSecond * Time.deltaTime;

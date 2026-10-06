@@ -96,6 +96,9 @@ namespace Salvo
             SalvoInput.GameplayEnabled = false;
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
+            // a different map behind the menu each time keeps the front end fresh
+            var maps = GameConfig.I != null ? GameConfig.I.maps : null;
+            if (maps != null && maps.Length > 0) MenuMap = maps[Random.Range(0, maps.Length)].sceneName;
             var op = SceneManager.LoadSceneAsync(MenuMap, LoadSceneMode.Single);
             if (op != null) op.completed += _ => EnteredMenu?.Invoke();
         }

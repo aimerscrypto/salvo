@@ -76,6 +76,7 @@ namespace Salvo
         readonly Dictionary<ulong, float> respawnAt = new Dictionary<ulong, float>(); // combatant id -> time
         readonly HashSet<ulong> spawnedClients = new HashSet<ulong>();
         int botNameCursor;
+        bool rotating;
         float populationTimer;
         float pingTimer;
 
@@ -424,7 +425,17 @@ namespace Salvo
             }
             else if (MatchPhase == MatchPhase.Ended && now >= PhaseEnd.Value)
             {
-                RestartMatch();
+                // rotate to the next map when there is more than one; otherwise replay this one
+                var maps = GameConfig.I.maps;
+                if (settings.rotateMaps && maps != null && maps.Length > 1 && !rotating)
+                {
+                    rotating = true;
+                    int cur = System.Array.FindIndex(maps, m => m.sceneName == gameObject.scene.name);
+                    settings.map = maps[(cur + 1 + maps.Length) % maps.Length].sceneName;
+                    NetworkManager.SceneManager.LoadScene(settings.map, UnityEngine.SceneManagement.LoadSceneMode.Single);
+                    return;
+                }
+                if (!rotating) RestartMatch();
             }
 
             populationTimer += Time.deltaTime;

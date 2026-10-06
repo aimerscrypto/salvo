@@ -81,7 +81,7 @@ namespace Salvo
         static MatchSettings Clone(MatchSettings s, bool offline) => new MatchSettings
         {
             mode = s.mode, maxPlayers = s.maxPlayers, fillWithBots = s.fillWithBots, botSkill = s.botSkill,
-            isPrivate = s.isPrivate, offline = offline, timeLimit = s.timeLimit, map = s.map
+            isPrivate = s.isPrivate, offline = offline, timeLimit = s.timeLimit, map = s.map, rotateMaps = s.rotateMaps
         };
 
         void Back()
@@ -136,6 +136,13 @@ namespace Salvo
         {
             var box = ui.Q("play-options");
             box.Clear();
+            var maps = GameConfig.I.maps;
+            var mapNames = new List<string>();
+            foreach (var m in maps) mapNames.Add(m.displayName.ToUpperInvariant());
+            mapNames.Add("ROTATION");
+            box.Add(UIRoot.Row("Map", UIRoot.Cycler(mapNames.ToArray(),
+                () => play.rotateMaps ? maps.Length : Mathf.Max(0, System.Array.FindIndex(maps, m => m.sceneName == play.map)),
+                v => { play.rotateMaps = v >= maps.Length; play.map = maps[v >= maps.Length ? 0 : v].sceneName; })));
             box.Add(UIRoot.Row("Mode", UIRoot.Cycler(new[] { "FREE FOR ALL", "TEAM DEATHMATCH" }, () => (int)play.mode, v => play.mode = (GameMode)v)));
             box.Add(UIRoot.Row("Fill with bots to", UIRoot.Cycler(new[] { "NO BOTS", "2", "3", "4", "5", "6", "7", "8", "9", "10" },
                 () => play.fillWithBots <= 0 ? 0 : play.fillWithBots - 1, v => play.fillWithBots = v == 0 ? 0 : v + 1)));

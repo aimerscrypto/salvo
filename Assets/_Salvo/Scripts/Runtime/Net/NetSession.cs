@@ -24,6 +24,7 @@ namespace Salvo
         public bool isPrivate;
         public string sessionName = "";
         public bool offline;
+        public bool rotateMaps = true;
 
         public int ScoreLimit => scoreLimit > 0 ? scoreLimit : (mode == GameMode.FreeForAll ? GameRules.FfaScoreLimit : GameRules.TdmScoreLimit);
     }

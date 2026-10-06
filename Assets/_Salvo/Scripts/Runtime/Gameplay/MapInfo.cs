@@ -9,6 +9,8 @@ namespace Salvo
         public static MapInfo I { get; private set; }
 
         public string displayName = "Outpost";
+        [Tooltip("Combatants below this height die (e.g. falling into the sea).")]
+        public float killHeight = GameRules.KillHeight;
         public Transform[] spawnsFfa;
         public Transform[] spawnsRed;
         public Transform[] spawnsBlue;

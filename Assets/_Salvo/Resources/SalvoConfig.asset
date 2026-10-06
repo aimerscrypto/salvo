@@ -35,6 +35,9 @@ MonoBehaviour:
   - sceneName: Outpost
     displayName: Outpost
     blurb: Sun-baked desert outpost. Containers west, market east, plaza in the middle.
+  - sceneName: Harbor
+    displayName: Harbor
+    blurb: Whitewashed fishing town on the quay. Mind the water, it bites.
   combatantPrefab: {fileID: 4007441227666334914, guid: ea8355714f36de8489de816771e2c3d7, type: 3}
   trooperModel: {fileID: 919132149155446097, guid: 5973ab564b04b834196ca7eb95dfbbba, type: 3}
   fpArmsModel: {fileID: 919132149155446097, guid: 1e14b3f2dba62ef43a782723233dcf05, type: 3}

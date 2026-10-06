@@ -33,7 +33,7 @@ namespace Salvo.EditorTools
             Directory.CreateDirectory(dir);
             var opts = new BuildPlayerOptions
             {
-                scenes = new[] { "Assets/_Salvo/Scenes/Boot.unity", "Assets/_Salvo/Scenes/Transition.unity", "Assets/_Salvo/Scenes/Outpost.unity" },
+                scenes = System.Array.ConvertAll(System.Array.FindAll(EditorBuildSettings.scenes, sc => sc.enabled), sc => sc.path),
                 locationPathName = Path.Combine(dir, "SALVO.exe"),
                 target = BuildTarget.StandaloneWindows64,
                 options = release ? BuildOptions.None : BuildOptions.Development,

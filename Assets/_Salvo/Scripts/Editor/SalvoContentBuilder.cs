@@ -129,6 +129,13 @@ namespace Salvo.EditorTools
                 m.SetColor("_GroundColor", Hex("D9C8A6")); m.SetColor("_SunColor", Hex("FFF4DC"));
                 m.SetFloat("_CloudCover", 0.42f); m.SetFloat("_CloudScale", 0.55f);
             });
+            MakeMat("M_SkyHarbor", sky, m =>
+            {
+                m.SetTexture("_CloudMap", T("T_CloudNoise"));
+                m.SetColor("_ZenithColor", Hex("3E86D1")); m.SetColor("_HorizonColor", Hex("D6EAF5"));
+                m.SetColor("_GroundColor", Hex("7FB8CC")); m.SetColor("_SunColor", Hex("FFF8E8"));
+                m.SetFloat("_CloudCover", 0.32f); m.SetFloat("_CloudScale", 0.5f);
+            });
             log.AppendLine("materials");
         }
 
@@ -368,7 +375,11 @@ namespace Salvo.EditorTools
             var c = LoadOrCreate<GameConfig>(Root + "Resources/SalvoConfig.asset");
             c.weapons = weapons;
             c.skins = skins;
-            c.maps = new[] { new MapDef { sceneName = "Outpost", displayName = "Outpost", blurb = "Sun-baked desert outpost. Containers west, market east, plaza in the middle." } };
+            c.maps = new[]
+            {
+                new MapDef { sceneName = "Outpost", displayName = "Outpost", blurb = "Sun-baked desert outpost. Containers west, market east, plaza in the middle." },
+                new MapDef { sceneName = "Harbor", displayName = "Harbor", blurb = "Whitewashed fishing town on the quay. Mind the water, it bites." },
+            };
             c.combatantPrefab = combatant;
             c.trooperModel = Model("Characters/Trooper");
             c.fpArmsModel = Model("Characters/FP_Arms");

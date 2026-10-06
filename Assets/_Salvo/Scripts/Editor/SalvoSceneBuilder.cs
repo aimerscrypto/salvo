@@ -31,13 +31,18 @@ namespace Salvo.EditorTools
             if (!AssetDatabase.IsValidFolder(SceneDir.TrimEnd('/'))) AssetDatabase.CreateFolder(Root.TrimEnd('/'), "Scenes");
             BuildBoot(log);
             BuildTransition(log);
-            BuildOutpost(log);
-            EditorBuildSettings.scenes = new[]
+            var scenes = new List<EditorBuildSettingsScene>
             {
                 new EditorBuildSettingsScene(SceneDir + "Boot.unity", true),
                 new EditorBuildSettingsScene(SceneDir + "Transition.unity", true),
-                new EditorBuildSettingsScene(SceneDir + "Outpost.unity", true),
             };
+            foreach (var theme in Themes)
+            {
+                if (AssetDatabase.LoadAssetAtPath<GameObject>(Root + "Art/Models/Map/" + theme.name + ".fbx") == null) continue;
+                BuildMap(theme, log);
+                scenes.Add(new EditorBuildSettingsScene(SceneDir + theme.name + ".unity", true));
+            }
+            EditorBuildSettings.scenes = scenes.ToArray();
             EditorSceneManager.OpenScene(SceneDir + "Boot.unity");
             Debug.Log("[SALVO] Scenes built:\n" + log);
             return log.ToString();
@@ -100,14 +105,39 @@ namespace Salvo.EditorTools
             log.AppendLine("Transition");
         }
 
-        // ------------------------------------------------------------------ outpost
-        static void BuildOutpost(System.Text.StringBuilder log)
+        // ------------------------------------------------------------------ maps
+        public class Theme
+        {
+            public string name, display, sky = "M_Sky", ambience = "Desert_Wind";
+            public Color sun = new Color(1f, 0.94f, 0.84f), ambSky, ambEquator, ambGround, fog;
+            public float sunIntensity = 1.45f, fogStart = 55f, fogEnd = 260f, killHeight = GameRules.KillHeight, shadowStrength = 0.82f;
+            public Vector3 sunEuler = new Vector3(47f, -38f, 0f);
+        }
+
+        public static readonly Theme[] Themes =
+        {
+            new Theme
+            {
+                name = "Outpost", display = "Outpost",
+                ambSky = new Color(0.64f, 0.72f, 0.86f), ambEquator = new Color(0.74f, 0.70f, 0.64f), ambGround = new Color(0.52f, 0.44f, 0.36f),
+                fog = new Color(0.80f, 0.86f, 0.89f),
+            },
+            new Theme
+            {
+                name = "Harbor", display = "Harbor", sky = "M_SkyHarbor", killHeight = -1.6f,
+                sun = new Color(1f, 0.96f, 0.9f), sunIntensity = 1.35f, sunEuler = new Vector3(52f, 128f, 0f), shadowStrength = 0.75f,
+                ambSky = new Color(0.62f, 0.74f, 0.92f), ambEquator = new Color(0.72f, 0.76f, 0.80f), ambGround = new Color(0.46f, 0.50f, 0.54f),
+                fog = new Color(0.78f, 0.87f, 0.94f), fogStart = 70f, fogEnd = 320f,
+            },
+        };
+
+        static void BuildMap(Theme theme, System.Text.StringBuilder log)
         {
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-            var mapAsset = AssetDatabase.LoadAssetAtPath<GameObject>(Root + "Art/Models/Map/Outpost.fbx");
+            var mapAsset = AssetDatabase.LoadAssetAtPath<GameObject>(Root + "Art/Models/Map/" + theme.name + ".fbx");
             var map = (GameObject)PrefabUtility.InstantiatePrefab(mapAsset);
             PrefabUtility.UnpackPrefabInstance(map, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
-            map.name = "Outpost";
+            map.name = theme.name;
 
             var spFfa = new List<Transform>(); var spRed = new List<Transform>(); var spBlue = new List<Transform>();
             var roam = new List<Transform>(); var cams = new List<Transform>();
@@ -126,7 +156,7 @@ namespace Salvo.EditorTools
                 if (mf != null)
                 {
                     var mr = t.GetComponent<MeshRenderer>();
-                    bool far = n.StartsWith("NC_Mesa") || n.StartsWith("NC_Dunes") || n.StartsWith("NC_Far");
+                    bool far = n.StartsWith("NC_Mesa") || n.StartsWith("NC_Dunes") || n.StartsWith("NC_Far") || n.StartsWith("NC_Sea") || n.StartsWith("NC_Hill") || n.StartsWith("NC_Island") || n.StartsWith("NC_Light") || n.StartsWith("NC_Sail");
                     if (n.StartsWith("NC_"))
                     {
                         t.gameObject.layer = Layers.Default;
@@ -184,30 +214,31 @@ namespace Salvo.EditorTools
             var sunGo = new GameObject("Sun");
             var sun = sunGo.AddComponent<Light>();
             sun.type = LightType.Directional;
-            sun.color = new Color(1f, 0.94f, 0.84f);
-            sun.intensity = 1.45f;
+            sun.color = theme.sun;
+            sun.intensity = theme.sunIntensity;
             sun.shadows = LightShadows.Soft;
-            sun.shadowStrength = 0.82f;
+            sun.shadowStrength = theme.shadowStrength;
             sun.shadowBias = 0.05f;
             sun.shadowNormalBias = 0.4f;
-            sunGo.transform.rotation = Quaternion.Euler(47f, -38f, 0f);
+            sunGo.transform.rotation = Quaternion.Euler(theme.sunEuler);
             sunGo.AddComponent<UniversalAdditionalLightData>();
 
-            RenderSettings.skybox = AssetDatabase.LoadAssetAtPath<Material>(Root + "Art/Materials/M_Sky.mat");
+            RenderSettings.skybox = AssetDatabase.LoadAssetAtPath<Material>(Root + "Art/Materials/" + theme.sky + ".mat");
             RenderSettings.sun = sun;
             RenderSettings.ambientMode = AmbientMode.Trilight;
-            RenderSettings.ambientSkyColor = new Color(0.64f, 0.72f, 0.86f);
-            RenderSettings.ambientEquatorColor = new Color(0.74f, 0.70f, 0.64f);
-            RenderSettings.ambientGroundColor = new Color(0.52f, 0.44f, 0.36f);
+            RenderSettings.ambientSkyColor = theme.ambSky;
+            RenderSettings.ambientEquatorColor = theme.ambEquator;
+            RenderSettings.ambientGroundColor = theme.ambGround;
             RenderSettings.fog = true;
             RenderSettings.fogMode = FogMode.Linear;
-            RenderSettings.fogColor = new Color(0.80f, 0.86f, 0.89f);
-            RenderSettings.fogStartDistance = 55f;
-            RenderSettings.fogEndDistance = 260f;
+            RenderSettings.fogColor = theme.fog;
+            RenderSettings.fogStartDistance = theme.fogStart;
+            RenderSettings.fogEndDistance = theme.fogEnd;
             RenderSettings.defaultReflectionMode = DefaultReflectionMode.Custom;
             RenderSettings.reflectionIntensity = 0f;
-            var ls = new LightingSettings { name = "OutpostLighting", bakedGI = false, realtimeGI = false, autoGenerate = false };
-            AssetDatabase.CreateAsset(ls, SceneDir + "OutpostLighting.lighting");
+            var ls = new LightingSettings { name = theme.name + "Lighting", bakedGI = false, realtimeGI = false, autoGenerate = false };
+            AssetDatabase.DeleteAsset(SceneDir + theme.name + "Lighting.lighting");
+            AssetDatabase.CreateAsset(ls, SceneDir + theme.name + "Lighting.lighting");
             Lightmapping.lightingSettings = ls;
 
             // ---- camera
@@ -231,11 +262,12 @@ namespace Salvo.EditorTools
             mm.AddComponent<NetworkObject>();
             mm.AddComponent<MatchManager>();
             var info = new GameObject("MapInfo").AddComponent<MapInfo>();
-            info.displayName = "Outpost";
+            info.displayName = theme.display;
+            info.killHeight = theme.killHeight;
             info.spawnsFfa = spFfa.ToArray(); info.spawnsRed = spRed.ToArray(); info.spawnsBlue = spBlue.ToArray();
             info.roamPoints = roam.ToArray(); info.menuCameraPath = cams.ToArray();
             info.showcaseSpot = showcase; info.showcaseCamera = showcaseCam; info.sun = sun;
-            info.ambience = AssetDatabase.LoadAssetAtPath<AudioClip>(Root + "Audio/Ambience/Desert_Wind.wav");
+            info.ambience = AssetDatabase.LoadAssetAtPath<AudioClip>(Root + "Audio/Ambience/" + theme.ambience + ".wav");
             new GameObject("MenuBackdrop").AddComponent<MenuBackdrop>();
 
             // ---- navmesh for bots
@@ -244,22 +276,22 @@ namespace Salvo.EditorTools
             surf.useGeometry = UnityEngine.AI.NavMeshCollectGeometry.PhysicsColliders;
             surf.layerMask = 1 << Layers.World;
             surf.BuildNavMesh();
-            string navPath = SceneDir + "Outpost_NavMesh.asset";
+            string navPath = SceneDir + theme.name + "_NavMesh.asset";
             AssetDatabase.DeleteAsset(navPath);
             AssetDatabase.CreateAsset(surf.navMeshData, navPath);
             EditorUtility.SetDirty(surf);
 
             // in-scene NetworkObjects need their GlobalObjectIdHash generated before saving
             EditorSceneManager.MarkSceneDirty(scene);
-            EditorSceneManager.SaveScene(scene, SceneDir + "Outpost.unity");
+            EditorSceneManager.SaveScene(scene, SceneDir + theme.name + ".unity");
             foreach (var no in Object.FindObjectsByType<NetworkObject>(FindObjectsSortMode.None))
             {
                 var m = typeof(NetworkObject).GetMethod("OnValidate", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public);
                 m?.Invoke(no, null);
                 EditorUtility.SetDirty(no);
             }
-            EditorSceneManager.SaveScene(scene, SceneDir + "Outpost.unity");
-            log.AppendLine($"Outpost: {colliders} colliders, {renderOnly} render-only, spawns {spFfa.Count}/{spRed.Count}/{spBlue.Count}, roam {roam.Count}, cams {cams.Count}, showcase {(showcase != null)}");
+            EditorSceneManager.SaveScene(scene, SceneDir + theme.name + ".unity");
+            log.AppendLine($"{theme.name}: {colliders} colliders, {renderOnly} render-only, spawns {spFfa.Count}/{spRed.Count}/{spBlue.Count}, roam {roam.Count}, cams {cams.Count}, showcase {(showcase != null)}");
         }
     }
 }
