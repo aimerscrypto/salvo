@@ -91,7 +91,9 @@ Then in Unity: **SALVO → Setup → Configure Project**, **SALVO → Build → 
 The project is linked to a Unity Cloud project. For online matches to work for players:
 1. In the Unity Cloud dashboard, open the project and make sure **Relay** and **Lobby**
    (Multiplayer Services) are enabled. Anonymous authentication needs no setup.
-2. Build with **SALVO → Build → Windows (Release, IL2CPP)**.
+2. Build with **SALVO → Build → Windows (Release)** → `Builds/Windows/SALVO.exe`.
+   It uses IL2CPP when the "Windows Build Support (IL2CPP)" module is installed in Unity Hub,
+   otherwise an optimized Mono build.
 
 LAN/direct-IP play uses UDP port **7777** on the host. Offline practice needs no network.
 
@@ -100,6 +102,14 @@ LAN/direct-IP play uses UDP port **7777** on the host. Offline practice needs no
 The player accepts command-line flags for automated tests:
 `-salvo-practice`, `-salvo-host` (LAN), `-salvo-join <ip[:port]>`, `-salvo-online-host`,
 `-salvo-code <CODE>`, `-salvo-name <name>`.
+
+## Verified
+
+- Standalone release build: ~85–88 FPS average (worst frame ~17 ms) in a 6-combatant bot match
+  on an Intel Celeron 5205U + UHD Graphics (dev build measurement).
+- LAN: player-build host + Editor client — movement, hit claims, server damage, kills, kill feed,
+  scoreboard and respawns replicate correctly.
+- Online: Editor hosts a Relay session, player build joins with the 6-letter code.
 
 ## Licenses
 

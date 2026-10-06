@@ -15,13 +15,19 @@ namespace Salvo.EditorTools
         [MenuItem("SALVO/Build/Windows (Dev, Mono)")]
         public static string BuildDev() => Build(false);
 
-        [MenuItem("SALVO/Build/Windows (Release, IL2CPP)")]
+        [MenuItem("SALVO/Build/Windows (Release)")]
         public static string BuildRelease() => Build(true);
 
         public static string Build(bool release)
         {
             var target = NamedBuildTarget.Standalone;
-            PlayerSettings.SetScriptingBackend(target, release ? ScriptingImplementation.IL2CPP : ScriptingImplementation.Mono2x);
+            // IL2CPP needs the "Windows Build Support (IL2CPP)" module; fall back to Mono when it's absent.
+            string engines = Path.Combine(EditorApplication.applicationContentsPath, "PlaybackEngines", "windowsstandalonesupport", "Variations");
+            bool hasIl2cpp = Directory.Exists(engines) && Directory.GetDirectories(engines, "*il2cpp*").Length > 0;
+            bool il2cpp = release && hasIl2cpp;
+            if (release && !hasIl2cpp) Debug.LogWarning("[SALVO] IL2CPP module not installed - release build uses Mono.");
+            PlayerSettings.bundleVersion = GameRules.Version;
+            PlayerSettings.SetScriptingBackend(target, il2cpp ? ScriptingImplementation.IL2CPP : ScriptingImplementation.Mono2x);
             PlayerSettings.SetIl2CppCompilerConfiguration(target, Il2CppCompilerConfiguration.Release);
             string dir = Path.GetFullPath(Path.Combine(Application.dataPath, "..", "Builds", release ? "Windows" : "Windows-Dev"));
             Directory.CreateDirectory(dir);
