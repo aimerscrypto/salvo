@@ -25,9 +25,13 @@ namespace Salvo
         float recoilDebt;
         float yaw, pitch;
 
-        float Reaction => Skill == BotSkill.Easy ? 0.55f : Skill == BotSkill.Normal ? 0.33f : 0.2f;
-        float TurnSpeed => Skill == BotSkill.Easy ? 220f : Skill == BotSkill.Normal ? 380f : 560f;
-        float ErrorDeg => Skill == BotSkill.Easy ? 5.5f : Skill == BotSkill.Normal ? 3.2f : 1.6f;
+        // difficulty: reaction delay, aim turn rate, aim error, how long bursts last and the pause between
+        float Reaction => Skill == BotSkill.Easy ? 0.9f : Skill == BotSkill.Normal ? 0.5f : 0.22f;
+        float TurnSpeed => Skill == BotSkill.Easy ? 150f : Skill == BotSkill.Normal ? 280f : 540f;
+        float ErrorDeg => Skill == BotSkill.Easy ? 8f : Skill == BotSkill.Normal ? 4.5f : 1.7f;
+        Vector2 BurstLength => Skill == BotSkill.Easy ? new Vector2(0.2f, 0.45f) : Skill == BotSkill.Normal ? new Vector2(0.3f, 0.75f) : new Vector2(0.4f, 1f);
+        float BurstPause => Skill == BotSkill.Easy ? 0.65f : Skill == BotSkill.Normal ? 0.38f : 0.2f;
+        float TapRate => Skill == BotSkill.Easy ? 2.5f : Skill == BotSkill.Normal ? 4f : 7f; // semi-auto pulls per second
         float ViewDistance => Skill == BotSkill.Easy ? 40f : 60f;
 
         void Awake()
@@ -107,10 +111,10 @@ namespace Salvo
                 if (reacted && inRange && angleOff < 6f + 40f / Mathf.Max(dist, 1f))
                 {
                     fireHoldTimer -= dt;
-                    bool burst = def.fireMode != FireMode.Auto || fireHoldTimer > -0.25f;
+                    bool burst = fireHoldTimer > 0f;
                     w.fireHeld = burst;
-                    w.firePressed = burst && (def.fireMode != FireMode.Auto) && Random.value < 0.35f;
-                    if (fireHoldTimer < -0.35f) fireHoldTimer = Random.Range(0.3f, 0.9f);
+                    w.firePressed = burst && def.fireMode != FireMode.Auto && Random.value < dt * TapRate;
+                    if (fireHoldTimer < -BurstPause) fireHoldTimer = Random.Range(BurstLength.x, BurstLength.y);
                 }
                 w.aimHeld = def.scoped ? dist > 10f : dist > 18f && Skill != BotSkill.Easy;
             }
@@ -192,7 +196,7 @@ namespace Salvo
 
             if (best != null)
             {
-                if (best != target || !targetVisible) { firstSeen = Time.time; trackStart = 0f; headAim = Random.value < (Skill == BotSkill.Hard ? 0.45f : 0.2f); }
+                if (best != target || !targetVisible) { firstSeen = Time.time; trackStart = 0f; headAim = Random.value < (Skill == BotSkill.Hard ? 0.4f : Skill == BotSkill.Normal ? 0.15f : 0.05f); }
                 target = best;
                 targetVisible = true;
                 seenTime = Time.time;

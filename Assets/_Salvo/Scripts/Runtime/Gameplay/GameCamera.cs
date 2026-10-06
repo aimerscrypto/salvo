@@ -157,6 +157,9 @@ namespace Salvo
             Cam.fieldOfView = SalvoMath.Damp(Cam.fieldOfView, killer != null ? vf * 0.7f : vf, 3f, dt);
         }
 
+        Combatant stepTarget;
+        float stepLastY, stepSmooth;
+
         void UpdateFirstPerson(float dt)
         {
             if (Target == null || !Target.IsSpawned) { EnterOverview(); return; }
@@ -182,7 +185,16 @@ namespace Salvo
             Vector3 shakeRot = new Vector3(Mathf.PerlinNoise(Time.time * 25f, 1f) - 0.5f, Mathf.PerlinNoise(2f, Time.time * 25f) - 0.5f, Mathf.PerlinNoise(Time.time * 25f, 5f) - 0.5f) * (sh * 6f);
 
             eyeHeight = SalvoMath.Damp(eyeHeight, motor.EyeHeight, 18f, dt);
-            Vector3 eye = Target.transform.position + Vector3.up * (eyeHeight + land.Value);
+            // stairs: the controller pops up each step; absorb the pop and ease the eye up instead
+            float py = Target.transform.position.y;
+            if (stepTarget == Target && motor.Grounded)
+            {
+                float rise = py - stepLastY;
+                if (rise > 0.03f + hs * dt * 0.6f && rise < 0.6f) stepSmooth -= rise;
+            }
+            stepTarget = Target; stepLastY = py;
+            stepSmooth = SalvoMath.Damp(stepSmooth, 0f, 12f, dt);
+            Vector3 eye = Target.transform.position + Vector3.up * (eyeHeight + land.Value + stepSmooth);
             float yaw = motor.Input.yaw, pitch = motor.Input.pitch;
 
             // strafe roll

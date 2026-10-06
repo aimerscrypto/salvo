@@ -308,8 +308,11 @@ def awning_parts(G, x, y, z, width, colors, rz):
     return parts
 
 
-def stairs(F, name, x, y, z0, width, rise, direction_rz, step_h=0.25, step_d=0.3, color="sand_dark", side=False):
-    """Straight stair starting at (x,y,z0) climbing towards local +Y (rotated by direction_rz)."""
+def stairs(F, name, x, y, z0, width, rise, direction_rz, step_h=0.25, step_d=0.3, color="sand_dark", side=False, wall_side=0, landing=1.0):
+    """Straight stair starting at (x,y,z0) climbing towards local +Y (rotated by direction_rz).
+    wall_side = +1/-1: an external stair running along a building on that local-X side. It gets a
+    landing at the top (you step sideways onto the roof from it) on a masonry pier, and a stepped
+    parapet on the open side, so it reads as built access instead of a free-standing flight."""
     G = F.sub(x, y, z0, direction_rz)
     n = max(1, int(round(rise / step_h)))
     sh = rise / n
@@ -320,6 +323,18 @@ def stairs(F, name, x, y, z0, width, rise, direction_rz, step_h=0.25, step_d=0.3
         run = n * step_d
         for sx in (-1, 1):
             parts.append(G.box("cheek", (0.22, run, rise + 0.9), (sx * (width / 2 + 0.11), run / 2, (rise + 0.9) / 2 - 0.0), "sand", bev=0.04, dense=1.5))
+    if wall_side:
+        run = n * step_d
+        ox = -wall_side * (width / 2 + 0.1)          # open side, away from the building
+        # landing slab flush with the top step, carried by a pier at the open corner
+        parts.append(G.box("landing", (width, landing, 0.3), (0, run + landing / 2, rise - 0.15), color, bev=0.03))
+        parts.append(G.box("pier", (0.45, 0.45, rise - 0.3), (-wall_side * (width / 2 - 0.22), run + landing - 0.22, (rise - 0.3) / 2), "sand", bev=0.04, dense=1.5))
+        # stepped parapet up the open side, around the landing's open side and end
+        for i in range(n):
+            parts.append(G.box("rail", (0.2, step_d, 0.9), (ox, step_d * i + step_d / 2, sh * (i + 1) + 0.45), "sand", bev=0.03))
+        parts.append(G.box("rail_l", (0.2, landing + 0.2, 0.9), (ox, run + landing / 2 + 0.1, rise + 0.45), "sand", bev=0.03))
+        parts.append(G.box("rail_e", (width + 0.4, 0.2, 0.9), (0, run + landing + 0.1, rise + 0.45), "sand", bev=0.03))
+        parts.append(G.box("cap", (0.26, run + landing + 0.2, 0.08), (ox, (run + landing + 0.2) / 2, rise + 0.94), "cream", bev=0.02))
     return prop(name, parts)
 
 
@@ -482,7 +497,7 @@ def build_half(F, accent, cloth, spawn_team):
 
     # ---------------- barracks (NE) with rooftop stairs --------------------------------
     house(F, "Barracks", 19.0, 29.5, 11.0, 10.0, 6.4, wall="plaster", trim="sand_dark", accent=accent, door_faces=("S",), parapet_sides="NSE")
-    stairs(F, "BarracksStairs", 12.65, 24.9, 0, 1.7, 6.4, 0, step_h=0.25, step_d=0.31)
+    stairs(F, "BarracksStairs", 12.65, 24.9, 0, 1.7, 6.4, 0, step_h=0.25, step_d=0.31, wall_side=1)
     F.marker("ROAM_barracks_roof", (19, 29.5, 6.5))
     crate(F, "RoofCrate", 22.0, 31.5, 6.4, 1.1, 20)
     sandbags(F, "RoofBags", 17.0, 25.4, 3.0, 2, 0)
@@ -490,7 +505,7 @@ def build_half(F, accent, cloth, spawn_team):
     # ---------------- NW: water tower + shed -------------------------------------------
     water_tower(F, "WaterTower", -19.0, 32.0)
     house(F, "Shed", -25.8, 30.8, 6.0, 6.4, 3.6, wall="sand", trim="terra_dark", accent=accent, door_faces=("E",), roof_props=False, parapet_sides="NEW")
-    stairs(F, "ShedStairs", -21.6, 26.9, 0, 1.4, 3.6, 90, step_h=0.24, step_d=0.3)
+    stairs(F, "ShedStairs", -21.6, 26.9, 0, 1.4, 3.6, 90, step_h=0.24, step_d=0.3, wall_side=1)
     crate(F, "TowerCrate", -17.0, 28.6, 0, 1.1, 5)
     barrel(F, "TowerBarrel", -21.8, 35.2, 0, "red")
     barrel(F, "TowerBarrel2", -22.7, 34.6, 0, "red", tipped=True)
@@ -523,7 +538,7 @@ def build_half(F, accent, cloth, spawn_team):
     # ---------------- east lane: market (X 14..28, Y 5..22) ------------------------------
     house(F, "MarketHouse1", 25.6, 17.8, 6.2, 7.2, 4.6, wall="sand", trim="terra_dark", accent=accent, door_faces=("W",), awning=None)
     house(F, "MarketHouse2", 25.6, 8.6, 6.2, 6.6, 3.5, wall="cream", trim="sand_dark", accent=accent, door_faces=("W",), roof_props=False, parapet_sides="SEW")
-    stairs(F, "MarketStairs", 21.0, 12.6, 0, 1.4, 3.5, -90, step_h=0.25, step_d=0.3)
+    stairs(F, "MarketStairs", 21.0, 12.6, 0, 1.4, 3.5, -90, step_h=0.25, step_d=0.3, wall_side=1)
     # arcade along the west side of the market street (walkable roof)
     arc = []
     G = F.sub(15.6, 14.0)

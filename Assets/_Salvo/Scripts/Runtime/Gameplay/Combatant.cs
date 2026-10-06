@@ -236,7 +236,7 @@ namespace Salvo
         void DiedRpc(ulong killerId, byte weaponId, bool headshot, Vector3 dir)
         {
             Died?.Invoke(killerId, weaponId, headshot, dir);
-            Visual?.BreakApart(dir, headshot);
+            Visual?.PlayDeath(dir, headshot);
             Weapons.OnDied();
             if (IsOwner && !IsBot) GameCamera.I?.EnterDeathCam(this, Find(killerId));
         }

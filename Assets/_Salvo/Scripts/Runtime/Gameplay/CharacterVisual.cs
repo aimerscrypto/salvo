@@ -31,6 +31,7 @@ namespace Salvo
         readonly List<Collider> hitboxes = new List<Collider>();
         Vector3 lastPos, vel;
         float phase, crouchT, airT, pitch, fireKick, hurtFlash;
+        Vector3 strideDir = Vector3.forward;
         bool broken;
         int lastStep;
         GameObject blobShadow;
@@ -220,8 +221,10 @@ namespace Salvo
 
             // legs
             float run = Mathf.Clamp01(hs / GameRules.RunSpeed);
-            float dirSign = local.z < -0.5f ? -1f : 1f;
-            phase += dt * hs * 1.75f * dirSign;
+            phase += dt * hs * 1.75f;
+            // legs stride along the actual travel direction (forward, back, sideways, diagonal)
+            Vector3 travel = hs > 0.2f ? local / hs : Vector3.forward;
+            strideDir = Vector3.Lerp(strideDir, travel, 1f - Mathf.Exp(-10f * dt));
             int step = Mathf.FloorToInt(phase / Mathf.PI);
             if (step != lastStep)
             {
@@ -235,16 +238,16 @@ namespace Salvo
             float amp = Mathf.Lerp(0f, 38f, run) * (1f - airT);
             float sL = Mathf.Sin(phase), sR = Mathf.Sin(phase + Mathf.PI);
             float crouchThigh = 70f * crouchT, crouchShin = -95f * crouchT;
-            Leg(thL, shL, sL * amp + crouchThigh + airT * 30f, Mathf.Min(0f, Mathf.Cos(phase)) * amp * 1.2f + crouchShin - airT * 45f);
-            Leg(thR, shR, sR * amp + crouchThigh - airT * 5f, Mathf.Min(0f, Mathf.Cos(phase + Mathf.PI)) * amp * 1.2f + crouchShin - airT * 20f);
-            // strafing: turn the hips into the direction of travel a bit
-            float strafeYaw = hs > 0.5f ? Mathf.Clamp(Mathf.Atan2(local.x, Mathf.Abs(local.z) + 0.01f) * Mathf.Rad2Deg, -45f, 45f) * run : 0f;
-            hips.localRotation = baseRot[hips] * Quaternion.Euler(0, -strafeYaw * dirSign * 0.6f, 0);
+            Leg(thL, shL, sL * amp, crouchThigh + airT * 30f, Mathf.Min(0f, Mathf.Cos(phase)) * amp * 1.2f + crouchShin - airT * 45f);
+            Leg(thR, shR, sR * amp, crouchThigh - airT * 5f, Mathf.Min(0f, Mathf.Cos(phase + Mathf.PI)) * amp * 1.2f + crouchShin - airT * 20f);
+            // lean a little into sideways movement (local Y is the model's forward axis -> roll)
+            float lean = -strideDir.x * run * 5f * (1f - airT);
+            hips.localRotation = baseRot[hips];
             float bob = Mathf.Abs(Mathf.Cos(phase)) * 0.045f * run * (1f - airT);
             hips.localPosition = hipsBase + new Vector3(0, -0.36f * crouchT - bob, 0);
 
             // spine and head follow aim (in wrapper space, +X rotation pitches "forward" for the model)
-            torso.localRotation = baseRot[torso] * Quaternion.Euler((-pitch * 0.45f - crouchT * 10f) * AimSign, strafeYaw * dirSign * 0.6f, 0);
+            torso.localRotation = baseRot[torso] * Quaternion.Euler((-pitch * 0.45f - crouchT * 10f) * AimSign, lean, 0);
             head.localRotation = baseRot[head] * Quaternion.Euler(-pitch * 0.4f * AimSign, 0, 0);
 
             // weapon follows aim and crouch
@@ -282,9 +285,16 @@ namespace Salvo
         const float LegSign = -1f;
         const float AimSign = -1f;
 
-        void Leg(Transform thigh, Transform shin, float thighAngle, float shinAngle)
+        /// <summary>stride swings the thigh along strideDir; bend is a forward lift (crouch/air).
+        /// Node axes: local X pitches the leg (negative = knee forward), local Y swings it sideways
+        /// (positive = knee to the right), local Z runs along the leg.</summary>
+        void Leg(Transform thigh, Transform shin, float stride, float bend, float shinAngle)
         {
-            thigh.localRotation = baseRot[thigh] * Quaternion.Euler(thighAngle * LegSign, 0, 0);
+            // sideways steps are shorter than forward ones
+            Vector3 w = new Vector3(-strideDir.z, strideDir.x * 0.7f, 0f);
+            float m = w.magnitude;
+            Quaternion swing = m > 1e-4f ? Quaternion.AngleAxis(stride * m, w / m) : Quaternion.identity;
+            thigh.localRotation = baseRot[thigh] * Quaternion.Euler(bend * LegSign, 0, 0) * swing;
             shin.localRotation = baseRot[shin] * Quaternion.Euler(shinAngle * LegSign, 0, 0);
         }
 
@@ -307,7 +317,8 @@ namespace Salvo
         }
 
         // ------------------------------------------------------------------ death
-        public void BreakApart(Vector3 dir, bool headshot)
+        /// <summary>The body keeps its last pose and topples away from the shot, then sinks out of sight.</summary>
+        public void PlayDeath(Vector3 dir, bool headshot)
         {
             if (broken || model == null) return;
             broken = true;
@@ -317,30 +328,31 @@ namespace Salvo
             foreach (var h in hitboxes) if (h != null) h.enabled = false;
             if (weaponPivot != null) weaponPivot.gameObject.SetActive(false);
             if (blobShadow != null) blobShadow.SetActive(false);
-            FxManager.I?.DeathPoof(transform.position + Vector3.up * 1f, c.TeamColor);
 
-            var parts = new List<Transform>();
-            foreach (var r in model.GetComponentsInChildren<MeshRenderer>()) parts.Add(r.transform);
-            var debrisRoot = new GameObject("Debris_" + c.Name).transform;
-            foreach (var part in parts)
-            {
-                part.SetParent(debrisRoot, true);
-                part.gameObject.layer = Layers.Debris;
-                var mf = part.GetComponent<MeshFilter>();
-                var box = part.gameObject.AddComponent<BoxCollider>();
-                if (mf != null && mf.sharedMesh != null) { box.center = mf.sharedMesh.bounds.center; box.size = Vector3.Max(mf.sharedMesh.bounds.size * 0.85f, Vector3.one * 0.06f); }
-                var rb = part.gameObject.AddComponent<Rigidbody>();
-                rb.mass = 2f;
-                rb.interpolation = RigidbodyInterpolation.None;
-                rb.collisionDetectionMode = CollisionDetectionMode.Discrete;
-                Vector3 push = dir * Random.Range(2f, 4.5f) + Vector3.up * Random.Range(1.5f, 3.5f) + Random.insideUnitSphere * 1.5f;
-                if (headshot && part.name == "Head") push += Vector3.up * 4f + dir * 3f;
-                rb.linearVelocity = push + vel * 0.6f;
-                rb.angularVelocity = Random.insideUnitSphere * 8f;
-            }
-            debrisRoot.gameObject.AddComponent<DebrisFader>().Begin(3.2f);
-            Destroy(wrapper.gameObject);
+            var corpse = new GameObject("Corpse_" + c.Name).transform;
+            corpse.SetPositionAndRotation(transform.position, transform.rotation);
+            wrapper.SetParent(corpse, true);
+            Vector3 fall = Vector3.ProjectOnPlane(dir, Vector3.up);
+            if (fall.sqrMagnitude < 1e-4f) fall = -transform.forward;
+            fall = ClearFallDirection(fall.normalized);
+            corpse.gameObject.AddComponent<Corpse>().Begin(fall.normalized, headshot, crouchT, shL, shR, torso, head, vel);
             wrapper = null; model = null;
+        }
+
+        /// <summary>Direction closest to the shot that has room for a body to lie down (no wall within 1.7 m).</summary>
+        Vector3 ClearFallDirection(Vector3 preferred)
+        {
+            Vector3 chest = transform.position + Vector3.up * 0.9f;
+            Vector3 best = preferred;
+            float bestRoom = -1f;
+            foreach (float yaw in new[] { 0f, 35f, -35f, 70f, -70f, 110f, -110f, 180f })
+            {
+                Vector3 d = Quaternion.Euler(0, yaw, 0) * preferred;
+                float room = Physics.SphereCast(chest, 0.15f, d, out var hit, 1.7f, Layers.WorldMask, QueryTriggerInteraction.Ignore) ? hit.distance : 1.7f;
+                if (room >= 1.69f) return d;
+                if (room > bestRoom) { bestRoom = room; best = d; }
+            }
+            return best;
         }
 
         void OnDestroy()
@@ -349,21 +361,59 @@ namespace Salvo
         }
     }
 
-    /// <summary>Shrinks and removes break-apart debris.</summary>
-    public class DebrisFader : MonoBehaviour
+    /// <summary>
+    /// Procedural death: the body pivots over its feet away from the shot (gravity ease-in, a small
+    /// bounce on landing), knees buckle and the head lolls, then it rests and sinks into the ground.
+    /// </summary>
+    public class Corpse : MonoBehaviour
     {
-        float life, t;
-        public void Begin(float seconds) { life = seconds; }
+        const float FallTime = 0.5f, Rest = 2.2f, SinkTime = 0.8f;
+        Vector3 axis, slide;
+        Quaternion startRot;
+        Vector3 startPos;
+        Transform shL, shR, torso, head;
+        Quaternion shLBase, shRBase, torsoBase, headBase;
+        float t, crouch, headKick;
+
+        public void Begin(Vector3 fallDir, bool headshot, float crouchT, Transform shinL, Transform shinR, Transform torsoT, Transform headT, Vector3 velocity)
+        {
+            axis = Vector3.Cross(Vector3.up, fallDir).normalized;
+            startRot = transform.rotation;
+            startPos = transform.position;
+            slide = Vector3.ProjectOnPlane(velocity, Vector3.up) * 0.25f + fallDir * (headshot ? 0.35f : 0.2f);
+            crouch = crouchT;
+            headKick = headshot ? 1f : 0.4f;
+            shL = shinL; shR = shinR; torso = torsoT; head = headT;
+            if (shL != null) shLBase = shL.localRotation;
+            if (shR != null) shRBase = shR.localRotation;
+            if (torso != null) torsoBase = torso.localRotation;
+            if (head != null) headBase = head.localRotation;
+        }
 
         void Update()
         {
             t += Time.deltaTime;
-            if (t > life)
+            float f = Mathf.Clamp01(t / FallTime);
+            float angle = 88f * f * f; // accelerate like a fall
+            if (t > FallTime)
             {
-                float k = 1f - (t - life) / 0.5f;
-                if (k <= 0f) { Destroy(gameObject); return; }
-                foreach (Transform ch in transform) ch.localScale = Vector3.one * k;
+                float k = t - FallTime;
+                angle = 88f - Mathf.Sin(k * 16f) * Mathf.Exp(-k * 9f) * 7f; // thud and settle
             }
+            // pivot over the feet; lift slightly as it lies down so the body rests on, not in, the floor
+            Vector3 pos = startPos + slide * Mathf.SmoothStep(0, 1, f) + Vector3.up * (0.14f * Mathf.SmoothStep(0, 1, f));
+            if (t > Rest) pos += Vector3.down * Mathf.SmoothStep(0f, 0.75f, (t - Rest) / SinkTime);
+            transform.SetPositionAndRotation(pos, Quaternion.AngleAxis(angle, axis) * startRot);
+
+            // knees buckle early, the upper body curls, the head lolls back
+            float buckle = Mathf.Sin(Mathf.Clamp01(t / (FallTime * 0.8f)) * Mathf.PI) * (1f - crouch) * 45f;
+            if (shL != null) shL.localRotation = shLBase * Quaternion.Euler(buckle, 0, 0);
+            if (shR != null) shR.localRotation = shRBase * Quaternion.Euler(buckle * 0.7f, 0, 0);
+            float curl = Mathf.SmoothStep(0, 1, f);
+            if (torso != null) torso.localRotation = torsoBase * Quaternion.Euler(8f * curl, 0, 0);
+            if (head != null) head.localRotation = headBase * Quaternion.Euler(-25f * headKick * curl, 0, 0);
+
+            if (t > Rest + SinkTime) Destroy(gameObject);
         }
     }
 }

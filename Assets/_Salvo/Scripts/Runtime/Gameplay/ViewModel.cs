@@ -19,6 +19,7 @@ namespace Salvo
             public Quaternion armLRot, actionRot;
             public Vector3 adsPos;
             public Renderer flash;
+            public bool hasReticle;
         }
 
         readonly Rig[] rigs = new Rig[3];
@@ -122,6 +123,24 @@ namespace Salvo
                     r.reflectionProbeUsage = ReflectionProbeUsage.Off;
                 }
 
+                // red-dot / holo reticle: a small unlit dot on the optic's glass, on the sight line
+                var reticle = rig.model.FindDeep("Reticle");
+                if (reticle != null)
+                {
+                    var rq = GameObject.CreatePrimitive(PrimitiveType.Quad);
+                    Destroy(rq.GetComponent<Collider>());
+                    rq.name = "ReticleDot";
+                    rq.transform.SetParent(rig.pose, false);
+                    rq.transform.position = reticle.position;
+                    rq.transform.localRotation = Quaternion.identity;
+                    rq.transform.localScale = Vector3.one * 0.0085f;
+                    var rr = rq.GetComponent<MeshRenderer>();
+                    rr.sharedMaterial = ReticleMaterial(cfg);
+                    rr.shadowCastingMode = ShadowCastingMode.Off;
+                    rr.receiveShadows = false;
+                    rig.hasReticle = true;
+                }
+
                 // muzzle flash quad
                 if (rig.muzzle != null && st.def.fireMode != FireMode.Melee)
                 {
@@ -202,7 +221,11 @@ namespace Salvo
             // --- springs
             kickPos.Step(Vector3.zero, 6f, 0.6f, dt);
             kickRot.Step(Vector3.zero, 5f, 0.5f, dt);
-            Vector2 look = SalvoInput.GameplayEnabled ? SalvoInput.Look.ReadValue<Vector2>() : Vector2.zero;
+            // sway from look *rate*, not this frame's raw delta: per-frame deltas swing with frame
+            // time and made the gun twitch whenever the frame rate wobbled
+            Vector2 rawLook = SalvoInput.GameplayEnabled ? SalvoInput.Look.ReadValue<Vector2>() : Vector2.zero;
+            lookRate = Vector2.Lerp(lookRate, rawLook / Mathf.Max(dt, 1e-4f), 1f - Mathf.Exp(-14f * dt));
+            Vector2 look = lookRate / 60f; // in "pixels per 60 Hz frame", the scale the sway was tuned for
             float swayK = Mathf.Lerp(1f, 0.2f, ads);
             swayRot.Step(new Vector3(Mathf.Clamp(look.y * 0.08f, -4f, 4f), Mathf.Clamp(-look.x * 0.08f, -5f, 5f), Mathf.Clamp(-look.x * 0.06f, -4f, 4f)) * swayK, 3.5f, 0.6f, dt);
             Vector3 localVel = c.transform.InverseTransformDirection(motor.Velocity);
@@ -315,6 +338,33 @@ namespace Salvo
         }
 
         bool reloadClick;
+
+        /// <summary>True when the held weapon's optic draws its own red dot (HUD dot fades while aiming).</summary>
+        public bool HasReticle => cur != null && cur.hasReticle;
+
+        static Material reticleMat;
+        static Material ReticleMaterial(GameConfig cfg)
+        {
+            if (reticleMat != null) return reticleMat;
+            const int n = 32;
+            var tex = new Texture2D(n, n, TextureFormat.RGBA32, false) { wrapMode = TextureWrapMode.Clamp, name = "ReticleDot" };
+            var px = new Color32[n * n];
+            for (int y = 0; y < n; y++)
+                for (int x = 0; x < n; x++)
+                {
+                    float d = Vector2.Distance(new Vector2(x + 0.5f, y + 0.5f), new Vector2(n / 2f, n / 2f)) / (n / 2f);
+                    float a = Mathf.Clamp01((0.42f - d) / 0.12f);           // crisp dot
+                    a = Mathf.Max(a, Mathf.Clamp01(1f - d) * 0.18f);        // faint bloom around it
+                    px[y * n + x] = new Color32(255, 255, 255, (byte)(a * 255));
+                }
+            tex.SetPixels32(px);
+            tex.Apply(false, true);
+            reticleMat = new Material(cfg.sightGlass) { name = "M_ReticleDot", renderQueue = 3010 };
+            reticleMat.SetTexture("_BaseMap", tex);
+            reticleMat.SetColor("_BaseColor", new Color(1.6f, 0.12f, 0.08f, 1f));
+            return reticleMat;
+        }
+        Vector2 lookRate;
 
         public Vector3 MuzzleWorld => cur != null && cur.muzzle != null ? cur.muzzle.position : (GameCamera.I != null ? GameCamera.I.transform.position : Vector3.zero);
     }

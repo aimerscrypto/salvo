@@ -16,3 +16,6 @@ for e in r.get('entries',[]):
     seen.add(m); print(m[:300])
 print('--', len(seen), 'unique')
 "
+# compile errors can be missing from the console (e.g. cleared before a no-op refresh): ask the editor
+until unity command eval --caller plugin --skill unity-cli --code 'return UnityEditor.EditorApplication.isCompiling ? "busy" : "idle";' 2>/dev/null | grep -q idle; do sleep 3; done
+unity command eval --caller plugin --skill unity-cli --code 'return UnityEditor.EditorUtility.scriptCompilationFailed ? "COMPILE FAILED" : "";' 2>/dev/null | grep -o "COMPILE FAILED"

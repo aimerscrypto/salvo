@@ -489,7 +489,10 @@ namespace Salvo
             Line(chLeft, -gap - len, -th / 2, len, th);
             Line(chRight, gap, -th / 2, len, th);
             chDot.style.backgroundColor = c;
-            chDot.style.opacity = def.pellets > 1 ? 0.5f : 1f;
+            // optics with a red dot: the sight's own reticle takes over while aiming
+            var vm = w != null ? w.GetComponent<ViewModel>() : null;
+            float dotFade = vm != null && vm.HasReticle ? 1f - Mathf.SmoothStep(0.4f, 0.85f, ads) : 1f;
+            chDot.style.opacity = (def.pellets > 1 ? 0.5f : 1f) * dotFade;
         }
 
         void UpdateNumbers(float dt)
