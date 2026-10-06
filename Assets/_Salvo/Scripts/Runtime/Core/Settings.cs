@@ -111,6 +111,8 @@ namespace Salvo
             if (GraphicsSettings.currentRenderPipeline is UniversalRenderPipelineAsset urp)
             {
                 urp.renderScale = Mathf.Clamp(d.renderScale, 0.5f, 1f);
+                // below native, FSR's edge-adaptive upscale + sharpening stays far crisper than bilinear
+                urp.upscalingFilter = urp.renderScale < 0.99f ? UpscalingFilterSelection.FSR : UpscalingFilterSelection.Auto;
                 urp.msaaSampleCount = d.msaa >= 4 ? 4 : d.msaa >= 2 ? 2 : 1;
                 urp.shadowDistance = d.shadows == 0 ? 0f : d.shadowDistance;
             }
@@ -119,11 +121,31 @@ namespace Salvo
             Application.targetFrameRate = d.vsync ? -1 : (d.fpsCap <= 0 ? -1 : d.fpsCap);
 
 #if !UNITY_EDITOR
-            var mode = d.fullscreen == 0 ? FullScreenMode.Windowed : d.fullscreen == 2 ? FullScreenMode.ExclusiveFullScreen : FullScreenMode.FullScreenWindow;
-            if (Screen.fullScreenMode != mode) Screen.fullScreenMode = mode;
+            ApplyDisplay(d.fullscreen == 0 ? FullScreenMode.Windowed : d.fullscreen == 2 ? FullScreenMode.ExclusiveFullScreen : FullScreenMode.FullScreenWindow);
 #endif
             AudioListener.volume = d.master;
             Changed?.Invoke();
+        }
+
+        /// <summary>
+        /// Full screen always runs at the monitor's native resolution: Unity remembers the last window
+        /// size and would otherwise stretch e.g. a stored 800x450 across a 1080p panel (blurry UI and
+        /// world). Performance scaling is the job of the render scale, which leaves the UI sharp.
+        /// </summary>
+        static void ApplyDisplay(FullScreenMode mode)
+        {
+            if (Array.IndexOf(Environment.GetCommandLineArgs(), "-screen-width") >= 0) return; // explicit size (tests)
+            var info = Screen.mainWindowDisplayInfo;
+            int nw = info.width > 0 ? info.width : Screen.currentResolution.width;
+            int nh = info.height > 0 ? info.height : Screen.currentResolution.height;
+            if (mode == FullScreenMode.Windowed)
+            {
+                if (Screen.fullScreenMode == mode) return;
+                int w = Mathf.Min(1600, Mathf.RoundToInt(nw * 0.85f));
+                Screen.SetResolution(w, Mathf.RoundToInt(w * nh / (float)nw), mode);
+            }
+            else if (Screen.fullScreenMode != mode || Screen.width != nw || Screen.height != nh)
+                Screen.SetResolution(nw, nh, mode);
         }
 
         /// <summary>Called when a map loads (its sun is the only light).</summary>

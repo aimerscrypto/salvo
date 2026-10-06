@@ -34,6 +34,7 @@ namespace Salvo
 
         void Start()
         {
+            Debug.Log($"[SALVO] Display {Screen.width}x{Screen.height} (monitor {Screen.currentResolution.width}x{Screen.currentResolution.height}, {Screen.dpi:0} dpi, {Screen.fullScreenMode}), render scale {Settings.Data.renderScale:0.00}, MSAA {Settings.Data.msaa}x");
             ParseCommandLine();
             if (!autoStarted) GameFlow.GoToMenu();
         }
