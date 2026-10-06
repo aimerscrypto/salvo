@@ -22,6 +22,9 @@ namespace Salvo
         }
 
         readonly Rig[] rigs = new Rig[3];
+        // Nodes inside an imported FBX share the root's frame: (x, y, z)node = (right, forward, down).
+        static readonly Quaternion MarkerFix = Quaternion.identity;
+        static Vector3 Node(float right, float up, float forward) => new Vector3(right, forward, -up);
         Combatant c;
         Rig cur;
         Spring3 kickPos, kickRot, swayRot, swayPos;
@@ -68,7 +71,6 @@ namespace Salvo
                 rig.pose.SetParent(rig.root, false);
                 var wrap = new GameObject("Wrap").transform;
                 wrap.SetParent(rig.pose, false);
-                wrap.localRotation = Quaternion.Euler(0, 180f, 0);
                 rig.model = Instantiate(st.def.model, wrap).transform;
                 CharacterVisual.ApplySkin(rig.model, st.def, st.skin);
                 rig.muzzle = rig.model.FindDeep("Muzzle");
@@ -85,7 +87,7 @@ namespace Salvo
                 rig.gripL = rig.model.FindDeep("GripL");
                 rig.armR = arms.FindDeep("Arm_R");
                 rig.armL = arms.FindDeep("Arm_L");
-                if (rig.armR != null && gripR != null) { rig.armR.SetParent(gripR, false); rig.armR.localPosition = Vector3.zero; rig.armR.localRotation = Quaternion.identity; }
+                if (rig.armR != null && gripR != null) { rig.armR.SetParent(gripR, false); rig.armR.localPosition = Vector3.zero; rig.armR.localRotation = MarkerFix; }
                 if (rig.armL != null)
                 {
                     bool twoHanded = st.def.slot == WeaponSlot.Primary;
@@ -93,7 +95,7 @@ namespace Salvo
                     {
                         rig.armL.SetParent(rig.gripL, false);
                         rig.armL.localPosition = Vector3.zero;
-                        rig.armL.localRotation = Quaternion.identity;
+                        rig.armL.localRotation = MarkerFix;
                         // re-home into pose space so the reload can move it independently
                         rig.armL.SetParent(rig.pose, true);
                         rig.armLBase = rig.armL.localPosition;
@@ -107,8 +109,8 @@ namespace Salvo
                     {
                         // pistol: support hand cups the shooting hand
                         rig.armL.SetParent(gripR, false);
-                        rig.armL.localPosition = new Vector3(-0.035f, -0.03f, 0.02f);
-                        rig.armL.localRotation = Quaternion.Euler(0, 0, 0);
+                        rig.armL.localPosition = MarkerFix * new Vector3(-0.035f, -0.03f, 0.02f);
+                        rig.armL.localRotation = MarkerFix;
                         rig.armL.SetParent(rig.pose, true);
                         rig.armLBase = rig.armL.localPosition;
                         rig.armLRot = rig.armL.localRotation;
@@ -150,7 +152,7 @@ namespace Salvo
                 rig.pose.localPosition = Vector3.zero;
                 rig.pose.localRotation = Quaternion.identity;
                 Vector3 sightLocal = rig.sight != null ? rig.root.InverseTransformPoint(rig.sight.position) : Vector3.zero;
-                rig.adsPos = new Vector3(-sightLocal.x, -sightLocal.y, st.def.sightDistance - sightLocal.z);
+                rig.adsPos = new Vector3(-sightLocal.x, -sightLocal.y, st.def.sightDistance - sightLocal.z) + st.def.adsOffset;
 
                 rig.root.gameObject.SetLayerRecursive(Layers.ViewModel);
                 rig.root.gameObject.SetActive(false);
@@ -262,7 +264,7 @@ namespace Salvo
                     float magOut = Mathf.SmoothStep(0, 1, Mathf.Clamp01((p - 0.15f) / 0.2f)) * (1f - Mathf.SmoothStep(0, 1, Mathf.Clamp01((p - 0.5f) / 0.22f)));
                     if (cur.mag != null)
                     {
-                        cur.mag.localPosition = cur.magBase + new Vector3(0, -0.22f, 0.02f) * magOut;
+                        cur.mag.localPosition = cur.magBase + Node(0, -0.22f, -0.02f) * magOut;
                         cur.mag.gameObject.SetActive(!(p > 0.33f && p < 0.5f));
                     }
                     armLOffset = new Vector3(0.0f, -0.12f, -0.12f) * magOut + new Vector3(0, -0.02f, 0) * tilt;
@@ -283,12 +285,12 @@ namespace Salvo
             float act = Mathf.Sin(Mathf.Clamp01(actionT) * Mathf.PI);
             if (cur.action != null)
             {
-                if (d.fireMode == FireMode.Pump) cur.action.localPosition = cur.actionBase + new Vector3(0, 0, 0.09f) * act;
+                if (d.fireMode == FireMode.Pump) cur.action.localPosition = cur.actionBase + Node(0, 0, -0.09f) * act;
                 else if (d.fireMode == FireMode.Bolt)
                 {
                     float lift = Mathf.Clamp01(act * 2f);
-                    cur.action.localRotation = cur.actionRot * Quaternion.Euler(0, 0, -70f * lift);
-                    cur.action.localPosition = cur.actionBase + new Vector3(0, 0, 0.06f) * Mathf.Clamp01(act * 2f - 0.6f);
+                    cur.action.localRotation = cur.actionRot * Quaternion.Euler(0, -70f * lift, 0);
+                    cur.action.localPosition = cur.actionBase + Node(0, 0, -0.06f) * Mathf.Clamp01(act * 2f - 0.6f);
                 }
             }
             if (d.fireMode == FireMode.Pump) { armLOffset += new Vector3(0, 0, -0.09f) * act; rot *= Quaternion.Euler(-3f * act, 0, 4f * act); }

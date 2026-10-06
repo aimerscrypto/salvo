@@ -79,12 +79,12 @@ namespace Salvo
             return playerColors[Mathf.Abs(index) % playerColors.Length];
         }
 
-        Material[] ffaMats;
+        [System.NonSerialized] Material[] ffaMats;
         public Material TeamMaterial(Team team, int colorIndex)
         {
             if (team == Team.Red) return teamRed;
             if (team == Team.Blue) return teamBlue;
-            if (ffaMats == null || ffaMats.Length != playerColors.Length)
+            if (ffaMats == null || ffaMats.Length != playerColors.Length || System.Array.Exists(ffaMats, m => m == null))
             {
                 ffaMats = new Material[playerColors.Length];
                 for (int i = 0; i < ffaMats.Length; i++)

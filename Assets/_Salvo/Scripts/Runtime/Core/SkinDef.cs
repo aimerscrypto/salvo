@@ -17,7 +17,7 @@ namespace Salvo
         [Range(0, 1)] public float grain = 0.15f;
         public float highlight = 0.1f;
 
-        Material cached;
+        [System.NonSerialized] Material cached;
 
         /// <summary>Shared runtime material for this skin (one per skin keeps the SRP batcher happy).</summary>
         public Material GetMaterial(Material template)

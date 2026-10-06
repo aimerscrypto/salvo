@@ -54,9 +54,10 @@ MonoBehaviour:
   adsSensitivity: 0.75
   adsMoveMultiplier: 0.6
   model: {fileID: 919132149155446097, guid: 2bbb92838cca7a645bb65623fd50ad7b, type: 3}
-  hipPosition: {x: 0.12, y: -0.15, z: 0.17}
-  hipEuler: {x: 0, y: -2, z: 0}
-  sightDistance: 0.1
+  hipPosition: {x: 0.19, y: -0.23, z: 0.44}
+  hipEuler: {x: 0, y: -1, z: 0}
+  sightDistance: 0.12
+  adsOffset: {x: 0, y: 0, z: 0}
   viewScale: 0.5
   tracerColor: {r: 1, g: 0.95, b: 0.8, a: 1}
   shakeOnFire: 0.3

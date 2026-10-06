@@ -146,6 +146,9 @@ namespace Salvo.EditorTools
                     mr.allowOcclusionWhenDynamic = true;
                     continue;
                 }
+                // Blender empties arrive with up = Blender local +Y (our "facing"), forward = -Blender Z.
+                if (n.StartsWith("SP_") || n.StartsWith("ROAM_") || n.StartsWith("CAM_") || n.StartsWith("SHOWCASE") || n.StartsWith("PAD_") || n.StartsWith("PK_"))
+                    t.rotation = Quaternion.LookRotation(-t.up, -t.forward);
                 if (n.StartsWith("SP_FFA")) spFfa.Add(t);
                 else if (n.StartsWith("SP_RED")) spRed.Add(t);
                 else if (n.StartsWith("SP_BLUE")) spBlue.Add(t);

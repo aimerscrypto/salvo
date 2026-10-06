@@ -186,7 +186,7 @@ namespace Salvo.EditorTools
                     w.hipSpread = 1.3f; w.adsSpread = 0.25f; w.moveSpreadAdd = 1.0f; w.airSpreadAdd = 3f; w.spreadPerShot = 0.55f; w.maxBloom = 2.5f; w.bloomRecovery = 6f;
                     w.recoilPitch = 1.5f; w.recoilYaw = 0.4f; w.recoilRecovery = 10f; w.kickBack = 0.05f; w.kickRotation = 6f;
                     w.adsFov = 68; w.adsTime = 0.13f; w.adsMoveMultiplier = 0.85f;
-                    w.hipPosition = new Vector3(0.13f, -0.15f, 0.3f); w.hipEuler = new Vector3(0, -3, 0); w.sightDistance = 0.34f;
+                    w.hipPosition = new Vector3(0.2f, -0.21f, 0.52f); w.hipEuler = new Vector3(0, -1, 0); w.sightDistance = 0.5f;
                     w.tracerColor = new Color(1f, 0.92f, 0.65f); w.shakeOnFire = 0.08f;
                     w.fireSound = A("Weapons/Viper_Fire"); w.reloadOut = mag; w.reloadIn = A("Weapons/Slide_Rack"); w.equipSound = equip;
                 }),
@@ -199,7 +199,7 @@ namespace Salvo.EditorTools
                     w.hipSpread = 2.2f; w.adsSpread = 0.9f; w.moveSpreadAdd = 0.8f; w.airSpreadAdd = 2.5f; w.spreadPerShot = 0.16f; w.maxBloom = 2.4f; w.bloomRecovery = 9f;
                     w.recoilPitch = 0.55f; w.recoilYaw = 0.35f; w.recoilRecovery = 12f; w.kickBack = 0.03f; w.kickRotation = 2.5f;
                     w.adsFov = 66; w.adsTime = 0.14f; w.adsMoveMultiplier = 0.85f;
-                    w.hipPosition = new Vector3(0.12f, -0.14f, 0.22f); w.hipEuler = new Vector3(0, -2, 0); w.sightDistance = 0.21f;
+                    w.hipPosition = new Vector3(0.2f, -0.23f, 0.46f); w.hipEuler = new Vector3(0, -1, 0); w.sightDistance = 0.24f;
                     w.tracerColor = new Color(1f, 0.9f, 0.6f); w.shakeOnFire = 0.05f;
                     w.fireSound = A("Weapons/Hornet_Fire"); w.reloadOut = mag; w.reloadIn = magIn; w.equipSound = equip;
                 }),
@@ -212,7 +212,7 @@ namespace Salvo.EditorTools
                     w.hipSpread = 2.6f; w.adsSpread = 0.35f; w.moveSpreadAdd = 1.4f; w.airSpreadAdd = 4f; w.spreadPerShot = 0.22f; w.maxBloom = 2.8f; w.bloomRecovery = 7f;
                     w.recoilPitch = 0.85f; w.recoilYaw = 0.3f; w.recoilRecovery = 9f; w.kickBack = 0.035f; w.kickRotation = 3.5f;
                     w.adsFov = 56; w.adsTime = 0.17f; w.adsMoveMultiplier = 0.75f;
-                    w.hipPosition = new Vector3(0.12f, -0.15f, 0.2f); w.hipEuler = new Vector3(0, -2, 0); w.sightDistance = 0.2f;
+                    w.hipPosition = new Vector3(0.2f, -0.24f, 0.5f); w.hipEuler = new Vector3(0, -1, 0); w.sightDistance = 0.26f;
                     w.tracerColor = new Color(1f, 0.88f, 0.58f); w.shakeOnFire = 0.07f;
                     w.fireSound = A("Weapons/Ranger_Fire"); w.reloadOut = mag; w.reloadIn = magIn; w.equipSound = equip;
                 }),
@@ -225,7 +225,7 @@ namespace Salvo.EditorTools
                     w.hipSpread = 4.8f; w.adsSpread = 3.6f; w.moveSpreadAdd = 0.5f; w.airSpreadAdd = 1.5f; w.spreadPerShot = 0f; w.maxBloom = 0f;
                     w.recoilPitch = 4.5f; w.recoilYaw = 1.2f; w.recoilRecovery = 7f; w.kickBack = 0.09f; w.kickRotation = 12f;
                     w.adsFov = 68; w.adsTime = 0.18f; w.adsMoveMultiplier = 0.85f;
-                    w.hipPosition = new Vector3(0.13f, -0.16f, 0.18f); w.hipEuler = new Vector3(0, -2, 0); w.sightDistance = 0.24f;
+                    w.hipPosition = new Vector3(0.2f, -0.25f, 0.47f); w.hipEuler = new Vector3(0, -1, 0); w.sightDistance = 0.46f; w.adsOffset = new Vector3(0.015f, -0.03f, 0f);
                     w.tracerColor = new Color(1f, 0.85f, 0.55f); w.shakeOnFire = 0.25f;
                     w.fireSound = A("Weapons/Bulldog_Fire"); w.reloadOut = A("Weapons/Shell_Load"); w.reloadIn = A("Weapons/Shell_Load");
                     w.actionSound = A("Weapons/Pump_Action"); w.equipSound = equip;
@@ -239,7 +239,7 @@ namespace Salvo.EditorTools
                     w.hipSpread = 7f; w.adsSpread = 0f; w.moveSpreadAdd = 3f; w.airSpreadAdd = 8f; w.spreadPerShot = 0f; w.maxBloom = 0f;
                     w.recoilPitch = 5.5f; w.recoilYaw = 0.8f; w.recoilRecovery = 6f; w.kickBack = 0.1f; w.kickRotation = 10f;
                     w.adsFov = 22; w.adsTime = 0.24f; w.scoped = true; w.adsSensitivity = 0.75f; w.adsMoveMultiplier = 0.6f;
-                    w.hipPosition = new Vector3(0.12f, -0.15f, 0.17f); w.hipEuler = new Vector3(0, -2, 0); w.sightDistance = 0.1f;
+                    w.hipPosition = new Vector3(0.19f, -0.23f, 0.44f); w.hipEuler = new Vector3(0, -1, 0); w.sightDistance = 0.12f;
                     w.tracerColor = new Color(1f, 0.95f, 0.8f); w.shakeOnFire = 0.3f;
                     w.fireSound = A("Weapons/Longbow_Fire"); w.reloadOut = mag; w.reloadIn = magIn; w.actionSound = A("Weapons/Bolt_Action"); w.equipSound = equip;
                 }),
@@ -249,7 +249,7 @@ namespace Salvo.EditorTools
                     w.category = "MELEE"; w.slot = WeaponSlot.Melee; w.fireMode = FireMode.Melee; w.ownedByDefault = true;
                     w.damage = 55; w.headMultiplier = 1f; w.limbMultiplier = 1f; w.range = 2.3f; w.rpm = 110; w.magSize = 1; w.reserveAmmo = 0;
                     w.equipTime = 0.25f; w.moveSpeedMultiplier = 1.08f; w.hipSpread = 0; w.adsSpread = 0;
-                    w.hipPosition = new Vector3(0.15f, -0.17f, 0.25f); w.hipEuler = new Vector3(-10, -20, 10); w.sightDistance = 0.3f;
+                    w.hipPosition = new Vector3(0.21f, -0.24f, 0.46f); w.hipEuler = new Vector3(-10, -20, 10); w.sightDistance = 0.3f;
                     w.fireSound = null; w.equipSound = equip;
                 }),
             };
@@ -328,7 +328,6 @@ namespace Salvo.EditorTools
             var pad = new GameObject("JumpPad");
             var padModel = (GameObject)PrefabUtility.InstantiatePrefab(Model("Props/JumpPad"));
             padModel.transform.SetParent(pad.transform, false);
-            padModel.transform.localRotation = Quaternion.Euler(0, 180, 0);
             var jp = pad.AddComponent<JumpPad>();
             jp.ring = padModel.transform.FindDeep("Ring");
             foreach (var mf in padModel.GetComponentsInChildren<MeshFilter>())

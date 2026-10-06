@@ -66,7 +66,6 @@ namespace Salvo
             var cfg = GameConfig.I;
             wrapper = new GameObject("ModelWrapper").transform;
             wrapper.SetParent(transform, false);
-            wrapper.localRotation = Quaternion.Euler(0, 180f, 0);
             model = Instantiate(cfg.trooperModel, wrapper).transform;
             model.localPosition = Vector3.zero;
             model.localRotation = Quaternion.identity;
@@ -123,7 +122,9 @@ namespace Salvo
             var go = new GameObject("HB_" + part.name);
             go.layer = Layers.Hitbox;
             go.transform.SetParent(part, false);
-            go.transform.localPosition = center;
+            // offsets are authored as (right, up, forward); FBX nodes use (right, forward, down)
+            go.transform.localPosition = new Vector3(center.x, center.z, -center.y);
+            size = new Vector3(size.x, size.z, size.y);
             Collider col;
             if (sphereRadius > 0) { var s = go.AddComponent<SphereCollider>(); s.radius = sphereRadius; col = s; }
             else { var b = go.AddComponent<BoxCollider>(); b.size = size; col = b; }
@@ -147,7 +148,6 @@ namespace Salvo
                 holder.SetParent(weaponPivot, false);
                 var wrap = new GameObject("Wrap").transform;
                 wrap.SetParent(holder, false);
-                wrap.localRotation = Quaternion.Euler(0, 180f, 0);
                 var inst = Instantiate(st.def.model, wrap).transform;
                 ApplySkin(inst, st.def, st.skin);
                 var gR = inst.FindDeep("GripR");
@@ -267,8 +267,8 @@ namespace Salvo
         }
 
         // Model-space sign conventions (verified in editor; axis-converted FBX nodes)
-        const float LegSign = 1f;
-        const float AimSign = 1f;
+        const float LegSign = -1f;
+        const float AimSign = -1f;
 
         void Leg(Transform thigh, Transform shin, float thighAngle, float shinAngle)
         {

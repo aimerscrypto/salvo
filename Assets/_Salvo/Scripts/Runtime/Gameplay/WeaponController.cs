@@ -98,6 +98,8 @@ namespace Salvo
         public int ShotsFired, ShotsHit;
 
         public static readonly int MeleeWeaponId = 5;
+        /// <summary>Automation/test hook: hold ADS on the local player.</summary>
+        public static bool DebugForceAim;
 
         public void OnSpawned(Combatant combatant)
         {
@@ -173,7 +175,7 @@ namespace Salvo
             var st = CurrentState;
 
             // aim
-            bool canAim = In.aimHeld && !Reloading && d.fireMode != FireMode.Melee && !c.Motor.Sliding && Time.time >= equipEnd - 0.1f;
+            bool canAim = (In.aimHeld || (DebugForceAim && c.IsLocalHuman)) && !Reloading && d.fireMode != FireMode.Melee && !c.Motor.Sliding && Time.time >= equipEnd - 0.1f;
             AimT = Mathf.MoveTowards(AimT, canAim ? 1f : 0f, dt / Mathf.Max(0.05f, d.adsTime));
             c.Motor.SpeedMultiplier = d.moveSpeedMultiplier * Mathf.Lerp(1f, d.adsMoveMultiplier, AimT);
             if (c.IsLocalHuman && GameCamera.I != null)

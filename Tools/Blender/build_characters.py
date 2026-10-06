@@ -142,8 +142,8 @@ def fp_arms():
     # forearm going back/down/right from the wrist
     import math as _m
     wrist = Vector((0.03, -0.05, 0.03))
-    d = Vector((0.22, -1.0, -0.45)).normalized()
-    L = 0.42
+    d = Vector((0.32, -0.75, -0.85)).normalized()
+    L = 0.36
     mid = wrist + d * (L / 2)
     rot = d.to_track_quat("Z", "Y").to_euler()
     deg = tuple(_m.degrees(a) for a in rot)
@@ -160,7 +160,7 @@ def fp_arms():
           box("knuckle", (0.026, 0.08, 0.05), (-0.05, 0.005, -0.02), "dark", bev=0.01),
           box("thumb", (0.024, 0.06, 0.026), (0.045, 0.02, -0.01), "rubber", rot=(0, 0, -15), bev=0.01)]
     wrist = Vector((0.0, -0.05, -0.04))
-    d = Vector((-0.45, -1.0, -0.5)).normalized()
+    d = Vector((-0.38, -0.72, -0.85)).normalized()
     mid = wrist + d * (L / 2)
     rot = d.to_track_quat("Z", "Y").to_euler()
     deg = tuple(_m.degrees(a) for a in rot)

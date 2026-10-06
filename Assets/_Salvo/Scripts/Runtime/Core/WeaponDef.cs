@@ -65,6 +65,7 @@ namespace Salvo
         public Vector3 hipPosition = new Vector3(0.11f, -0.11f, 0.2f);
         public Vector3 hipEuler = new Vector3(0f, -2f, 0f);
         public float sightDistance = 0.17f;
+        public Vector3 adsOffset;
         public float viewScale = 0.5f;
         public Color tracerColor = new Color(1f, 0.9f, 0.6f);
         public float shakeOnFire = 0.15f;

@@ -47,7 +47,6 @@ namespace Salvo
             root.SetPositionAndRotation(map.showcaseSpot.position, map.showcaseSpot.rotation);
             var wrap = new GameObject("Wrap").transform;
             wrap.SetParent(root, false);
-            wrap.localRotation = Quaternion.Euler(0, 180f, 0);
             trooper = Instantiate(cfg.trooperModel, wrap).transform;
             upR = trooper.FindDeep("UpperArm_R"); upL = trooper.FindDeep("UpperArm_L");
             loR = trooper.FindDeep("LowerArm_R"); loL = trooper.FindDeep("LowerArm_L");
@@ -77,7 +76,6 @@ namespace Salvo
                 {
                     var wrap = new GameObject("Wrap").transform;
                     wrap.SetParent(weaponHolder, false);
-                    wrap.localRotation = Quaternion.Euler(0, 180f, 0);
                     var inst = Instantiate(def.model, wrap).transform;
                     CharacterVisual.ApplySkin(inst, def, sid);
                     var g = inst.FindDeep("GripR");
