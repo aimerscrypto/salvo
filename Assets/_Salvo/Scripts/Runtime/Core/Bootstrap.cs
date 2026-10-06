@@ -27,6 +27,9 @@ namespace Salvo
             Settings.Load();
             SalvoInput.Init();
             Settings.Apply();
+            // compile the game's shader variants up front (behind the menu) instead of mid-fight
+            var svc = GameConfig.I != null ? GameConfig.I.shaderVariants : null;
+            if (svc != null && !svc.isWarmedUp) svc.WarmUp();
         }
 
         void Start()
@@ -42,14 +45,19 @@ namespace Salvo
         {
             var args = System.Environment.GetCommandLineArgs();
             int bots = 4;
-            for (int i = 0; i < args.Length - 1; i++) if (args[i] == "-salvo-bots") int.TryParse(args[i + 1], out bots);
+            string map = "Outpost";
+            for (int i = 0; i < args.Length - 1; i++)
+            {
+                if (args[i] == "-salvo-bots") int.TryParse(args[i + 1], out bots);
+                if (args[i] == "-salvo-map") map = args[i + 1];
+            }
             for (int i = 0; i < args.Length; i++)
             {
                 switch (args[i])
                 {
                     case "-salvo-name" when i + 1 < args.Length: NetSession.NameOverride = NetSession.SanitizeName(args[i + 1]); break;
-                    case "-salvo-host": autoStarted = true; GameFlow.StartLocal(new MatchSettings { fillWithBots = bots }, true); break;
-                    case "-salvo-practice": autoStarted = true; GameFlow.StartLocal(new MatchSettings { fillWithBots = 6, offline = true }, false); break;
+                    case "-salvo-host": autoStarted = true; GameFlow.StartLocal(new MatchSettings { fillWithBots = bots, map = map, rotateMaps = false }, true); break;
+                    case "-salvo-practice": autoStarted = true; GameFlow.StartLocal(new MatchSettings { fillWithBots = 6, offline = true, map = map, rotateMaps = false }, false); break;
                     case "-salvo-join" when i + 1 < args.Length: autoStarted = true; GameFlow.JoinDirect(args[i + 1]); break;
                     case "-salvo-code" when i + 1 < args.Length: autoStarted = true; GameFlow.JoinCode(args[i + 1]); break;
                     case "-salvo-online-host": autoStarted = true; GameFlow.HostOnline(new MatchSettings { fillWithBots = bots }); break;
@@ -58,9 +66,14 @@ namespace Salvo
         }
 
 #if DEVELOPMENT_BUILD
-        float perfTimer; int perfFrames; float perfWorst;
+        float perfTimer; int perfFrames; float perfWorst; int lastGc;
+        public static int FrameRebuilds, FrameBreaks, FrameShots;
         void Update()
         {
+            int gc = System.GC.CollectionCount(0);
+            if (Time.unscaledDeltaTime > 0.03f && Time.frameCount > 300)
+                Debug.Log($"[SALVO/Hitch] {Time.unscaledDeltaTime * 1000f:0} ms rebuilds={FrameRebuilds} breaks={FrameBreaks} shots={FrameShots} gc={(gc != lastGc)}");
+            lastGc = gc; FrameRebuilds = FrameBreaks = FrameShots = 0;
             perfTimer += Time.unscaledDeltaTime; perfFrames++;
             perfWorst = Mathf.Max(perfWorst, Time.unscaledDeltaTime);
             if (perfTimer >= 10f)

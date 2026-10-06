@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!200 &20000000
+ShaderVariantCollection:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: SalvoVariants
+  m_Shaders:
+  - first: {fileID: 4800000, guid: 42004729d1db33a48aec8af97126281e, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 13
+      - keywords: FOG_LINEAR
+        passType: 13
+  - first: {fileID: 4800000, guid: 82dde178c8e684f498660d8405381090, type: 3}
+    second:
+      variants:
+      - keywords: 
+        passType: 8
+      - keywords: 
+        passType: 13
+      - keywords: FOG_LINEAR
+        passType: 13
+      - keywords: FOG_LINEAR _MAIN_LIGHT_SHADOWS
+        passType: 13
+      - keywords: FOG_LINEAR _MAIN_LIGHT_SHADOWS _SHADOWS_SOFT
+        passType: 13
+      - keywords: FOG_LINEAR _MAIN_LIGHT_SHADOWS_CASCADE
+        passType: 13
+      - keywords: FOG_LINEAR _MAIN_LIGHT_SHADOWS_CASCADE _SHADOWS_SOFT
+        passType: 13
+      - keywords: FOG_LINEAR _MAIN_LIGHT_SHADOWS_CASCADE _SHADOWS_SOFT_LOW
+        passType: 13

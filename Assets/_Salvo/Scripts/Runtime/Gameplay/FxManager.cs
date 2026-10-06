@@ -190,6 +190,9 @@ namespace Salvo
         // ------------------------------------------------------------------ shots
         public void PlayShotLocal(Combatant shooter, ShotData shot)
         {
+#if DEVELOPMENT_BUILD
+            Bootstrap.FrameShots++;
+#endif
             var def = GameConfig.I.Weapon(shot.weapon);
             Vector3 muzzle = shooter.IsLocalHuman ? LocalMuzzle(shooter) : shooter.Visual != null ? shooter.Visual.MuzzlePosition : shot.origin;
             if (!shooter.IsLocalHuman)
@@ -202,6 +205,9 @@ namespace Salvo
 
         public void PlayShotRemote(Combatant shooter, ShotData shot)
         {
+#if DEVELOPMENT_BUILD
+            Bootstrap.FrameShots++;
+#endif
             var def = GameConfig.I.Weapon(shot.weapon);
             if (def == null) return;
             if (def.fireMode == FireMode.Melee)

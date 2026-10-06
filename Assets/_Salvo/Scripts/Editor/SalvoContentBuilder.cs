@@ -40,7 +40,12 @@ namespace Salvo.EditorTools
             var combatant = BuildCombatant(log);
             BuildPickupsAndPads(log);
             BuildVolumeAndUI(log);
+            BuildFontAssets(log);
+            var variants = BuildShaderVariants(log);
             BuildConfig(weapons, skins, sounds, combatant, log);
+            var cfgAsset = AssetDatabase.LoadAssetAtPath<GameConfig>(Root + "Resources/SalvoConfig.asset");
+            cfgAsset.shaderVariants = variants;
+            EditorUtility.SetDirty(cfgAsset);
             AssetDatabase.SaveAssets();
             Debug.Log("[SALVO] Content built:\n" + log);
             return log.ToString();
@@ -407,6 +412,67 @@ namespace Salvo.EditorTools
                 if (!have.Contains(pf)) list.Add(new NetworkPrefab { Prefab = pf });
             EditorUtility.SetDirty(list);
             log.AppendLine("config + network prefab list");
+        }
+
+        // ------------------------------------------------------------------ warm-up
+        /// <summary>SDF font assets with printable ASCII pre-rasterized: no glyph-atlas hitches mid-match.</summary>
+        static void BuildFontAssets(System.Text.StringBuilder log)
+        {
+            Dir(Root + "UI/Fonts/");
+            string ascii = "";
+            for (int c = 32; c < 127; c++) ascii += (char)c;
+            foreach (var name in new[] { "LilitaOne-Regular", "Rubik-Medium", "Rubik-Bold", "Rubik-Black" })
+            {
+                string path = Root + "UI/Fonts/" + name + " SDF.asset";
+                AssetDatabase.DeleteAsset(path);
+                var font = AssetDatabase.LoadAssetAtPath<Font>(Root + "Fonts/" + name + ".ttf");
+                var fa = UnityEngine.TextCore.Text.FontAsset.CreateFontAsset(font, 64, 6, UnityEngine.TextCore.LowLevel.GlyphRenderMode.SDFAA, 1024, 1024,
+                    UnityEngine.TextCore.Text.AtlasPopulationMode.Dynamic, true);
+                fa.name = name + " SDF";
+                fa.TryAddCharacters(ascii, out _, false);
+                AssetDatabase.CreateAsset(fa, path);
+                foreach (var tex in fa.atlasTextures) { if (tex != null) { tex.name = name + " Atlas"; AssetDatabase.AddObjectToAsset(tex, fa); } }
+                if (fa.material != null) { fa.material.name = name + " Material"; AssetDatabase.AddObjectToAsset(fa.material, fa); }
+                EditorUtility.SetDirty(fa);
+            }
+            AssetDatabase.SaveAssets();
+            log.AppendLine("font assets");
+        }
+
+        /// <summary>Every keyword combination our shaders actually run with (sun shadows on/soft/off, linear fog).</summary>
+        static ShaderVariantCollection BuildShaderVariants(System.Text.StringBuilder log)
+        {
+            string path = Root + "Art/Shaders/SalvoVariants.shadervariants";
+            var svc = AssetDatabase.LoadAssetAtPath<ShaderVariantCollection>(path);
+            if (svc == null) { svc = new ShaderVariantCollection(); AssetDatabase.CreateAsset(svc, path); }
+            svc.Clear();
+            var lit = Shader.Find("Salvo/StylizedLit");
+            var fx = Shader.Find("Salvo/FxUnlit");
+            var sky = Shader.Find("Salvo/Sky");
+            string[][] litSets =
+            {
+                new[] { "FOG_LINEAR" },
+                new[] { "_MAIN_LIGHT_SHADOWS_CASCADE", "FOG_LINEAR" },
+                new[] { "_MAIN_LIGHT_SHADOWS_CASCADE", "_SHADOWS_SOFT", "FOG_LINEAR" },
+                new[] { "_MAIN_LIGHT_SHADOWS_CASCADE", "_SHADOWS_SOFT_LOW", "FOG_LINEAR" },
+                new[] { "_MAIN_LIGHT_SHADOWS", "_SHADOWS_SOFT", "FOG_LINEAR" },
+                new[] { "_MAIN_LIGHT_SHADOWS", "FOG_LINEAR" },
+            };
+            int added = 0;
+            void Add(Shader s, PassType pass, params string[] kw)
+            {
+                try { if (svc.Add(new ShaderVariantCollection.ShaderVariant(s, pass, kw))) added++; }
+                catch (System.ArgumentException) { /* combination not present in this shader */ }
+            }
+            foreach (var set in litSets) Add(lit, PassType.ScriptableRenderPipeline, set);
+            Add(lit, PassType.ShadowCaster);
+            Add(lit, PassType.ScriptableRenderPipeline);
+            Add(fx, PassType.ScriptableRenderPipeline, "FOG_LINEAR");
+            Add(fx, PassType.ScriptableRenderPipeline);
+            Add(sky, PassType.ScriptableRenderPipeline);
+            EditorUtility.SetDirty(svc);
+            log.AppendLine($"shader variants: {added}");
+            return svc;
         }
 
         static void BuildVolumeAndUI(System.Text.StringBuilder log)

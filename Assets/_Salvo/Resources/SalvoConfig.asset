@@ -67,6 +67,7 @@ MonoBehaviour:
   - {r: 0.8392157, g: 0.27058825, b: 0.22745098, a: 1}
   - {r: 0.72156864, g: 0.8392157, b: 0.2901961, a: 1}
   - {r: 0.9137255, g: 0.89411765, b: 0.84705883, a: 1}
+  shaderVariants: {fileID: 20000000, guid: 18b68e53a0e7ec041b754c7c7a10fefa, type: 2}
   rendererData: {fileID: 11400000, guid: f288ae1f4751b564a96ac7587541f7a2, type: 2}
   panelSettings: {fileID: 11400000, guid: 4923ae5748fcaea4c86c25e9891805ac, type: 2}
   uiLayout: {fileID: 9197481963319205126, guid: 23233c690986e894ab5c9015f12779d1, type: 3}

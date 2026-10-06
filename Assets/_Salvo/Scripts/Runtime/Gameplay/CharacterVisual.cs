@@ -55,6 +55,9 @@ namespace Salvo
 
         public void Rebuild()
         {
+#if DEVELOPMENT_BUILD
+            Bootstrap.FrameRebuilds++;
+#endif
             if (wrapper != null) Destroy(wrapper.gameObject);
             if (weaponPivot != null) Destroy(weaponPivot.gameObject);
             broken = false;
@@ -299,6 +302,9 @@ namespace Salvo
         {
             if (broken || model == null) return;
             broken = true;
+#if DEVELOPMENT_BUILD
+            Bootstrap.FrameBreaks++;
+#endif
             foreach (var h in hitboxes) if (h != null) h.enabled = false;
             if (weaponPivot != null) weaponPivot.gameObject.SetActive(false);
             if (blobShadow != null) blobShadow.SetActive(false);

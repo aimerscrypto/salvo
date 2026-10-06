@@ -44,6 +44,7 @@ namespace Salvo
         public Color[] playerColors;
 
         [Header("Rendering")]
+        public ShaderVariantCollection shaderVariants;
         public UnityEngine.Rendering.Universal.UniversalRendererData rendererData;
 
         [Header("UI")]

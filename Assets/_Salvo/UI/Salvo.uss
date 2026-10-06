@@ -22,7 +22,7 @@
 
 
 
-    -unity-font-definition: url("/Assets/_Salvo/Fonts/Rubik-Bold.ttf");
+    -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/Rubik-Bold SDF.asset");
     color: var(--c-text);
     font-size: 18px;
 }
@@ -39,12 +39,12 @@
 .center { align-items: center; justify-content: center; }
 
 /* ---------- typography ---------- */
-.title-xl { -unity-font-definition: url("/Assets/_Salvo/Fonts/LilitaOne-Regular.ttf"); font-size: 132px; color: var(--c-text); text-shadow: 0 6px 0 rgba(0,0,0,0.35); letter-spacing: 4px; -unity-text-align: middle-left; margin: 0; padding: 0; }
-.title-l { -unity-font-definition: url("/Assets/_Salvo/Fonts/LilitaOne-Regular.ttf"); font-size: 64px; text-shadow: 0 4px 0 rgba(0,0,0,0.35); margin: 0; }
-.title-m { -unity-font-definition: url("/Assets/_Salvo/Fonts/LilitaOne-Regular.ttf"); font-size: 36px; letter-spacing: 1px; margin: 0; }
-.title-s { -unity-font-definition: url("/Assets/_Salvo/Fonts/LilitaOne-Regular.ttf"); font-size: 24px; letter-spacing: 1px; margin: 0; }
-.label { -unity-font-definition: url("/Assets/_Salvo/Fonts/Rubik-Medium.ttf"); font-size: 16px; color: var(--c-muted); letter-spacing: 1px; }
-.num { -unity-font-definition: url("/Assets/_Salvo/Fonts/LilitaOne-Regular.ttf"); }
+.title-xl { -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/LilitaOne-Regular SDF.asset"); font-size: 132px; color: var(--c-text); text-shadow: 0 6px 0 rgba(0,0,0,0.35); letter-spacing: 4px; -unity-text-align: middle-left; margin: 0; padding: 0; }
+.title-l { -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/LilitaOne-Regular SDF.asset"); font-size: 64px; text-shadow: 0 4px 0 rgba(0,0,0,0.35); margin: 0; }
+.title-m { -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/LilitaOne-Regular SDF.asset"); font-size: 36px; letter-spacing: 1px; margin: 0; }
+.title-s { -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/LilitaOne-Regular SDF.asset"); font-size: 24px; letter-spacing: 1px; margin: 0; }
+.label { -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/Rubik-Medium SDF.asset"); font-size: 16px; color: var(--c-muted); letter-spacing: 1px; }
+.num { -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/LilitaOne-Regular SDF.asset"); }
 
 /* ---------- panels ---------- */
 .panel { background-color: var(--c-panel); border-radius: 14px; border-width: 0; border-bottom-width: 5px; border-color: rgba(0,0,0,0.35); padding: 22px; }
@@ -55,7 +55,7 @@
 
 /* ---------- buttons ---------- */
 .btn {
-    -unity-font-definition: url("/Assets/_Salvo/Fonts/LilitaOne-Regular.ttf");
+    -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/LilitaOne-Regular SDF.asset");
     font-size: 26px; letter-spacing: 1px;
     color: var(--c-ink);
     background-color: var(--c-accent);
@@ -80,7 +80,7 @@
 .btn.icon { width: 44px; height: 44px; padding: 0; font-size: 24px; }
 
 .menu-btn {
-    -unity-font-definition: url("/Assets/_Salvo/Fonts/LilitaOne-Regular.ttf");
+    -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/LilitaOne-Regular SDF.asset");
     font-size: 40px; letter-spacing: 2px;
     color: var(--c-text); background-color: rgba(0,0,0,0);
     border-width: 0; border-left-width: 0; border-color: var(--c-accent);
@@ -98,15 +98,15 @@
 #main-menu { flex-direction: row; }
 .menu-gradient { position: absolute; left: 0; top: 0; bottom: 0; width: 60%; background-image: none; background-color: rgba(10, 14, 24, 0.0); }
 .menu-left { width: 640px; padding: 60px 0 60px 84px; justify-content: center; background-color: rgba(10, 14, 24, 0.42); }
-.logo-sub { -unity-font-definition: url("/Assets/_Salvo/Fonts/Rubik-Medium.ttf"); font-size: 20px; color: var(--c-accent); letter-spacing: 8px; margin: -12px 0 34px 6px; }
+.logo-sub { -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/Rubik-Medium SDF.asset"); font-size: 20px; color: var(--c-accent); letter-spacing: 8px; margin: -12px 0 34px 6px; }
 .topbar { position: absolute; top: 26px; right: 30px; flex-direction: row; align-items: center; }
 .chip { flex-direction: row; align-items: center; background-color: var(--c-panel); border-radius: 30px; padding: 6px 18px 6px 8px; margin-left: 12px; border-bottom-width: 4px; border-color: rgba(0,0,0,0.35); }
-.chip-badge { width: 42px; height: 42px; border-radius: 21px; background-color: var(--c-accent); color: var(--c-ink); -unity-font-definition: url("/Assets/_Salvo/Fonts/LilitaOne-Regular.ttf"); font-size: 22px; -unity-text-align: middle-center; margin-right: 10px; }
+.chip-badge { width: 42px; height: 42px; border-radius: 21px; background-color: var(--c-accent); color: var(--c-ink); -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/LilitaOne-Regular SDF.asset"); font-size: 22px; -unity-text-align: middle-center; margin-right: 10px; }
 .coin-dot { width: 26px; height: 26px; border-radius: 13px; background-color: var(--c-accent); border-width: 3px; border-color: var(--c-accent-dk); margin-right: 8px; }
 .xpbar { width: 160px; height: 10px; border-radius: 5px; background-color: rgba(255,255,255,0.12); margin-top: 4px; overflow: hidden; }
 .xpfill { height: 100%; width: 40%; background-color: var(--c-accent); border-radius: 5px; }
 .bottom-right { position: absolute; right: 30px; bottom: 26px; align-items: flex-end; }
-.version { -unity-font-definition: url("/Assets/_Salvo/Fonts/Rubik-Medium.ttf"); font-size: 14px; color: rgba(255,255,255,0.45); margin-top: 8px; }
+.version { -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/Rubik-Medium SDF.asset"); font-size: 14px; color: rgba(255,255,255,0.45); margin-top: 8px; }
 
 /* ---------- generic menu page ---------- */
 .page { padding: 50px 70px; }
@@ -119,10 +119,10 @@
 .card:hover { translate: 0 -3px; border-color: rgba(242,179,61,0.55); }
 .card.selected { border-color: var(--c-accent); background-color: rgb(58, 68, 92); }
 .card.locked { opacity: 0.6; }
-.card-title { -unity-font-definition: url("/Assets/_Salvo/Fonts/LilitaOne-Regular.ttf"); font-size: 26px; }
-.card-sub { -unity-font-definition: url("/Assets/_Salvo/Fonts/Rubik-Medium.ttf"); font-size: 14px; color: var(--c-muted); }
-.price { flex-direction: row; align-items: center; -unity-font-definition: url("/Assets/_Salvo/Fonts/LilitaOne-Regular.ttf"); font-size: 20px; color: var(--c-accent); }
-.tag { -unity-font-definition: url("/Assets/_Salvo/Fonts/LilitaOne-Regular.ttf"); font-size: 14px; color: var(--c-ink); background-color: var(--c-teal); border-radius: 6px; padding: 2px 8px; margin-left: 6px; }
+.card-title { -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/LilitaOne-Regular SDF.asset"); font-size: 26px; }
+.card-sub { -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/Rubik-Medium SDF.asset"); font-size: 14px; color: var(--c-muted); }
+.price { flex-direction: row; align-items: center; -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/LilitaOne-Regular SDF.asset"); font-size: 20px; color: var(--c-accent); }
+.tag { -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/LilitaOne-Regular SDF.asset"); font-size: 14px; color: var(--c-ink); background-color: var(--c-teal); border-radius: 6px; padding: 2px 8px; margin-left: 6px; }
 .tag.equipped { background-color: var(--c-accent); }
 .tag.rare { background-color: rgb(92, 160, 230); }
 .tag.epic { background-color: rgb(170, 120, 230); }
@@ -134,36 +134,36 @@
 .statrow .label { width: 120px; }
 .statbar { flex-grow: 1; height: 10px; border-radius: 5px; background-color: rgba(255,255,255,0.1); }
 .statfill { height: 100%; border-radius: 5px; background-color: var(--c-accent); }
-.section-title { -unity-font-definition: url("/Assets/_Salvo/Fonts/LilitaOne-Regular.ttf"); font-size: 22px; color: var(--c-accent); margin: 14px 6px 4px 6px; letter-spacing: 1px; }
+.section-title { -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/LilitaOne-Regular SDF.asset"); font-size: 22px; color: var(--c-accent); margin: 14px 6px 4px 6px; letter-spacing: 1px; }
 .tabs { flex-direction: row; margin-bottom: 12px; }
-.tab { -unity-font-definition: url("/Assets/_Salvo/Fonts/LilitaOne-Regular.ttf"); font-size: 22px; color: var(--c-muted); background-color: rgba(0,0,0,0); border-width: 0; border-bottom-width: 4px; border-color: rgba(0,0,0,0); padding: 6px 18px; margin-right: 6px; }
+.tab { -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/LilitaOne-Regular SDF.asset"); font-size: 22px; color: var(--c-muted); background-color: rgba(0,0,0,0); border-width: 0; border-bottom-width: 4px; border-color: rgba(0,0,0,0); padding: 6px 18px; margin-right: 6px; }
 .tab:hover { color: var(--c-text); }
 .tab.active { color: var(--c-text); border-color: var(--c-accent); }
 
 /* ---------- form controls ---------- */
 .setting-row { flex-direction: row; align-items: center; justify-content: space-between; padding: 10px 14px; border-radius: 8px; margin: 2px 0; background-color: rgba(255,255,255,0.03); }
 .setting-row:hover { background-color: rgba(255,255,255,0.07); }
-.setting-name { -unity-font-definition: url("/Assets/_Salvo/Fonts/Rubik-Medium.ttf"); font-size: 18px; }
+.setting-name { -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/Rubik-Medium SDF.asset"); font-size: 18px; }
 .cycler { flex-direction: row; align-items: center; width: 320px; justify-content: space-between; }
-.cycler-value { -unity-font-definition: url("/Assets/_Salvo/Fonts/LilitaOne-Regular.ttf"); font-size: 20px; -unity-text-align: middle-center; flex-grow: 1; }
-.arrow { -unity-font-definition: url("/Assets/_Salvo/Fonts/LilitaOne-Regular.ttf"); font-size: 22px; width: 40px; height: 36px; padding: 0; border-radius: 8px; border-width: 0; border-bottom-width: 3px; border-color: rgba(0,0,0,0.4); background-color: var(--c-panel-3); color: var(--c-text); }
+.cycler-value { -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/LilitaOne-Regular SDF.asset"); font-size: 20px; -unity-text-align: middle-center; flex-grow: 1; }
+.arrow { -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/LilitaOne-Regular SDF.asset"); font-size: 22px; width: 40px; height: 36px; padding: 0; border-radius: 8px; border-width: 0; border-bottom-width: 3px; border-color: rgba(0,0,0,0.4); background-color: var(--c-panel-3); color: var(--c-text); }
 .arrow:hover { background-color: var(--c-accent); color: var(--c-ink); }
 .textfield { width: 320px; }
-.textfield > .unity-base-text-field__input { background-color: rgba(0,0,0,0.35); border-radius: 8px; border-width: 2px; border-color: rgba(255,255,255,0.12); color: var(--c-text); -unity-font-definition: url("/Assets/_Salvo/Fonts/LilitaOne-Regular.ttf"); font-size: 22px; padding: 6px 10px; }
+.textfield > .unity-base-text-field__input { background-color: rgba(0,0,0,0.35); border-radius: 8px; border-width: 2px; border-color: rgba(255,255,255,0.12); color: var(--c-text); -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/LilitaOne-Regular SDF.asset"); font-size: 22px; padding: 6px 10px; }
 .textfield:focus > .unity-base-text-field__input { border-color: var(--c-accent); }
 .slider-wrap { flex-direction: row; align-items: center; width: 320px; }
 .slider-wrap .unity-slider { flex-grow: 1; margin: 0 10px 0 0; }
-.slider-value { -unity-font-definition: url("/Assets/_Salvo/Fonts/LilitaOne-Regular.ttf"); font-size: 18px; width: 52px; -unity-text-align: middle-right; }
+.slider-value { -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/LilitaOne-Regular SDF.asset"); font-size: 18px; width: 52px; -unity-text-align: middle-right; }
 .unity-base-slider__dragger { background-color: var(--c-accent); border-radius: 9px; width: 18px; height: 18px; margin-top: -8px; border-width: 0; }
 .unity-base-slider__tracker { background-color: rgba(255,255,255,0.15); border-radius: 3px; height: 6px; border-width: 0; margin-top: -2px; }
 .unity-base-slider--horizontal .unity-base-slider__drag-container { height: 20px; }
 
 /* ---------- connecting / modal / toast ---------- */
 .modal { width: 640px; align-items: center; }
-.modal-body { -unity-font-definition: url("/Assets/_Salvo/Fonts/Rubik-Medium.ttf"); font-size: 20px; white-space: normal; -unity-text-align: middle-center; margin: 16px 0 22px 0; color: var(--c-text); }
+.modal-body { -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/Rubik-Medium SDF.asset"); font-size: 20px; white-space: normal; -unity-text-align: middle-center; margin: 16px 0 22px 0; color: var(--c-text); }
 .spinner { width: 54px; height: 54px; border-radius: 27px; border-width: 7px; border-color: rgba(255,255,255,0.15); border-top-color: var(--c-accent); margin-bottom: 18px; }
 .toast-layer { position: absolute; top: 90px; left: 0; right: 0; align-items: center; }
-.toast { -unity-font-definition: url("/Assets/_Salvo/Fonts/LilitaOne-Regular.ttf"); font-size: 22px; background-color: var(--c-panel); color: var(--c-text); padding: 10px 22px; border-radius: 10px; margin: 4px; border-bottom-width: 4px; border-color: rgba(0,0,0,0.35); transition-property: opacity, translate; transition-duration: 0.25s; }
+.toast { -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/LilitaOne-Regular SDF.asset"); font-size: 22px; background-color: var(--c-panel); color: var(--c-text); padding: 10px 22px; border-radius: 10px; margin: 4px; border-bottom-width: 4px; border-color: rgba(0,0,0,0.35); transition-property: opacity, translate; transition-duration: 0.25s; }
 .toast.out { opacity: 0; translate: 0 -10px; }
 
 /* ===================================================================== HUD */
@@ -176,67 +176,67 @@
 .hud-bottom-left { position: absolute; left: 36px; bottom: 30px; flex-direction: row; align-items: flex-end; }
 .hud-bottom-right { position: absolute; right: 36px; bottom: 30px; align-items: flex-end; }
 .health-box { background-color: var(--c-panel); border-radius: 12px; padding: 10px 16px 12px 16px; border-bottom-width: 5px; border-color: rgba(0,0,0,0.35); width: 300px; }
-.health-num { -unity-font-definition: url("/Assets/_Salvo/Fonts/LilitaOne-Regular.ttf"); font-size: 46px; margin: -6px 0 -2px 0; }
+.health-num { -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/LilitaOne-Regular SDF.asset"); font-size: 46px; margin: -6px 0 -2px 0; }
 .health-bar { height: 14px; border-radius: 7px; background-color: rgba(255,255,255,0.12); overflow: hidden; }
 .health-fill { height: 100%; width: 100%; border-radius: 7px; background-color: var(--c-good); transition-property: width; transition-duration: 0.15s; }
 .health-ghost { position: absolute; left: 0; top: 0; bottom: 0; width: 100%; background-color: rgba(255,255,255,0.55); border-radius: 7px; }
 .ammo-box { background-color: var(--c-panel); border-radius: 12px; padding: 8px 18px 10px 18px; border-bottom-width: 5px; border-color: rgba(0,0,0,0.35); align-items: flex-end; min-width: 220px; }
-.ammo-mag { -unity-font-definition: url("/Assets/_Salvo/Fonts/LilitaOne-Regular.ttf"); font-size: 56px; margin: -8px 0 -6px 0; }
-.ammo-res { -unity-font-definition: url("/Assets/_Salvo/Fonts/LilitaOne-Regular.ttf"); font-size: 26px; color: var(--c-muted); margin-left: 8px; }
-.weapon-name { -unity-font-definition: url("/Assets/_Salvo/Fonts/LilitaOne-Regular.ttf"); font-size: 20px; color: var(--c-accent); letter-spacing: 1px; }
+.ammo-mag { -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/LilitaOne-Regular SDF.asset"); font-size: 56px; margin: -8px 0 -6px 0; }
+.ammo-res { -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/LilitaOne-Regular SDF.asset"); font-size: 26px; color: var(--c-muted); margin-left: 8px; }
+.weapon-name { -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/LilitaOne-Regular SDF.asset"); font-size: 20px; color: var(--c-accent); letter-spacing: 1px; }
 .slots { flex-direction: row; margin-bottom: 8px; }
-.slot { -unity-font-definition: url("/Assets/_Salvo/Fonts/LilitaOne-Regular.ttf"); font-size: 15px; color: var(--c-muted); background-color: rgba(24,31,46,0.75); border-radius: 6px; padding: 3px 10px; margin-left: 6px; }
+.slot { -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/LilitaOne-Regular SDF.asset"); font-size: 15px; color: var(--c-muted); background-color: rgba(24,31,46,0.75); border-radius: 6px; padding: 3px 10px; margin-left: 6px; }
 .slot.active { color: var(--c-ink); background-color: var(--c-accent); }
 .top-center { position: absolute; top: 18px; left: 0; right: 0; align-items: center; }
 .score-strip { flex-direction: row; align-items: center; }
-.score-team { -unity-font-definition: url("/Assets/_Salvo/Fonts/LilitaOne-Regular.ttf"); font-size: 32px; width: 92px; height: 52px; -unity-text-align: middle-center; border-radius: 10px; border-bottom-width: 5px; border-color: rgba(0,0,0,0.35); color: white; }
+.score-team { -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/LilitaOne-Regular SDF.asset"); font-size: 32px; width: 92px; height: 52px; -unity-text-align: middle-center; border-radius: 10px; border-bottom-width: 5px; border-color: rgba(0,0,0,0.35); color: white; }
 .score-team.red { background-color: var(--c-red); }
 .score-team.blue { background-color: var(--c-blue); }
-.timer { -unity-font-definition: url("/Assets/_Salvo/Fonts/LilitaOne-Regular.ttf"); font-size: 30px; background-color: var(--c-panel); border-radius: 10px; padding: 6px 18px; margin: 0 10px; border-bottom-width: 5px; border-color: rgba(0,0,0,0.35); min-width: 110px; -unity-text-align: middle-center; }
-.ffa-info { -unity-font-definition: url("/Assets/_Salvo/Fonts/LilitaOne-Regular.ttf"); font-size: 18px; color: var(--c-muted); margin-top: 6px; background-color: rgba(24,31,46,0.75); border-radius: 8px; padding: 3px 12px; }
+.timer { -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/LilitaOne-Regular SDF.asset"); font-size: 30px; background-color: var(--c-panel); border-radius: 10px; padding: 6px 18px; margin: 0 10px; border-bottom-width: 5px; border-color: rgba(0,0,0,0.35); min-width: 110px; -unity-text-align: middle-center; }
+.ffa-info { -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/LilitaOne-Regular SDF.asset"); font-size: 18px; color: var(--c-muted); margin-top: 6px; background-color: rgba(24,31,46,0.75); border-radius: 8px; padding: 3px 12px; }
 .killfeed { position: absolute; right: 26px; top: 22px; align-items: flex-end; }
 .kf-row { flex-direction: row; align-items: center; background-color: rgba(24,31,46,0.85); border-radius: 8px; padding: 4px 12px; margin-bottom: 5px; transition-property: opacity; transition-duration: 0.4s; }
 .kf-row.mine { border-width: 2px; border-color: var(--c-accent); }
-.kf-name { -unity-font-definition: url("/Assets/_Salvo/Fonts/LilitaOne-Regular.ttf"); font-size: 18px; }
-.kf-weapon { -unity-font-definition: url("/Assets/_Salvo/Fonts/Rubik-Medium.ttf"); font-size: 14px; color: var(--c-muted); margin: 0 10px; }
-.kf-head { -unity-font-definition: url("/Assets/_Salvo/Fonts/LilitaOne-Regular.ttf"); font-size: 13px; color: var(--c-ink); background-color: var(--c-accent); border-radius: 4px; padding: 1px 5px; margin-right: 8px; }
+.kf-name { -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/LilitaOne-Regular SDF.asset"); font-size: 18px; }
+.kf-weapon { -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/Rubik-Medium SDF.asset"); font-size: 14px; color: var(--c-muted); margin: 0 10px; }
+.kf-head { -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/LilitaOne-Regular SDF.asset"); font-size: 13px; color: var(--c-ink); background-color: var(--c-accent); border-radius: 4px; padding: 1px 5px; margin-right: 8px; }
 .kill-banner { position: absolute; left: 0; right: 0; bottom: 210px; align-items: center; transition-property: opacity, scale; transition-duration: 0.18s; }
-.kill-banner-text { -unity-font-definition: url("/Assets/_Salvo/Fonts/LilitaOne-Regular.ttf"); font-size: 34px; color: var(--c-text); text-shadow: 0 3px 0 rgba(0,0,0,0.5); }
-.kill-banner-sub { -unity-font-definition: url("/Assets/_Salvo/Fonts/LilitaOne-Regular.ttf"); font-size: 22px; color: var(--c-accent); text-shadow: 0 2px 0 rgba(0,0,0,0.5); }
-.streak { -unity-font-definition: url("/Assets/_Salvo/Fonts/LilitaOne-Regular.ttf"); font-size: 26px; color: var(--c-coral); text-shadow: 0 3px 0 rgba(0,0,0,0.5); }
+.kill-banner-text { -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/LilitaOne-Regular SDF.asset"); font-size: 34px; color: var(--c-text); text-shadow: 0 3px 0 rgba(0,0,0,0.5); }
+.kill-banner-sub { -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/LilitaOne-Regular SDF.asset"); font-size: 22px; color: var(--c-accent); text-shadow: 0 2px 0 rgba(0,0,0,0.5); }
+.streak { -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/LilitaOne-Regular SDF.asset"); font-size: 26px; color: var(--c-coral); text-shadow: 0 3px 0 rgba(0,0,0,0.5); }
 .respawn { position: absolute; left: 0; right: 0; top: 30%; align-items: center; }
-.respawn-killer { -unity-font-definition: url("/Assets/_Salvo/Fonts/LilitaOne-Regular.ttf"); font-size: 30px; }
-.respawn-timer { -unity-font-definition: url("/Assets/_Salvo/Fonts/LilitaOne-Regular.ttf"); font-size: 80px; color: var(--c-accent); text-shadow: 0 5px 0 rgba(0,0,0,0.4); }
+.respawn-killer { -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/LilitaOne-Regular SDF.asset"); font-size: 30px; }
+.respawn-timer { -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/LilitaOne-Regular SDF.asset"); font-size: 80px; color: var(--c-accent); text-shadow: 0 5px 0 rgba(0,0,0,0.4); }
 .scope { position: absolute; left: 0; top: 0; right: 0; bottom: 0; -unity-background-scale-mode: scale-and-crop; }
 .dmg-indicator { position: absolute; left: 50%; top: 50%; width: 0; height: 0; }
 .dmg-arc { position: absolute; width: 80px; height: 14px; left: -40px; top: -190px; border-radius: 7px; background-color: rgba(226, 97, 79, 0.9); border-bottom-width: 3px; border-color: rgba(100,20,10,0.6); }
-.hit-number { position: absolute; -unity-font-definition: url("/Assets/_Salvo/Fonts/LilitaOne-Regular.ttf"); font-size: 22px; color: white; text-shadow: 0 2px 0 rgba(0,0,0,0.6); }
+.hit-number { position: absolute; -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/LilitaOne-Regular SDF.asset"); font-size: 22px; color: white; text-shadow: 0 2px 0 rgba(0,0,0,0.6); }
 .hit-number.head { color: var(--c-accent); font-size: 26px; }
-.nameplate { position: absolute; -unity-font-definition: url("/Assets/_Salvo/Fonts/LilitaOne-Regular.ttf"); font-size: 16px; color: white; text-shadow: 0 2px 0 rgba(0,0,0,0.6); -unity-text-align: middle-center; width: 200px; margin-left: -100px; }
+.nameplate { position: absolute; -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/LilitaOne-Regular SDF.asset"); font-size: 16px; color: white; text-shadow: 0 2px 0 rgba(0,0,0,0.6); -unity-text-align: middle-center; width: 200px; margin-left: -100px; }
 .nameplate-bar { height: 4px; width: 60px; border-radius: 2px; background-color: rgba(0,0,0,0.5); margin-left: 70px; }
 .nameplate-fill { height: 100%; border-radius: 2px; background-color: var(--c-good); }
 .center-hint { position: absolute; left: 0; right: 0; top: 58%; align-items: center; }
-.hint { -unity-font-definition: url("/Assets/_Salvo/Fonts/LilitaOne-Regular.ttf"); font-size: 20px; color: var(--c-text); background-color: rgba(24,31,46,0.75); border-radius: 8px; padding: 4px 14px; }
+.hint { -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/LilitaOne-Regular SDF.asset"); font-size: 20px; color: var(--c-text); background-color: rgba(24,31,46,0.75); border-radius: 8px; padding: 4px 14px; }
 .reload-bar { width: 120px; height: 6px; border-radius: 3px; background-color: rgba(0,0,0,0.4); margin-top: 6px; overflow: hidden; }
 .reload-fill { height: 100%; background-color: var(--c-accent); }
-.fps { position: absolute; left: 10px; top: 8px; -unity-font-definition: url("/Assets/_Salvo/Fonts/Rubik-Medium.ttf"); font-size: 14px; color: rgba(255,255,255,0.7); }
-.code-chip { position: absolute; left: 26px; top: 22px; -unity-font-definition: url("/Assets/_Salvo/Fonts/LilitaOne-Regular.ttf"); font-size: 18px; color: var(--c-muted); background-color: rgba(24,31,46,0.75); border-radius: 8px; padding: 4px 12px; }
-.spawn-shield { -unity-font-definition: url("/Assets/_Salvo/Fonts/LilitaOne-Regular.ttf"); font-size: 16px; color: var(--c-teal); margin-bottom: 6px; }
+.fps { position: absolute; left: 10px; top: 8px; -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/Rubik-Medium SDF.asset"); font-size: 14px; color: rgba(255,255,255,0.7); }
+.code-chip { position: absolute; left: 26px; top: 22px; -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/LilitaOne-Regular SDF.asset"); font-size: 18px; color: var(--c-muted); background-color: rgba(24,31,46,0.75); border-radius: 8px; padding: 4px 12px; }
+.spawn-shield { -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/LilitaOne-Regular SDF.asset"); font-size: 16px; color: var(--c-teal); margin-bottom: 6px; }
 
 /* ---------- scoreboard / end ---------- */
 .board { width: 1000px; }
 .sb-head { flex-direction: row; padding: 6px 14px; }
-.sb-head Label { -unity-font-definition: url("/Assets/_Salvo/Fonts/LilitaOne-Regular.ttf"); font-size: 16px; color: var(--c-muted); }
+.sb-head Label { -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/LilitaOne-Regular SDF.asset"); font-size: 16px; color: var(--c-muted); }
 .sb-row { flex-direction: row; align-items: center; padding: 6px 14px; border-radius: 8px; margin: 2px 0; background-color: rgba(255,255,255,0.04); }
 .sb-row.me { background-color: rgba(242,179,61,0.22); }
-.sb-row Label { -unity-font-definition: url("/Assets/_Salvo/Fonts/LilitaOne-Regular.ttf"); font-size: 20px; }
+.sb-row Label { -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/LilitaOne-Regular SDF.asset"); font-size: 20px; }
 .sb-rank { width: 40px; color: var(--c-muted); }
 .sb-name { flex-grow: 1; }
 .sb-cell { width: 80px; -unity-text-align: middle-right; }
 .sb-team-bar { width: 6px; height: 26px; border-radius: 3px; margin-right: 12px; }
-.end-title { -unity-font-definition: url("/Assets/_Salvo/Fonts/LilitaOne-Regular.ttf"); font-size: 96px; text-shadow: 0 6px 0 rgba(0,0,0,0.35); }
+.end-title { -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/LilitaOne-Regular SDF.asset"); font-size: 96px; text-shadow: 0 6px 0 rgba(0,0,0,0.35); }
 .reward-row { flex-direction: row; justify-content: space-between; padding: 6px 4px; border-bottom-width: 1px; border-color: var(--c-line); }
-.reward-row Label { -unity-font-definition: url("/Assets/_Salvo/Fonts/LilitaOne-Regular.ttf"); font-size: 20px; }
+.reward-row Label { -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/LilitaOne-Regular SDF.asset"); font-size: 20px; }
 .reward-xp { color: var(--c-teal); width: 90px; -unity-text-align: middle-right; }
 .reward-coins { color: var(--c-accent); width: 90px; -unity-text-align: middle-right; }
-.levelup { -unity-font-definition: url("/Assets/_Salvo/Fonts/LilitaOne-Regular.ttf"); font-size: 30px; color: var(--c-accent); }
+.levelup { -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/LilitaOne-Regular SDF.asset"); font-size: 30px; color: var(--c-accent); }
