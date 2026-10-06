@@ -127,6 +127,8 @@ namespace Salvo.EditorTools
             MakeMat("M_FxTracer", fx, m => fxSet(m, T("T_Tracer"), 5, 10, 0, 0.5f));
             MakeMat("M_FxDecal", fx, m => { fxSet(m, T("T_BulletHole"), 5, 10, -2, 1); m.renderQueue = 2450; });
             MakeMat("M_FxFlash", fx, m => fxSet(m, T("T_MuzzleFlash"), 5, 10, 0, 0));
+            // first-person optic lenses: a faint tint you can aim through (world glass stays opaque)
+            MakeMat("M_SightGlass", fx, m => { fxSet(m, null, 5, 10, 0, 0); m.SetColor("_BaseColor", new Color(0.62f, 0.9f, 1f, 0.1f)); });
             MakeMat("M_Sky", sky, m =>
             {
                 m.SetTexture("_CloudMap", T("T_CloudNoise"));
@@ -390,7 +392,7 @@ namespace Salvo.EditorTools
             c.fpArmsModel = Model("Characters/FP_Arms");
             Material M(string n) => AssetDatabase.LoadAssetAtPath<Material>(Mat + n + ".mat");
             c.worldMaterial = M("M_World"); c.characterMaterial = M("M_Character"); c.weaponMaterial = M("M_Weapon");
-            c.skinTemplate = M("M_SkinTemplate"); c.glassMaterial = M("M_Glass"); c.teamRed = M("M_TeamRed"); c.teamBlue = M("M_TeamBlue");
+            c.skinTemplate = M("M_SkinTemplate"); c.glassMaterial = M("M_Glass"); c.sightGlass = M("M_SightGlass"); c.teamRed = M("M_TeamRed"); c.teamBlue = M("M_TeamBlue");
             c.fxAlpha = M("M_FxPuff"); c.fxDecal = M("M_FxDecal"); c.fxTracer = M("M_FxTracer"); c.fxFlash = M("M_FxFlash");
             c.puffTexture = T("T_Puff"); c.sparkTexture = T("T_Spark");
             c.playerColors = new[] { "E8735A", "36A89C", "F2B33D", "4A8FD6", "9B6FD6", "6FBF5A", "F28BB2", "F08A3C", "5CC8D9", "D6453A", "B8D64A", "E9E4D8" }.Select(Hex).ToArray();

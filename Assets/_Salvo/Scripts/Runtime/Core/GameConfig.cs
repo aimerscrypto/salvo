@@ -33,6 +33,7 @@ namespace Salvo
         public Material weaponMaterial;
         public Material skinTemplate;
         public Material glassMaterial;
+        public Material sightGlass;     // see-through lens for first-person optics
         public Material teamRed;
         public Material teamBlue;
         public Material fxAlpha;

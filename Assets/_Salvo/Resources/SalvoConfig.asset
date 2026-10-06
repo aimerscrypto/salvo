@@ -46,6 +46,7 @@ MonoBehaviour:
   weaponMaterial: {fileID: 2100000, guid: e753471a42e69cf4da820c581de87e55, type: 2}
   skinTemplate: {fileID: 2100000, guid: 6db5d00cceecbf548a1f2d5274f7922f, type: 2}
   glassMaterial: {fileID: 2100000, guid: 8cd508b6e23f952468ead67f0ebb7631, type: 2}
+  sightGlass: {fileID: 2100000, guid: b1cfc8c18089369478eee50535844f0e, type: 2}
   teamRed: {fileID: 2100000, guid: 7e7e63888a85fed40aaaa7176d27c56b, type: 2}
   teamBlue: {fileID: 2100000, guid: 5550a36025df8e44195521f53785712e, type: 2}
   fxAlpha: {fileID: 2100000, guid: ccd75ffb286cb9540bd55b5f9a287ad9, type: 2}

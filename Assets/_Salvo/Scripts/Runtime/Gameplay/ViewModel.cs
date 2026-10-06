@@ -110,7 +110,11 @@ namespace Salvo
                 foreach (var r in rig.root.GetComponentsInChildren<Renderer>())
                 {
                     var mats = r.sharedMaterials;
-                    for (int i = 0; i < mats.Length; i++) if (mats[i] == cfg.teamRed) mats[i] = teamMat;
+                    for (int i = 0; i < mats.Length; i++)
+                    {
+                        if (mats[i] == cfg.teamRed) mats[i] = teamMat;
+                        else if (mats[i] == cfg.glassMaterial && cfg.sightGlass != null) mats[i] = cfg.sightGlass;
+                    }
                     r.sharedMaterials = mats;
                     r.shadowCastingMode = ShadowCastingMode.Off;
                     r.receiveShadows = true;
