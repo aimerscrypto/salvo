@@ -81,41 +81,28 @@ namespace Salvo
                 if (rig.mag != null) rig.magBase = rig.mag.localPosition;
                 if (rig.action != null) { rig.actionBase = rig.action.localPosition; rig.actionRot = rig.action.localRotation; }
 
-                // arms: take Arm_R / Arm_L from the FP_Arms model and pin them to the grip markers
+                // arms: the FP_Arms model holds hands posed for each weapon's grips (Arm_R / Arm_R_<Weapon>,
+                // Arm_L_<Weapon>), authored in their marker's frame -> parent with an identity transform
                 var arms = Instantiate(cfg.fpArmsModel).transform;
+                string key = st.def.model.name.StartsWith("W_") ? st.def.model.name.Substring(2) : st.def.model.name;
                 var gripR = rig.model.FindDeep("GripR");
                 rig.gripL = rig.model.FindDeep("GripL");
-                rig.armR = arms.FindDeep("Arm_R");
-                rig.armL = arms.FindDeep("Arm_L");
+                rig.armR = arms.FindDeep("Arm_R_" + key) ?? arms.FindDeep("Arm_R");
+                rig.armL = st.def.supportGrip == SupportGrip.None ? null : arms.FindDeep("Arm_L_" + key);
                 if (rig.armR != null && gripR != null) { rig.armR.SetParent(gripR, false); rig.armR.localPosition = Vector3.zero; rig.armR.localRotation = MarkerFix; }
-                if (rig.armL != null)
+                // pistol support hands cup the shooting hand, so they share the GripR frame
+                var supportMarker = st.def.supportGrip == SupportGrip.Pistol ? gripR : rig.gripL;
+                if (rig.armL != null && supportMarker != null)
                 {
-                    bool twoHanded = st.def.slot == WeaponSlot.Primary;
-                    if (twoHanded && rig.gripL != null)
-                    {
-                        rig.armL.SetParent(rig.gripL, false);
-                        rig.armL.localPosition = Vector3.zero;
-                        rig.armL.localRotation = MarkerFix;
-                        // re-home into pose space so the reload can move it independently
-                        rig.armL.SetParent(rig.pose, true);
-                        rig.armLBase = rig.armL.localPosition;
-                        rig.armLRot = rig.armL.localRotation;
-                    }
-                    else if (st.def.fireMode == FireMode.Melee)
-                    {
-                        Destroy(rig.armL.gameObject); rig.armL = null;
-                    }
-                    else if (gripR != null)
-                    {
-                        // pistol: support hand cups the shooting hand
-                        rig.armL.SetParent(gripR, false);
-                        rig.armL.localPosition = MarkerFix * new Vector3(-0.035f, -0.03f, 0.02f);
-                        rig.armL.localRotation = MarkerFix;
-                        rig.armL.SetParent(rig.pose, true);
-                        rig.armLBase = rig.armL.localPosition;
-                        rig.armLRot = rig.armL.localRotation;
-                    }
+                    rig.armL.SetParent(supportMarker, false);
+                    rig.armL.localPosition = Vector3.zero;
+                    rig.armL.localRotation = MarkerFix;
+                    // re-home into pose space so reloads / pumps can move it independently
+                    rig.armL.SetParent(rig.pose, true);
+                    rig.armLBase = rig.armL.localPosition;
+                    rig.armLRot = rig.armL.localRotation;
                 }
+                else rig.armL = null;
                 Destroy(arms.gameObject);
 
                 // team colored sleeves

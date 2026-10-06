@@ -14,7 +14,8 @@ namespace Salvo
     {
         Combatant c;
         Transform wrapper, model;
-        Transform hips, torso, head, upL, upR, loL, loR, thL, thR, shL, shR, handL, handR;
+        Transform hips, torso, head, upL, upR, loL, loR, thL, thR, shL, shR, wristL, wristR;
+        TrooperHands hands;
         Vector3 hipsBase;
         readonly Dictionary<Transform, Quaternion> baseRot = new Dictionary<Transform, Quaternion>();
         float upperLen = 0.28f, lowerLen = 0.28f;
@@ -78,15 +79,17 @@ namespace Salvo
             loL = model.FindDeep("LowerArm_L"); loR = model.FindDeep("LowerArm_R");
             thL = model.FindDeep("Thigh_L"); thR = model.FindDeep("Thigh_R");
             shL = model.FindDeep("Shin_L"); shR = model.FindDeep("Shin_R");
-            handL = model.FindDeep("Hand_L"); handR = model.FindDeep("Hand_R");
             hipsBase = hips.localPosition;
             foreach (var t in new[] { hips, torso, head, upL, upR, loL, loR, thL, thR, shL, shR }) baseRot[t] = t.localRotation;
             upperLen = Vector3.Distance(upR.position, loR.position);
-            lowerLen = Vector3.Distance(loR.position, handR.position);
+            // hands are posed per weapon and placed directly on the grips
+            hands = new TrooperHands(model, loR, loL);
+            wristR = hands.WristR; wristL = hands.WristL;
+            lowerLen = Vector3.Distance(loR.position, wristR.position);
 
             // team colors
             var teamMat = cfg.TeamMaterial(c.Team, c.ColorNV.Value);
-            foreach (var r in model.GetComponentsInChildren<Renderer>())
+            foreach (var r in model.GetComponentsInChildren<Renderer>(true)) // include the inactive hand variants
             {
                 var mats = r.sharedMaterials;
                 for (int i = 0; i < mats.Length; i++) if (mats[i] == cfg.teamRed) mats[i] = teamMat;
@@ -156,7 +159,8 @@ namespace Salvo
                 var gR = inst.FindDeep("GripR");
                 gripRs[s] = gR; gripLs[s] = inst.FindDeep("GripL"); muzzles[s] = inst.FindDeep("Muzzle");
                 // place grip at the right-hand hold point (right of chest, forward)
-                Vector3 hold = st.def.fireMode == FireMode.Melee ? new Vector3(0.2f, -0.22f, 0.3f) : new Vector3(0.12f, -0.12f, 0.3f);
+                Vector3 hold = st.def.fireMode == FireMode.Melee ? new Vector3(0.2f, -0.2f, 0.32f) : new Vector3(0.12f, -0.12f, 0.3f);
+                if (st.def.fireMode == FireMode.Melee) wrap.localRotation = Quaternion.Euler(-55f, 0f, 0f);
                 Vector3 gripLocal = gR != null ? holder.InverseTransformPoint(gR.position) : Vector3.zero;
                 wrap.localPosition = hold - gripLocal;
                 foreach (var r in inst.GetComponentsInChildren<Renderer>()) renderers.Add(r);
@@ -253,17 +257,22 @@ namespace Salvo
                 shownSlot = slot;
             }
 
-            // arms: IK hands onto the weapon grips
+            // hands: snap the posed hand variants onto the weapon grips, then IK each arm to its wrist
+            var def = c.Weapons.Current;
             var gR = slot >= 0 && slot < 3 ? gripRs[slot] : null;
             var gL = slot >= 0 && slot < 3 ? gripLs[slot] : null;
-            if (gR != null) SolveArm(upR, loR, handR, gR.position, transform.position + transform.right * 0.5f + Vector3.down * 0.4f - transform.forward * 0.2f);
-            if (gL != null)
+            hands.Use(def);
+            Vector3 poleR = transform.position + transform.right * 0.5f + Vector3.down * 0.4f - transform.forward * 0.2f;
+            Vector3 poleL = transform.position - transform.right * 0.6f + Vector3.down * 0.4f;
+            if (hands.SnapRight(gR, out var wR)) SolveArm(upR, loR, wristR, wR, poleR);
+            else hands.RestRight();
+            if (hands.SnapLeft(TrooperHands.SupportMarker(def, gR, gL), out var wL)) SolveArm(upL, loL, wristL, wL, poleL);
+            else
             {
-                var def = c.Weapons.Current;
-                bool oneHand = def != null && (def.fireMode == FireMode.Melee || def.slot == WeaponSlot.Secondary);
-                Vector3 tgt = oneHand ? (gR != null ? gR.position - transform.right * 0.06f : gL.position) : gL.position;
-                if (def != null && def.fireMode == FireMode.Melee) tgt = transform.position + Vector3.up * (1.05f - 0.3f * crouchT) + transform.forward * 0.15f - transform.right * 0.25f;
-                SolveArm(upL, loL, handL, tgt, transform.position - transform.right * 0.6f + Vector3.down * 0.4f);
+                // free hand (knife): guard position in front of the chest
+                Vector3 tgt = transform.position + Vector3.up * (1.05f - 0.3f * crouchT) + transform.forward * 0.15f - transform.right * 0.25f;
+                SolveArm(upL, loL, wristL, tgt, poleL);
+                hands.RestLeft();
             }
 
             hurtFlash = Mathf.MoveTowards(hurtFlash, 0f, dt * 6f);

@@ -17,7 +17,8 @@ namespace Salvo
         Transform trooper, weaponHolder;
         GameObject weaponInst;
         int shownWeapon = -1, shownSkin = -1, shownColor = -1;
-        Transform upR, upL, loR, loL, handR, handL, torso, head;
+        Transform upR, upL, loR, loL, torso, head;
+        TrooperHands hands;
         Quaternion upRBase, upLBase, loRBase, loLBase, torsoBase, headBase;
 
         void Awake() { I = this; }
@@ -50,7 +51,7 @@ namespace Salvo
             trooper = Instantiate(cfg.trooperModel, wrap).transform;
             upR = trooper.FindDeep("UpperArm_R"); upL = trooper.FindDeep("UpperArm_L");
             loR = trooper.FindDeep("LowerArm_R"); loL = trooper.FindDeep("LowerArm_L");
-            handR = trooper.FindDeep("Hand_R"); handL = trooper.FindDeep("Hand_L");
+            hands = new TrooperHands(trooper, loR, loL);
             torso = trooper.FindDeep("Torso"); head = trooper.FindDeep("Head");
             upRBase = upR.localRotation; upLBase = upL.localRotation; loRBase = loR.localRotation; loLBase = loL.localRotation;
             torsoBase = torso.localRotation; headBase = head.localRotation;
@@ -76,6 +77,7 @@ namespace Salvo
                 {
                     var wrap = new GameObject("Wrap").transform;
                     wrap.SetParent(weaponHolder, false);
+                    if (def.fireMode == FireMode.Melee) wrap.localRotation = Quaternion.Euler(-55f, 0f, 0f);
                     var inst = Instantiate(def.model, wrap).transform;
                     CharacterVisual.ApplySkin(inst, def, sid);
                     var g = inst.FindDeep("GripR");
@@ -87,7 +89,7 @@ namespace Salvo
             if (col != shownColor)
             {
                 var mat = cfg.TeamMaterial(Team.None, col);
-                foreach (var r in trooper.GetComponentsInChildren<Renderer>())
+                foreach (var r in trooper.GetComponentsInChildren<Renderer>(true)) // incl. hidden hand variants
                 {
                     if (weaponInst != null && r.transform.IsChildOf(weaponInst.transform)) continue;
                     var mats = r.sharedMaterials;
@@ -133,12 +135,16 @@ namespace Salvo
             torso.localRotation = torsoBase * Quaternion.Euler(breathe * 1.2f, 0, 0);
             head.localRotation = headBase * Quaternion.Euler(breathe * -0.8f, Mathf.Sin(Time.time * 0.4f) * 6f, 0);
             weaponHolder.localPosition = new Vector3(0.05f, 1.2f + breathe * 0.006f, 0.32f);
-            // simple IK so hands sit on the showcase weapon
+            // posed hands snap onto the showcase weapon, arms IK to their wrists
+            var def = GameConfig.I.Weapon(shownWeapon);
             var g = weaponInst.transform.FindDeep("GripR");
             var gl = weaponInst.transform.FindDeep("GripL");
             upR.localRotation = upRBase; loR.localRotation = loRBase; upL.localRotation = upLBase; loL.localRotation = loLBase;
-            if (g != null) Aim(upR, loR, handR, g.position, trooper.position + trooper.right * 0.6f + Vector3.down * 0.3f);
-            if (gl != null) Aim(upL, loL, handL, gl.position, trooper.position - trooper.right * 0.6f + Vector3.down * 0.3f);
+            hands.Use(def);
+            if (hands.SnapRight(g, out var wR)) Aim(upR, loR, hands.WristR, wR, trooper.position + trooper.right * 0.6f + Vector3.down * 0.3f);
+            else hands.RestRight();
+            if (hands.SnapLeft(TrooperHands.SupportMarker(def, g, gl), out var wL)) Aim(upL, loL, hands.WristL, wL, trooper.position - trooper.right * 0.6f + Vector3.down * 0.3f);
+            else hands.RestLeft();
         }
 
         static void Aim(Transform upper, Transform lower, Transform hand, Vector3 target, Vector3 pole)

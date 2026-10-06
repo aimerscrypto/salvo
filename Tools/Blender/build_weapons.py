@@ -19,6 +19,18 @@ def grip(name, loc, h=0.10, w=0.032, d=0.046, tilt=-14):
     return box(name, (w, d, h), loc, "rubber", rot=(tilt, 0, 0), bev=0.008, segs=2, taper=(0.95, 0.9))
 
 
+# every pistol grip shares one shape/tilt so the posed right hand fits all guns; the trigger sits
+# where that hand's index finger lands: GripR + (0, 0.05, 0.042)
+TRIGGER = (0, 0.05, 0.042)
+
+
+def trigger(origin=(0, 0, 0)):
+    o = origin
+    return [box("tg", (0.012, 0.064, 0.007), (o[0], o[1] + 0.046, o[2] + 0.018), "dark", bev=0.003),
+            box("tg_front", (0.012, 0.007, 0.03), (o[0], o[1] + 0.077, o[2] + 0.032), "dark", bev=0.003),
+            box("trigger", (0.006, 0.008, 0.022), (o[0] + TRIGGER[0], o[1] + TRIGGER[1], o[2] + TRIGGER[2]), "steel", rot=(15, 0, 0), bev=0.002)]
+
+
 def finish(root_name, body_parts, movers, markers, out):
     """movers: dict name -> (parts, pivot)"""
     body = join(body_parts, "Body")
@@ -54,9 +66,7 @@ def viper():
     P.append(box("rsight_r", (0.007, 0.008, 0.012), (0.009, -0.045, 0.118), "dark", bev=0.002))
     P.append(box("dot", (0.004, 0.003, 0.004), (0, 0.128, 0.121), "mustard", bev=0.0))
     # trigger guard (U shape)
-    P.append(box("tg_bot", (0.012, 0.055, 0.007), (0, 0.045, 0.02), "dark", bev=0.003))
-    P.append(box("tg_front", (0.012, 0.007, 0.04), (0, 0.072, 0.038), "dark", bev=0.003))
-    P.append(box("trigger", (0.006, 0.008, 0.022), (0, 0.035, 0.04), "steel", rot=(15, 0, 0), bev=0.002))
+    P += trigger()
     P.append(box("beaver", (0.03, 0.03, 0.012), (0, -0.04, 0.07), "dark", bev=0.004))
     P.append(box("rail", (0.022, 0.05, 0.01), (0, 0.095, 0.042), "dark", bev=0.003))
     mag = [box("mag_base", (0.036, 0.05, 0.012), (0, -0.012, -0.056), "dark", rot=(-14, 0, 0), bev=0.004),
@@ -86,9 +96,9 @@ def hornet():
         P.append(cyl(f"shroud_ring{i}", 0.026, 0.008, (0, 0.235 + i * 0.03, 0.075), "gunmetal", rot=(90, 0, 0), verts=12, bev=0.002))
     P.append(cyl("barrel", 0.011, 0.06, (0, 0.35, 0.075), "gunmetal", rot=(90, 0, 0), verts=10, bev=0.002))
     P.append(cyl("comp", 0.016, 0.035, (0, 0.385, 0.075), "dark", rot=(90, 0, 0), verts=8, bev=0.003))
-    P.append(box("fgrip", (0.026, 0.03, 0.085), (0, 0.2, 0.0), "rubber", rot=(8, 0, 0), bev=0.008))
-    P.append(box("tg", (0.012, 0.06, 0.007), (0, 0.04, 0.02), "dark", bev=0.003))
-    P.append(box("trigger", (0.006, 0.008, 0.02), (0, 0.03, 0.04), "steel", rot=(15, 0, 0), bev=0.002))
+    P.append(cyl("fgrip", 0.016, 0.09, (0, 0.2, -0.004), "rubber", rot=(8, 0, 0), verts=12, bev=0.006))
+    P.append(cyl("fgrip_cap", 0.019, 0.01, (0, 0.2 - 0.0063, -0.049), "dark", rot=(8, 0, 0), verts=12, bev=0.003))
+    P += trigger()
     # stock: two rods + butt pad
     P.append(cyl("rod_l", 0.006, 0.2, (-0.018, -0.15, 0.085), "steel", rot=(90, 0, 0), verts=8, bev=0.0))
     P.append(cyl("rod_r", 0.006, 0.2, (0.018, -0.15, 0.085), "steel", rot=(90, 0, 0), verts=8, bev=0.0))
@@ -106,7 +116,7 @@ def hornet():
         ("Muzzle", (0, 0.405, 0.075), (0, 0, 0)),
         ("Sight", (0, 0.0, 0.149), (0, 0, 0)),
         ("GripR", (0, 0, 0), (-14, 0, 0)),
-        ("GripL", (0, 0.2, 0.0), (8, 0, 0)),
+        ("GripL", (0, 0.2, -0.004), (8, 0, 0)),
         ("Eject", (0.03, 0.1, 0.1), (0, 0, 0)),
     ], "Weapons/W_Hornet.fbx")
 
@@ -131,8 +141,7 @@ def ranger():
     # stock (profile in YZ)
     P.append(prism("stock", [(-0.06, 0.13), (-0.06, 0.05), (-0.2, 0.02), (-0.31, -0.03), (-0.33, -0.03), (-0.33, 0.13)], 0.044, color="SKIN", bev=0.01))
     P.append(box("buttpad", (0.048, 0.02, 0.17), (0, -0.335, 0.05), "rubber", bev=0.008))
-    P.append(box("tg", (0.012, 0.06, 0.007), (0, 0.04, 0.018), "dark", bev=0.003))
-    P.append(box("trigger", (0.006, 0.008, 0.02), (0, 0.03, 0.038), "steel", rot=(15, 0, 0), bev=0.002))
+    P += trigger()
     P.append(box("charge", (0.03, 0.02, 0.012), (0, -0.05, 0.13), "dark", bev=0.003))
     # holo sight
     P.append(box("holo_base", (0.036, 0.07, 0.016), (0, 0.06, 0.153), "dark", bev=0.004))
@@ -150,7 +159,7 @@ def ranger():
         ("Muzzle", (0, 0.755, 0.1), (0, 0, 0)),
         ("Sight", (0, 0.0, 0.18), (0, 0, 0)),
         ("GripR", (0, 0, 0), (-14, 0, 0)),
-        ("GripL", (0, 0.36, 0.06), (0, 0, 0)),
+        ("GripL", (0, 0.36, 0.1), (0, 0, 0)),
         ("Eject", (0.03, 0.1, 0.11), (0, 0, 0)),
     ], "Weapons/W_Ranger.fbx")
 
@@ -166,12 +175,12 @@ def bulldog():
     P.append(cyl("tube_cap", 0.018, 0.02, (0, 0.6, 0.058), "gunmetal", rot=(90, 0, 0), verts=12, bev=0.004))
     P.append(box("band", (0.04, 0.02, 0.06), (0, 0.55, 0.077), "gunmetal", bev=0.006))
     P.append(cyl("bead", 0.004, 0.01, (0, 0.67, 0.115), "brass", verts=8, bev=0.0))
-    # wooden stock with wrist (the wrist doubles as the grip)
-    P.append(prism("stock", [(-0.02, 0.1), (-0.02, 0.04), (-0.08, -0.03), (-0.14, -0.035), (-0.38, 0.0), (-0.4, 0.0),
-                             (-0.4, 0.13), (-0.2, 0.1), (-0.06, 0.11)], 0.046, color="wood", bev=0.012))
+    # pistol grip + wooden stock
+    P.append(grip("grip", (0, 0, 0)))
+    P.append(prism("stock", [(-0.03, 0.11), (-0.03, 0.05), (-0.38, 0.0), (-0.4, 0.0),
+                             (-0.4, 0.13), (-0.2, 0.105), (-0.06, 0.112)], 0.046, color="wood", bev=0.012))
     P.append(box("buttpad", (0.05, 0.02, 0.14), (0, -0.405, 0.065), "rubber", bev=0.008))
-    P.append(box("tg", (0.012, 0.07, 0.007), (0, 0.04, 0.025), "dark", bev=0.003))
-    P.append(box("trigger", (0.006, 0.008, 0.02), (0, 0.04, 0.042), "steel", rot=(15, 0, 0), bev=0.002))
+    P += trigger()
     # side shell holder
     P.append(box("shell_holder", (0.008, 0.08, 0.03), (-0.03, 0.06, 0.075), "dark", bev=0.003))
     for i in range(4):
@@ -182,8 +191,8 @@ def bulldog():
     finish("W_Bulldog", P, {"Pump": (pump, (0, 0.33, 0.058))}, [
         ("Muzzle", (0, 0.685, 0.095), (0, 0, 0)),
         ("Sight", (0, -0.05, 0.12), (0, 0, 0)),
-        ("GripR", (0, -0.04, 0.03), (-24, 0, 0)),
-        ("GripL", (0, 0.33, 0.035), (0, 0, 0)),
+        ("GripR", (0, 0, 0), (-14, 0, 0)),
+        ("GripL", (0, 0.33, 0.058), (0, 0, 0)),
         ("Eject", (0.03, 0.08, 0.09), (0, 0, 0)),
     ], "Weapons/W_Bulldog.fbx")
 
@@ -193,8 +202,8 @@ def longbow():
     reset()
     P = []
     # chassis / stock (profile)
-    P.append(prism("chassis", [(-0.42, 0.11), (-0.42, -0.03), (-0.3, -0.02), (-0.16, 0.03), (-0.1, 0.0), (-0.05, -0.06),
-                               (0.0, -0.06), (0.03, 0.04), (0.42, 0.05), (0.44, 0.075), (0.42, 0.09), (-0.02, 0.09),
+    P.append(prism("chassis", [(-0.42, 0.11), (-0.42, -0.03), (-0.3, -0.02), (-0.16, 0.03), (-0.1, 0.0), (-0.04, 0.005),
+                               (0.08, 0.03), (0.42, 0.05), (0.44, 0.075), (0.42, 0.09), (-0.02, 0.09),
                                (-0.12, 0.12), (-0.3, 0.12)], 0.05, color="SKIN", bev=0.012))
     P.append(box("cheek", (0.046, 0.14, 0.03), (0, -0.25, 0.13), "SKIN", bev=0.01))
     P.append(box("buttpad", (0.052, 0.02, 0.16), (0, -0.425, 0.045), "rubber", bev=0.008))
@@ -203,9 +212,9 @@ def longbow():
     P.append(box("brake", (0.04, 0.07, 0.032), (0, 0.83, 0.098), "dark", bev=0.008))
     for i in range(3):
         P.append(box(f"brake_s{i}", (0.042, 0.008, 0.02), (0, 0.81 + i * 0.02, 0.098), "gunmetal", bev=0.0))
-    P.append(box("tg", (0.012, 0.06, 0.007), (0, 0.035, -0.01), "dark", bev=0.003))
-    P.append(box("trigger", (0.006, 0.008, 0.02), (0, 0.03, 0.01), "steel", rot=(15, 0, 0), bev=0.002))
-    P.append(box("bipod", (0.03, 0.18, 0.02), (0, 0.32, 0.03), "gunmetal", bev=0.006))
+    P.append(grip("grip", (0, -0.01, -0.035)))
+    P += trigger((0, -0.01, -0.035))
+    P.append(box("bipod", (0.03, 0.08, 0.02), (0, 0.44, 0.04), "gunmetal", bev=0.006))
     # scope
     P.append(cyl("scope_tube", 0.019, 0.3, (0, 0.08, 0.165), "dark", rot=(90, 0, 0), verts=14, bev=0.003))
     P.append(cyl("scope_obj", 0.032, 0.08, (0, 0.26, 0.165), "dark", rot=(90, 0, 0), verts=14, bev=0.005, r2=0.02))
@@ -223,8 +232,8 @@ def longbow():
     finish("W_Longbow", P, {"Mag": (mag, (0, 0.11, 0.05)), "Bolt": (bolt, (0.0, -0.02, 0.1))}, [
         ("Muzzle", (0, 0.87, 0.098), (0, 0, 0)),
         ("Sight", (0, -0.14, 0.165), (0, 0, 0)),
-        ("GripR", (0, -0.07, -0.01), (-18, 0, 0)),
-        ("GripL", (0, 0.3, 0.035), (0, 0, 0)),
+        ("GripR", (0, -0.01, -0.035), (-14, 0, 0)),
+        ("GripL", (0, 0.3, 0.066), (0, 0, 0)),
         ("Eject", (0.03, 0.06, 0.11), (0, 0, 0)),
     ], "Weapons/W_Longbow.fbx")
 
@@ -243,8 +252,8 @@ def fang():
     finish("W_Fang", P, {}, [
         ("Muzzle", (0, 0.27, 0.0), (0, 0, 0)),
         ("Sight", (0, 0, 0.05), (0, 0, 0)),
-        ("GripR", (0, 0, 0), (0, 0, 0)),
-        ("GripL", (0, 0, 0), (0, 0, 0)),
+        ("GripR", (0, 0, 0), (-90, 0, 0)),
+        ("GripL", (0, 0, 0), (-90, 0, 0)),
         ("Eject", (0, 0, 0), (0, 0, 0)),
     ], "Weapons/W_Fang.fbx")
 

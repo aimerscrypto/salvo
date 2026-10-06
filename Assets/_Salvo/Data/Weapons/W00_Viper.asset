@@ -58,6 +58,7 @@ MonoBehaviour:
   hipEuler: {x: 0, y: -1, z: 0}
   sightDistance: 0.5
   adsOffset: {x: 0, y: 0, z: 0}
+  supportGrip: 2
   viewScale: 0.5
   tracerColor: {r: 1, g: 0.92, b: 0.65, a: 1}
   shakeOnFire: 0.08

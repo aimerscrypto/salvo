@@ -4,6 +4,9 @@ namespace Salvo
 
     public enum FireMode : byte { Auto, Semi, Pump, Bolt, Melee }
 
+    /// <summary>What the support (left) hand holds: a handguard/pump, a vertical foregrip, or the shooting hand.</summary>
+    public enum SupportGrip : byte { Handguard = 0, Foregrip = 1, Pistol = 2, None = 3 }
+
     public enum HitZone : byte { Body = 0, Head = 1, Limb = 2 }
 
     public enum GameMode : byte { FreeForAll = 0, TeamDeathmatch = 1 }

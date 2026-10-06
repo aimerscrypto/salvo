@@ -192,7 +192,7 @@ namespace Salvo.EditorTools
                 W("W00_Viper", 0, "Viper", w =>
                 {
                     w.description = "Reliable semi-auto sidearm. Quick to draw, punishing in steady hands.";
-                    w.category = "PISTOL"; w.slot = WeaponSlot.Secondary; w.fireMode = FireMode.Semi; w.ownedByDefault = true;
+                    w.category = "PISTOL"; w.slot = WeaponSlot.Secondary; w.fireMode = FireMode.Semi; w.ownedByDefault = true; w.supportGrip = SupportGrip.Pistol;
                     w.damage = 27; w.headMultiplier = 1.8f; w.limbMultiplier = 0.85f; w.falloffStart = 15; w.falloffEnd = 38; w.minDamageFactor = 0.6f;
                     w.rpm = 420; w.magSize = 12; w.reserveAmmo = 60; w.reloadTime = 1.35f; w.equipTime = 0.3f; w.moveSpeedMultiplier = 1.04f;
                     w.hipSpread = 1.3f; w.adsSpread = 0.25f; w.moveSpreadAdd = 1.0f; w.airSpreadAdd = 3f; w.spreadPerShot = 0.55f; w.maxBloom = 2.5f; w.bloomRecovery = 6f;
@@ -205,7 +205,7 @@ namespace Salvo.EditorTools
                 W("W01_Hornet", 1, "Hornet", w =>
                 {
                     w.description = "Compact SMG with a blistering fire rate. Owns close quarters, sprays at range.";
-                    w.category = "SMG"; w.slot = WeaponSlot.Primary; w.fireMode = FireMode.Auto; w.price = 1200; w.unlockLevel = 2;
+                    w.category = "SMG"; w.slot = WeaponSlot.Primary; w.fireMode = FireMode.Auto; w.price = 1200; w.unlockLevel = 2; w.supportGrip = SupportGrip.Foregrip;
                     w.damage = 17; w.headMultiplier = 1.5f; w.limbMultiplier = 0.85f; w.falloffStart = 10; w.falloffEnd = 26; w.minDamageFactor = 0.55f;
                     w.rpm = 880; w.magSize = 32; w.reserveAmmo = 160; w.reloadTime = 1.75f; w.equipTime = 0.35f; w.moveSpeedMultiplier = 1.0f;
                     w.hipSpread = 2.2f; w.adsSpread = 0.9f; w.moveSpreadAdd = 0.8f; w.airSpreadAdd = 2.5f; w.spreadPerShot = 0.16f; w.maxBloom = 2.4f; w.bloomRecovery = 9f;
@@ -258,10 +258,10 @@ namespace Salvo.EditorTools
                 W("W05_Fang", 5, "Fang", w =>
                 {
                     w.description = "Combat knife. Fast slashes; strike from behind for an instant takedown.";
-                    w.category = "MELEE"; w.slot = WeaponSlot.Melee; w.fireMode = FireMode.Melee; w.ownedByDefault = true;
+                    w.category = "MELEE"; w.slot = WeaponSlot.Melee; w.fireMode = FireMode.Melee; w.ownedByDefault = true; w.supportGrip = SupportGrip.None;
                     w.damage = 55; w.headMultiplier = 1f; w.limbMultiplier = 1f; w.range = 2.3f; w.rpm = 110; w.magSize = 1; w.reserveAmmo = 0;
                     w.equipTime = 0.25f; w.moveSpeedMultiplier = 1.08f; w.hipSpread = 0; w.adsSpread = 0;
-                    w.hipPosition = new Vector3(0.21f, -0.24f, 0.46f); w.hipEuler = new Vector3(-10, -20, 10); w.sightDistance = 0.3f;
+                    w.hipPosition = new Vector3(0.22f, -0.25f, 0.5f); w.hipEuler = new Vector3(-42, -22, 18); w.sightDistance = 0.3f;
                     w.fireSound = null; w.equipSound = equip;
                 }),
             };

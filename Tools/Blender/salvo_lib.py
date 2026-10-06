@@ -79,6 +79,9 @@ PAL = {
     "hull_red":    "B84A3A",
     "rope":        "C8B48A",
     "net":         "6E8A6A",
+    "glove":       "8A6A48",
+    "glove_pad":   "5A4634",
+    "boot":        "7A5638",
     # special slots (vertex color forced to white; Unity assigns the real material)
     "TEAM":  "FFFFFF",
     "SKIN":  "FFFFFF",
