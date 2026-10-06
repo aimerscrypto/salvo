@@ -337,7 +337,7 @@ namespace Salvo
             if (c.IsLocalHuman && GameCamera.I != null)
             {
                 float adsDamp = Mathf.Lerp(1f, 0.6f, AimT);
-                GameCamera.I.AddRecoil(d.recoilPitch * adsDamp * UnityEngine.Random.Range(0.85f, 1.15f), d.recoilYaw * UnityEngine.Random.Range(-1f, 1f) * adsDamp, d.recoilRecovery);
+                GameCamera.I.AddRecoil(d.recoilPitch * adsDamp, d.recoilYaw * adsDamp, d.recoilRecovery, Mathf.Clamp(d.recoilPitch * 0.6f, 0.4f, 3f));
                 GameCamera.I.Shake(d.shakeOnFire);
             }
             else if (c.IsBot && c.Brain != null) c.Brain.OnRecoil(d.recoilPitch);

@@ -39,15 +39,25 @@ namespace Salvo
             c = combatant;
             var w = c.Weapons;
             w.Fired += OnFired;
-            w.Equipped += _ => { equipT = 0f; };
-            w.ReloadShell += _ => { shellBump = 1f; };
+            w.Equipped += d => { equipT = 0f; StopReloadSound(); if (built) AudioManager.Play2D(d.equipSound, 0.55f, Random.Range(0.95f, 1.05f)); };
+            w.ReloadShell += d => { shellBump = 1f; AudioManager.Play2D(d.reloadIn, 0.6f, Random.Range(0.95f, 1.05f)); };
             w.ActionCycled += _ => { actionT = 0f; PlayAction(); };
             w.Meleed += _ => { meleeT = 0f; meleeSide = -meleeSide; AudioManager.Play2D(AudioManager.Bank?.meleeSwing, 0.8f, Random.Range(0.95f, 1.1f)); };
             w.DryFired += d => { dryT = 0f; AudioManager.Play2D(AudioManager.Bank?.emptyClick, 0.7f); };
-            w.ReloadStarted += (d, dur) => AudioManager.Play2D(d.reloadOut, 0.75f);
-            w.ReloadFinished += d => { if (!d.reloadPerShell) AudioManager.Play2D(d.reloadIn, 0.8f); };
+            // the whole reload is one recording laid out to the animation; stop it if the reload is cut short
+            w.ReloadStarted += (d, dur) => { StopReloadSound(); reloadVoice = AudioManager.Play2DTracked(d.reloadSequence, 0.85f); reloadClip = d.reloadSequence; };
+            w.ReloadFinished += d => reloadClip = null;
             c.Motor.Landed += s => landT = Mathf.Clamp01(s / 12f);
             Build();
+        }
+
+        AudioSource reloadVoice;
+        AudioClip reloadClip;
+
+        void StopReloadSound()
+        {
+            if (reloadVoice != null && reloadVoice.isPlaying && reloadVoice.clip == reloadClip && reloadClip != null) reloadVoice.Stop();
+            reloadVoice = null; reloadClip = null;
         }
 
         void OnDestroy()
@@ -174,13 +184,15 @@ namespace Salvo
 
         void OnFired(WeaponDef d)
         {
+            // recoil: the gun slams back into the shoulder and the muzzle flips up, then springs home.
+            // Impulses are sized for a peak of `back` units / `flip` degrees (see KickPos/KickRot springs).
             float ads = c.Weapons.AimT;
-            float k = Mathf.Lerp(1f, 0.45f, ads);
-            kickPos.Kick(new Vector3(Random.Range(-0.15f, 0.15f) * d.kickBack, d.kickBack * 0.4f, -d.kickBack * 10f) * k);
-            kickRot.Kick(new Vector3(-d.kickRotation * 12f, Random.Range(-1f, 1f) * d.kickRotation * 3f, Random.Range(-1f, 1f) * d.kickRotation * 4f) * k);
-            float shotPitch = Random.Range(0.96f, 1.04f);
-            AudioManager.Play2D(d.fireSound, 0.9f, shotPitch);
-            AudioManager.OwnGunshot(d.fireSound, c.EyePosition, shotPitch);
+            float kp = Mathf.Lerp(1f, 0.6f, ads), kr = Mathf.Lerp(1f, 0.4f, ads);
+            float back = d.kickBack * 1.6f, flip = d.kickRotation * 1.1f;
+            kickPos.Kick(new Vector3(Random.Range(-0.12f, 0.12f) * back, back * 0.18f, -back) * (KickPosGain * kp));
+            kickRot.Kick(new Vector3(-flip, Random.Range(-0.25f, 0.25f) * flip, Random.Range(-0.4f, 0.4f) * flip) * (KickRotGain * kr));
+            float shotPitch = Random.Range(0.97f, 1.03f);
+            AudioManager.OwnGunshot(d, c.EyePosition, shotPitch);
             if (cur != null && cur.flash != null)
             {
                 cur.flash.enabled = true;
@@ -189,7 +201,10 @@ namespace Salvo
                 flashTime = 0.045f;
             }
             if (cur != null && cur.eject != null && d.fireMode != FireMode.Pump && d.fireMode != FireMode.Bolt)
+            {
                 FxManager.I?.EjectShell(cur.eject.position, GameCamera.I.transform.right, d.pellets > 1);
+                AudioManager.Casing(c.EyePosition + GameCamera.I.transform.right * 0.6f, false, true);
+            }
         }
 
         void PlayAction()
@@ -197,7 +212,11 @@ namespace Salvo
             var d = c.Weapons.Current;
             if (d == null) return;
             AudioManager.Play2D(d.actionSound, 0.8f);
-            if (cur != null && cur.eject != null) FxManager.I?.EjectShell(cur.eject.position, GameCamera.I.transform.right, d.pellets > 1);
+            if (cur != null && cur.eject != null)
+            {
+                FxManager.I?.EjectShell(cur.eject.position, GameCamera.I.transform.right, d.pellets > 1);
+                AudioManager.Casing(c.EyePosition + GameCamera.I.transform.right * 0.6f, d.pellets > 1, true);
+            }
         }
 
         void LateUpdate()
@@ -221,8 +240,8 @@ namespace Salvo
             float ads = Mathf.SmoothStep(0f, 1f, w.AimT);
 
             // --- springs
-            kickPos.Step(Vector3.zero, 6f, 0.6f, dt);
-            kickRot.Step(Vector3.zero, 5f, 0.5f, dt);
+            kickPos.Step(Vector3.zero, KickPosHz, 0.5f, dt);
+            kickRot.Step(Vector3.zero, KickRotHz, 0.45f, dt);
             // sway from look *rate*, not this frame's raw delta: per-frame deltas swing with frame
             // time and made the gun twitch whenever the frame rate wobbled
             Vector2 rawLook = SalvoInput.GameplayEnabled ? SalvoInput.Look.ReadValue<Vector2>() : Vector2.zero;
@@ -284,17 +303,14 @@ namespace Salvo
                         cur.mag.gameObject.SetActive(!(p > 0.33f && p < 0.5f));
                     }
                     armLOffset = new Vector3(0.0f, -0.12f, -0.12f) * magOut + new Vector3(0, -0.02f, 0) * tilt;
-                    if (p > 0.72f && p < 0.76f && !reloadClick) { reloadClick = true; AudioManager.Play2D(d.reloadIn, 0.7f, 1.05f); }
                 }
             }
             else
             {
-                reloadClick = false;
                 if (cur.mag != null) { cur.mag.localPosition = cur.magBase; if (!cur.mag.gameObject.activeSelf) cur.mag.gameObject.SetActive(true); }
             }
             shellBump = Mathf.MoveTowards(shellBump, 0f, dt * 5f);
             pos += new Vector3(0, 0.01f, 0.01f) * shellBump;
-            if (shellBump > 0.95f) AudioManager.Play2D(d.reloadIn, 0.6f, Random.Range(0.95f, 1.05f));
 
             // --- pump / bolt
             actionT = Mathf.MoveTowards(actionT, 1f, dt / 0.38f);
@@ -331,15 +347,19 @@ namespace Salvo
             rot *= Quaternion.Euler(Mathf.Sin(dryT * Mathf.PI) * 3f, 0, 0);
 
             // --- compose
-            cur.pose.localPosition = pos + bob + kickPos.Value * 0.01f + swayPos.Value;
-            cur.pose.localRotation = rot * Quaternion.Euler(bobRot + kickRot.Value * 0.1f + swayRot.Value);
+            cur.pose.localPosition = pos + bob + kickPos.Value + swayPos.Value;
+            cur.pose.localRotation = rot * Quaternion.Euler(bobRot + kickRot.Value + swayRot.Value);
             if (cur.armL != null) cur.armL.localPosition = cur.armLBase + armLOffset;
 
             if (flashTime > 0f) { flashTime -= dt; if (flashTime <= 0f && cur.flash != null) cur.flash.enabled = false; }
             if (cur.flash != null && cur.muzzle != null) cur.flash.transform.position = cur.muzzle.position;
         }
 
-        bool reloadClick;
+        // recoil springs: a velocity impulse v peaks at v * exp(-z/sqrt(1-z^2) * atan(sqrt(1-z^2)/z)) / w,
+        // so the gains below turn "peak units / degrees" into impulses
+        const float KickPosHz = 9f, KickRotHz = 7f;
+        static readonly float KickPosGain = 2f * Mathf.PI * KickPosHz / 0.546f;
+        static readonly float KickRotGain = 2f * Mathf.PI * KickRotHz / 0.573f;
 
         /// <summary>True when the held weapon's optic draws its own red dot (HUD dot fades while aiming).</summary>
         public bool HasReticle => cur != null && cur.hasReticle;

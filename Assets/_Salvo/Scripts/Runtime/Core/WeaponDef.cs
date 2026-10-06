@@ -73,9 +73,12 @@ namespace Salvo
         public Texture2D icon;
 
         [Header("Audio")]
-        public AudioClip fireSound;
+        public AudioClip fireSound;      // close-up shot, short so automatic fire stays crisp
+        public AudioClip tailOutdoor;    // the shot ringing off buildings in the open
+        public AudioClip tailIndoor;     // ...and under a roof / between close walls
+        public AudioClip reloadSequence; // whole magazine reload, timed to the reload animation
         public AudioClip reloadOut;
-        public AudioClip reloadIn;
+        public AudioClip reloadIn;       // per-shell weapons: one shell going in
         public AudioClip actionSound;   // pump / bolt / slide
         public AudioClip equipSound;
 

@@ -92,3 +92,16 @@ MonoBehaviour:
   - {fileID: 8300000, guid: b9fe432553fe25c48bca9467e52817fe, type: 3}
   - {fileID: 8300000, guid: 50a3350ca836f684f92c42c282c556d6, type: 3}
   distantShot: {fileID: 8300000, guid: 7117d1740bb7c2e479edc31af0a43d3b, type: 3}
+  cracks:
+  - {fileID: 8300000, guid: 11515e1415d965b4fa7cf726d839d02a, type: 3}
+  - {fileID: 8300000, guid: dd81ab51e6d642248b760f21e81b1314, type: 3}
+  - {fileID: 8300000, guid: 5a43ff792c094b14d87d9f7d523a093f, type: 3}
+  casings:
+  - {fileID: 8300000, guid: 657ebae3a9abe46449e1ea9ca47f454d, type: 3}
+  - {fileID: 8300000, guid: 9a6206f2f775611418c680ea06b1d210, type: 3}
+  - {fileID: 8300000, guid: f81ccfcf7f60afd479aec9289331a4ee, type: 3}
+  - {fileID: 8300000, guid: ef9afe4a4e20d6843be687049943a4e1, type: 3}
+  - {fileID: 8300000, guid: 77677056197a64d47bbeae0dacf25f0a, type: 3}
+  - {fileID: 8300000, guid: 519673e9054576e4cb0da5c84d2c0b4f, type: 3}
+  - {fileID: 8300000, guid: 1d177a7affca63d4792e5d6fb1f6fb4e, type: 3}
+  - {fileID: 8300000, guid: ffa18cf7428448b428f7b549d840c371, type: 3}

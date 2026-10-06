@@ -20,8 +20,10 @@ weapon handling, footsteps and impacts are CC0 field recordings from Freesound
 - **Movement:** quake-style ground accel/friction, air strafing, slide, slide-jump, coyote time,
   jump buffering, crouch, jump pads.
 - **Weapons:** Viper pistol, Hornet SMG, Ranger rifle, Bulldog pump shotgun, Longbow bolt sniper
-  (scoped), Fang knife (backstabs). Spread/bloom, recoil with recovery, damage falloff, headshots,
-  magazine and per-shell reloads, procedural view-model animation.
+  (scoped), Fang knife (backstabs). Spread/bloom, recoil that climbs
+  through a burst along a learnable side-to-side pattern and recovers when you stop, a visible
+  gun kick and muzzle flip, damage falloff, headshots, magazine and per-shell reloads, procedural
+  view-model animation.
 - **Hands:** gloved, fully posed hands generated per weapon — fingers wrap the actual grip,
   handguard, pump or foregrip, trigger finger on the trigger, cupped two-hand pistol grip, knife
   fist. The same poses are used in first person, on other players and on the menu showcase.
@@ -30,8 +32,11 @@ weapon handling, footsteps and impacts are CC0 field recordings from Freesound
 - **Progression & economy:** XP and levels (1–60), coins from kills/headshots/assists/wins,
   level-up bonuses, daily login streak, weapon unlocks, 11 weapon finishes (rarities, camo patterns),
   squad colors, career stats. Local profile is HMAC-signed against casual tampering.
-- **Audio:** distance falloff with air absorption, muffling through walls, gunfire arriving at
-  the speed of sound with a distant rumble and an echo shaped by nearby walls, footsteps / landings /
+- **Audio:** recorded gunshots with a punchy close layer plus an outdoor or indoor reverb tail
+  (picked by whether the shooter is under a roof / between walls); full recorded reload
+  sequences timed to the animations; brass bouncing on the ground; supersonic cracks on near
+  misses; your own fire ducks the ambience. Distance falloff with air absorption, muffling through
+  walls, gunfire arriving at the speed of sound with a distant rumble, footsteps / landings /
   bullet impacts per surface (sand, stone, wood, metal).
 - **UI:** main menu over a cinematic map fly-through, play/loadout (live 3D preview)/shop/profile/
   settings, HUD with dynamic crosshair, hit markers, damage numbers, direction indicators, kill feed,

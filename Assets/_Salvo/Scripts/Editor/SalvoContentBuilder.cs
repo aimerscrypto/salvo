@@ -63,9 +63,9 @@ namespace Salvo.EditorTools
         static Color Hex(string h) { ColorUtility.TryParseHtmlString("#" + h, out var c); return c; }
         static Texture2D T(string name) => AssetDatabase.LoadAssetAtPath<Texture2D>(Tex + name + ".png");
         /// <summary>All clips in Audio/Surfaces whose file name starts with prefix + "_", sorted by name.</summary>
-        static AudioClip[] Set(string prefix)
+        static AudioClip[] Set(string prefix, string folder = "Surfaces")
         {
-            return AssetDatabase.FindAssets(prefix + "_ t:AudioClip", new[] { Audio + "Surfaces" })
+            return AssetDatabase.FindAssets(prefix + "_ t:AudioClip", new[] { Audio + folder })
                 .Select(AssetDatabase.GUIDToAssetPath)
                 .Where(p => Path.GetFileNameWithoutExtension(p).StartsWith(prefix + "_"))
                 .OrderBy(p => p)
@@ -184,6 +184,7 @@ namespace Salvo.EditorTools
             b.stepsSand = Set("Step_Sand"); b.stepsStone = Set("Step_Stone"); b.stepsWood = Set("Step_Wood"); b.stepsMetal = Set("Step_Metal");
             b.impactsSand = Set("Impact_Sand"); b.impactsStone = Set("Impact_Stone"); b.impactsWood = Set("Impact_Wood"); b.impactsMetal = Set("Impact_Metal");
             b.distantShot = A("Surfaces/Distant_Shot");
+            b.casings = Set("Casing"); b.cracks = Set("Crack", "Feedback");
             EditorUtility.SetDirty(b);
             log.AppendLine("sound bank");
             return b;
@@ -201,9 +202,19 @@ namespace Salvo.EditorTools
             return w;
         }
 
+        /// <summary>Shot, tails and reload from Audio/Weapons/&lt;name&gt;_*.wav (Tools/process_sounds.py).</summary>
+        static void Sounds(WeaponDef w, string name)
+        {
+            w.fireSound = A("Weapons/" + name + "_Fire");
+            w.tailOutdoor = A("Weapons/" + name + "_TailOut");
+            w.tailIndoor = A("Weapons/" + name + "_TailIn");
+            w.reloadSequence = A("Weapons/" + name + "_Reload");
+            w.reloadOut = null; w.reloadIn = null;
+        }
+
         static WeaponDef[] BuildWeapons(System.Text.StringBuilder log)
         {
-            var mag = A("Weapons/Mag_Out"); var magIn = A("Weapons/Mag_In"); var equip = A("Weapons/Equip");
+            var equip = A("Weapons/Equip_0"); var equipSmall = A("Weapons/Equip_2");
             var list = new List<WeaponDef>
             {
                 W("W00_Viper", 0, "Viper", w =>
@@ -217,7 +228,7 @@ namespace Salvo.EditorTools
                     w.adsFov = 68; w.adsTime = 0.13f; w.adsMoveMultiplier = 0.85f;
                     w.hipPosition = new Vector3(0.2f, -0.21f, 0.52f); w.hipEuler = new Vector3(0, -1, 0); w.sightDistance = 0.5f;
                     w.tracerColor = new Color(1f, 0.92f, 0.65f); w.shakeOnFire = 0.08f;
-                    w.fireSound = A("Weapons/Viper_Fire"); w.reloadOut = mag; w.reloadIn = A("Weapons/Slide_Rack"); w.equipSound = equip;
+                    Sounds(w, "Viper"); w.equipSound = equipSmall;
                 }),
                 W("W01_Hornet", 1, "Hornet", w =>
                 {
@@ -230,7 +241,7 @@ namespace Salvo.EditorTools
                     w.adsFov = 66; w.adsTime = 0.14f; w.adsMoveMultiplier = 0.85f;
                     w.hipPosition = new Vector3(0.2f, -0.23f, 0.46f); w.hipEuler = new Vector3(0, -1, 0); w.sightDistance = 0.24f;
                     w.tracerColor = new Color(1f, 0.9f, 0.6f); w.shakeOnFire = 0.05f;
-                    w.fireSound = A("Weapons/Hornet_Fire"); w.reloadOut = mag; w.reloadIn = magIn; w.equipSound = equip;
+                    Sounds(w, "Hornet"); w.equipSound = equip;
                 }),
                 W("W02_Ranger", 2, "Ranger", w =>
                 {
@@ -243,7 +254,7 @@ namespace Salvo.EditorTools
                     w.adsFov = 56; w.adsTime = 0.17f; w.adsMoveMultiplier = 0.75f;
                     w.hipPosition = new Vector3(0.2f, -0.24f, 0.5f); w.hipEuler = new Vector3(0, -1, 0); w.sightDistance = 0.26f;
                     w.tracerColor = new Color(1f, 0.88f, 0.58f); w.shakeOnFire = 0.07f;
-                    w.fireSound = A("Weapons/Ranger_Fire"); w.reloadOut = mag; w.reloadIn = magIn; w.equipSound = equip;
+                    Sounds(w, "Ranger"); w.equipSound = equip;
                 }),
                 W("W03_Bulldog", 3, "Bulldog", w =>
                 {
@@ -254,9 +265,9 @@ namespace Salvo.EditorTools
                     w.hipSpread = 4.8f; w.adsSpread = 3.6f; w.moveSpreadAdd = 0.5f; w.airSpreadAdd = 1.5f; w.spreadPerShot = 0f; w.maxBloom = 0f;
                     w.recoilPitch = 4.5f; w.recoilYaw = 1.2f; w.recoilRecovery = 7f; w.kickBack = 0.09f; w.kickRotation = 12f;
                     w.adsFov = 68; w.adsTime = 0.18f; w.adsMoveMultiplier = 0.85f;
-                    w.hipPosition = new Vector3(0.2f, -0.25f, 0.47f); w.hipEuler = new Vector3(0, -1, 0); w.sightDistance = 0.46f; w.adsOffset = new Vector3(0.015f, -0.03f, 0f);
+                    w.hipPosition = new Vector3(0.2f, -0.25f, 0.47f); w.hipEuler = new Vector3(0, -1, 0); w.sightDistance = 0.33f; w.adsOffset = new Vector3(0f, -0.035f, 0f); // cheek on the stock, looking down the rib
                     w.tracerColor = new Color(1f, 0.85f, 0.55f); w.shakeOnFire = 0.25f;
-                    w.fireSound = A("Weapons/Bulldog_Fire"); w.reloadOut = A("Weapons/Shell_Load"); w.reloadIn = A("Weapons/Shell_Load");
+                    Sounds(w, "Bulldog"); w.reloadIn = A("Weapons/Shell_Load");
                     w.actionSound = A("Weapons/Pump_Action"); w.equipSound = equip;
                 }),
                 W("W04_Longbow", 4, "Longbow", w =>
@@ -270,7 +281,7 @@ namespace Salvo.EditorTools
                     w.adsFov = 22; w.adsTime = 0.24f; w.scoped = true; w.adsSensitivity = 0.75f; w.adsMoveMultiplier = 0.6f;
                     w.hipPosition = new Vector3(0.19f, -0.23f, 0.44f); w.hipEuler = new Vector3(0, -1, 0); w.sightDistance = 0.12f;
                     w.tracerColor = new Color(1f, 0.95f, 0.8f); w.shakeOnFire = 0.3f;
-                    w.fireSound = A("Weapons/Longbow_Fire"); w.reloadOut = mag; w.reloadIn = magIn; w.actionSound = A("Weapons/Bolt_Action"); w.equipSound = equip;
+                    Sounds(w, "Longbow"); w.actionSound = A("Weapons/Bolt_Action"); w.equipSound = equip;
                 }),
                 W("W05_Fang", 5, "Fang", w =>
                 {
@@ -279,7 +290,7 @@ namespace Salvo.EditorTools
                     w.damage = 55; w.headMultiplier = 1f; w.limbMultiplier = 1f; w.range = 2.3f; w.rpm = 110; w.magSize = 1; w.reserveAmmo = 0;
                     w.equipTime = 0.25f; w.moveSpeedMultiplier = 1.08f; w.hipSpread = 0; w.adsSpread = 0;
                     w.hipPosition = new Vector3(0.22f, -0.25f, 0.5f); w.hipEuler = new Vector3(-42, -22, 18); w.sightDistance = 0.3f;
-                    w.fireSound = null; w.equipSound = equip;
+                    w.fireSound = null; w.equipSound = equipSmall;
                 }),
             };
             log.AppendLine("weapons: " + list.Count);

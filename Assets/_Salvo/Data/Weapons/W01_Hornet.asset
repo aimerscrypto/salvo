@@ -64,7 +64,10 @@ MonoBehaviour:
   shakeOnFire: 0.05
   icon: {fileID: 2800000, guid: 1a54678c2e324c04194df74961e2fac3, type: 3}
   fireSound: {fileID: 8300000, guid: 8e8312a1f080695408ee18682cce3e4a, type: 3}
-  reloadOut: {fileID: 8300000, guid: 61a12850f2df21446950b179d6b8cced, type: 3}
-  reloadIn: {fileID: 8300000, guid: e4052458fb9abd7488dec78f6e6c3321, type: 3}
+  tailOutdoor: {fileID: 8300000, guid: 13ab9ff06ad0c9b48b32545159fb4ca5, type: 3}
+  tailIndoor: {fileID: 8300000, guid: 46a89eb6042ddb740a08c29ad5c985f1, type: 3}
+  reloadSequence: {fileID: 8300000, guid: 2b096b065901e7c4991ffe0ab6c01d02, type: 3}
+  reloadOut: {fileID: 0}
+  reloadIn: {fileID: 0}
   actionSound: {fileID: 0}
-  equipSound: {fileID: 8300000, guid: 19d5f3f597b3c224d9fde57c4dfd462d, type: 3}
+  equipSound: {fileID: 8300000, guid: 0c21d82dd7ea6e84f852fb7c9e0dda88, type: 3}

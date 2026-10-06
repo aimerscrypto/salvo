@@ -48,6 +48,11 @@ namespace Salvo
 
         [Header("Distance")]
         public AudioClip distantShot;   // low rumble layered under far-away gunfire (optional)
+        public AudioClip[] cracks;      // supersonic snap of a bullet passing close
+        public AudioClip[] casings;     // spent brass hitting the ground
+
+        public AudioClip Crack() => Pick(cracks);
+        public AudioClip Casing() => Pick(casings);
 
         public AudioClip Step(Surface s)
         {

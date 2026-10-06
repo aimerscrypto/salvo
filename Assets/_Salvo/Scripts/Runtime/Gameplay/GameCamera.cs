@@ -20,8 +20,11 @@ namespace Salvo
 
         // aim punch that the shooter sees and fights against; recovers automatically
         public float RecoilPitch, RecoilYaw;
-        float recoilRecovery = 9f;
+        float recoilRecovery = 9f, lastRecoil = -9f, burstSeed;
+        int burst;
+        const float RecoverDelay = 0.13f, MaxClimb = 9f;
         Spring3 kick;
+        Spring1 fovPunch;
         Spring1 land;
         float trauma;
         float bobPhase, bobAmount;
@@ -76,7 +79,7 @@ namespace Salvo
             Target = c;
             CurrentMode = Mode.FirstPerson;
             RecoilPitch = RecoilYaw = 0f;
-            kick = default;
+            kick = default; fovPunch = default;
             eyeHeight = c.Motor.EyeHeight;
         }
 
@@ -94,12 +97,24 @@ namespace Salvo
             CurrentMode = Mode.Overview;
         }
 
-        public void AddRecoil(float pitch, float yaw, float recovery)
+        /// <summary>
+        /// One shot's recoil. The view climbs while you keep firing (recovery waits until you stop),
+        /// drifting sideways along a smooth per-burst pattern you can learn and pull against; the first
+        /// shot kicks hardest. On top, a short punch (camera snap + slight FOV squeeze) sells the blast.
+        /// </summary>
+        public void AddRecoil(float pitch, float yaw, float recovery, float punch = 1f)
         {
-            RecoilPitch += pitch;
-            RecoilYaw += yaw;
+            if (Time.time - lastRecoil > 0.35f) { burst = 0; burstSeed = Random.Range(0f, 6.28f); }
+            burst++;
+            lastRecoil = Time.time;
+            float first = burst == 1 ? 1.3f : 1f;
+            RecoilPitch = Mathf.Min(RecoilPitch + pitch * first * Random.Range(0.9f, 1.1f), MaxClimb);
+            float side = Mathf.Sin(burst * 0.55f + burstSeed) * 0.75f + Random.Range(-0.35f, 0.35f);
+            RecoilYaw = Mathf.Clamp(RecoilYaw + yaw * side, -MaxClimb * 0.5f, MaxClimb * 0.5f);
             recoilRecovery = recovery;
-            kick.Kick(new Vector3(-pitch * 9f, yaw * 6f, Random.Range(-1f, 1f) * pitch * 4f));
+            // spring impulses ~ peak * w / 0.57: a snap of ~0.5 deg per degree of recoil
+            kick.Kick(new Vector3(-pitch * 0.5f, yaw * side * 0.4f, Random.Range(-1f, 1f) * (0.25f + pitch * 0.3f)) * 50f);
+            fovPunch.Velocity -= punch * 90f;
         }
 
         public void Shake(float amount) => trauma = Mathf.Min(1f, trauma + amount);
@@ -167,9 +182,13 @@ namespace Salvo
             ViewModelRoot.gameObject.SetActive(!HideViewModel);
 
             // recoil recovery (exponential, rate set by weapon)
-            RecoilPitch = SalvoMath.Damp(RecoilPitch, 0f, recoilRecovery, dt);
-            RecoilYaw = SalvoMath.Damp(RecoilYaw, 0f, recoilRecovery, dt);
-            kick.Step(Vector3.zero, 3.2f, 0.55f, dt);
+            if (Time.time - lastRecoil > RecoverDelay)
+            {
+                RecoilPitch = SalvoMath.Damp(RecoilPitch, 0f, recoilRecovery, dt);
+                RecoilYaw = SalvoMath.Damp(RecoilYaw, 0f, recoilRecovery, dt);
+            }
+            kick.Step(Vector3.zero, 6f, 0.45f, dt);
+            fovPunch.Step(0f, 4f, 0.5f, dt);
             land.Step(0f, 2.6f, 0.45f, dt);
 
             // view bob
@@ -209,7 +228,7 @@ namespace Salvo
             float zoomV = HorizontalToVertical(ZoomFov, Cam.aspect);
             float kickTarget = motor.Sliding ? 6f : hs > GameRules.RunSpeed * 1.15f ? 3f : 0f;
             fovKick = SalvoMath.Damp(fovKick, kickTarget, 6f, dt);
-            Cam.fieldOfView = Mathf.Lerp(baseV + fovKick, zoomV, Mathf.SmoothStep(0f, 1f, ZoomT));
+            Cam.fieldOfView = Mathf.Lerp(baseV + fovKick, zoomV, Mathf.SmoothStep(0f, 1f, ZoomT)) + fovPunch.Value * (1f - ZoomT * 0.6f);
         }
 
         /// <summary>Sensitivity multiplier while zoomed (keeps aim feel consistent across FOVs).</summary>

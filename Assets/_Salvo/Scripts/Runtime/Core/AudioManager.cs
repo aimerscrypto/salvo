@@ -13,7 +13,7 @@ namespace Salvo
     {
         public static AudioManager I { get; private set; }
 
-        const int PoolSize = 32;
+        const int PoolSize = 40;
         AudioSource[] pool;
         AudioLowPassFilter[] filters;
         int next;
@@ -136,45 +136,110 @@ namespace Salvo
             if (delay > 0.015f) s.PlayDelayed(delay); else s.Play();
         }
 
-        static float lastEcho;
+        static float lastRemoteTail;
 
         /// <summary>
-        /// Gunfire somebody else fired: the crack (speed-of-sound delayed, highs fading with distance),
-        /// a low rumble that takes over far away, and an echo off the surroundings.
+        /// 0 = open air, 1 = under a roof between close walls. Decides which reverb tail a shot gets.
         /// </summary>
-        public static void Gunshot(AudioClip fire, Vector3 pos, float pitch)
+        public static float Enclosure(Vector3 pos)
         {
-            if (fire == null || I == null) return;
-            float dist = Vector3.Distance(I.Ear, pos);
-            float far = Mathf.Clamp01((dist - 20f) / 60f);
-            PlayWorld(fire, pos, Mathf.Lerp(1f, 0.55f, far), pitch, 170f, true, true);
-            if (far > 0f && Bank != null && Bank.distantShot != null)
-                PlayWorld(Bank.distantShot, pos, far * 0.9f, pitch * Random.Range(0.94f, 1.04f), 260f, false, true);
-            Echo(fire, pos, pitch);
-        }
-
-        /// <summary>First-person gunfire: the dry shot plays 2D; the world answers with an echo.</summary>
-        public static void OwnGunshot(AudioClip fire, Vector3 pos, float pitch) => Echo(fire, pos, pitch);
-
-        /// <summary>
-        /// One reflection: close walls give a quick slap-back, open ground a late, soft tail.
-        /// Throttled so automatic fire doesn't stack dozens of echoes.
-        /// </summary>
-        static void Echo(AudioClip fire, Vector3 pos, float pitch)
-        {
-            if (I == null || Time.time - lastEcho < 0.09f) return;
-            lastEcho = Time.time;
-            float sum = 0f; int hits = 0;
+            pos += Vector3.up * 0.3f;
+            float roof = Physics.Raycast(pos, Vector3.up, 9f, Layers.WorldMask, QueryTriggerInteraction.Ignore) ? 1f : 0f;
+            int close = 0;
             for (int i = 0; i < 6; i++)
             {
-                Vector3 d = Quaternion.Euler(0, i * 60f + Random.Range(-15f, 15f), 0) * Vector3.forward;
-                if (Physics.Raycast(pos + Vector3.up * 0.3f, d, out var hit, 40f, Layers.WorldMask, QueryTriggerInteraction.Ignore)) { sum += hit.distance; hits++; }
+                Vector3 d = Quaternion.Euler(0, i * 60f + 15f, 0) * Vector3.forward;
+                if (Physics.Raycast(pos, d, 7f, Layers.WorldMask, QueryTriggerInteraction.Ignore)) close++;
             }
-            float wall = hits > 0 ? sum / hits : 40f;
-            float delay = Mathf.Clamp(2f * wall / SpeedOfSound, 0.05f, 0.24f);
-            float vol = Mathf.Lerp(0.22f, 0.1f, Mathf.InverseLerp(5f, 35f, wall)) * Mathf.Lerp(0.6f, 1f, hits / 6f);
-            var tail = Bank != null && Bank.distantShot != null ? Bank.distantShot : fire;
-            PlayWorld(tail, pos, vol, pitch * 0.92f, 170f, false, true, delay, 1500f);
+            return Mathf.Clamp01(roof * 0.6f + close / 6f * 0.5f);
+        }
+
+        AudioSource ownTailOut, ownTailIn;
+        float duck;
+
+        AudioSource TailSource(string name)
+        {
+            var go = new GameObject(name);
+            go.transform.SetParent(transform, false);
+            var s = go.AddComponent<AudioSource>();
+            s.playOnAwake = false;
+            s.spatialBlend = 0f;
+            s.priority = 40;
+            return s;
+        }
+
+        /// <summary>
+        /// Your own shot: the close blast (2D, the loudest thing you hear) and the space answering it.
+        /// The tail restarts on every shot, so a burst rings out once when you let go, and the
+        /// ambience ducks under the shot the way your ears do.
+        /// </summary>
+        public static void OwnGunshot(WeaponDef d, Vector3 pos, float pitch)
+        {
+            if (d == null || I == null) return;
+            Play2D(d.fireSound, 1f, pitch);
+            if (I.ownTailOut == null) { I.ownTailOut = I.TailSource("ownTailOut"); I.ownTailIn = I.TailSource("ownTailIn"); }
+            float enc = Enclosure(pos);
+            Restart(I.ownTailOut, d.tailOutdoor, (1f - enc) * 0.75f, pitch);
+            Restart(I.ownTailIn, d.tailIndoor, enc * 0.85f, pitch);
+            I.duck = Mathf.Max(I.duck, d.pellets > 1 || d.fireMode == FireMode.Bolt ? 1f : 0.6f);
+        }
+
+        static void Restart(AudioSource s, AudioClip clip, float volume, float pitch)
+        {
+            if (clip == null || volume < 0.02f) return;
+            s.clip = clip;
+            s.pitch = pitch;
+            s.volume = volume * Settings.Data.sfx;
+            s.Play();
+        }
+
+        /// <summary>
+        /// Gunfire somebody else fired: the blast (speed-of-sound delayed, highs fading with distance,
+        /// muffled through walls), the space ringing around it, and a low rumble far away.
+        /// The farther the shooter, the more you hear the space and the less the blast.
+        /// </summary>
+        public static void Gunshot(WeaponDef d, Vector3 pos, float pitch)
+        {
+            if (d == null || d.fireSound == null || I == null) return;
+            float dist = Vector3.Distance(I.Ear, pos);
+            float far = Mathf.Clamp01((dist - 15f) / 70f);
+            PlayWorld(d.fireSound, pos, Mathf.Lerp(1f, 0.45f, far), pitch, 170f, true, true);
+            // one tail at a time across all remote guns: a firefight rings, it doesn't pile up voices
+            if (Time.time - lastRemoteTail > 0.11f)
+            {
+                lastRemoteTail = Time.time;
+                float enc = Enclosure(pos);
+                var tail = enc > 0.5f ? d.tailIndoor : d.tailOutdoor;
+                PlayWorld(tail, pos, Mathf.Lerp(0.6f, 0.95f, far), pitch, 220f, false, true, 0f, Mathf.Lerp(9000f, 2400f, far));
+            }
+            if (far > 0f && Bank != null && Bank.distantShot != null)
+                PlayWorld(Bank.distantShot, pos, far * 0.9f, pitch * Random.Range(0.94f, 1.04f), 260f, false, true);
+        }
+
+        /// <summary>A spent case bouncing off the ground a moment after it was ejected.</summary>
+        public static void Casing(Vector3 ejectPos, bool shotgunShell, bool own)
+        {
+            if (I == null || Bank == null) return;
+            Vector3 ground = Physics.Raycast(ejectPos, Vector3.down, out var hit, 4f, Layers.WorldMask, QueryTriggerInteraction.Ignore) ? hit.point : ejectPos + Vector3.down * 1.4f;
+            float fall = Mathf.Sqrt(2f * Mathf.Max(0.2f, ejectPos.y - ground.y + 0.4f) / 9.81f);
+            PlayWorld(Bank.Casing(), ground, own ? 0.35f : 0.3f, shotgunShell ? Random.Range(0.62f, 0.72f) : Random.Range(0.9f, 1.12f), own ? 10f : 14f,
+                !own, false, fall + 0.12f, shotgunShell ? 2600f : 22000f);
+        }
+
+        /// <summary>A bullet passing close: the supersonic crack, then the whiz.</summary>
+        public static void NearMiss(Vector3 pos)
+        {
+            if (I == null || Bank == null) return;
+            PlayWorld(Bank.Crack(), pos, 0.75f, Random.Range(0.92f, 1.1f), 25f, false);
+            PlayWorld(Bank.bulletWhiz, pos, 0.3f, Random.Range(0.9f, 1.15f), 20f, false);
+        }
+
+        /// <summary>Plays a 2D clip on its own voice and hands it back (e.g. to stop a reload when cancelled).</summary>
+        public static AudioSource Play2DTracked(AudioClip clip, float volume = 1f, float pitch = 1f)
+        {
+            if (clip == null || I == null) return null;
+            Play2D(clip, volume, pitch);
+            return I.pool[I.lastIndex];
         }
 
         public static void PlayUI(AudioClip clip, float volume = 1f) => Play2D(clip, volume, Random.Range(0.97f, 1.03f), true);
@@ -198,13 +263,18 @@ namespace Salvo
                 I.ambience.clip = clip;
                 if (clip != null) I.ambience.Play(); else I.ambience.Stop();
             }
-            I.ambience.volume = volume * Settings.Data.sfx;
+            I.ambienceBase = volume;
         }
+
+        float ambienceBase;
 
         void Update()
         {
-            float target = musicTarget * Settings.Data.music;
-            music.volume = Mathf.MoveTowards(music.volume, target, Time.unscaledDeltaTime * 0.5f);
+            // your own gunfire briefly drowns out the background (fast attack, slow release)
+            duck = Mathf.MoveTowards(duck, 0f, Time.unscaledDeltaTime * 1.6f);
+            float target = musicTarget * Settings.Data.music * (1f - duck * 0.5f);
+            music.volume = Mathf.MoveTowards(music.volume, target, Time.unscaledDeltaTime * (music.volume > target ? 4f : 0.5f));
+            ambience.volume = ambienceBase * Settings.Data.sfx * (1f - duck * 0.7f);
         }
     }
 }

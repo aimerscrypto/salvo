@@ -198,7 +198,8 @@ namespace Salvo
             if (!shooter.IsLocalHuman)
             {
                 MuzzleFlash(muzzle, def != null && def.pellets > 1 ? 0.55f : 0.4f);
-                AudioManager.Gunshot(def?.fireSound, muzzle, Random.Range(0.95f, 1.05f));
+                AudioManager.Gunshot(def, muzzle, Random.Range(0.95f, 1.05f));
+                RemoteCasing(muzzle, def);
             }
             PlayEnds(shot, muzzle, def);
         }
@@ -217,7 +218,8 @@ namespace Salvo
             }
             Vector3 muzzle = shooter.Visual != null ? shooter.Visual.MuzzlePosition : shot.origin;
             MuzzleFlash(muzzle, def.pellets > 1 ? 0.55f : 0.4f);
-            AudioManager.Gunshot(def.fireSound, muzzle, Random.Range(0.95f, 1.05f));
+            AudioManager.Gunshot(def, muzzle, Random.Range(0.95f, 1.05f));
+            RemoteCasing(muzzle, def);
             PlayEnds(shot, muzzle, def);
             // whiz when a shot passes close to the local player
             var me = Combatant.Local;
@@ -227,9 +229,18 @@ namespace Salvo
                 Vector3 p = me.EyePosition;
                 Vector3 ab = b - a;
                 float t = Mathf.Clamp01(Vector3.Dot(p - a, ab) / Mathf.Max(0.01f, ab.sqrMagnitude));
-                if ((a + ab * t - p).sqrMagnitude < 2.5f * 2.5f && t > 0.05f && t < 0.98f)
-                    AudioManager.Play3D(AudioManager.Bank?.bulletWhiz, a + ab * t, 0.6f, Random.Range(0.9f, 1.15f), 20f);
+                if ((a + ab * t - p).sqrMagnitude < 3f * 3f && t > 0.05f && t < 0.98f)
+                    AudioManager.NearMiss(a + ab * t);
             }
+        }
+
+        /// <summary>Other players' brass, heard only up close (semi / auto guns eject on every shot).</summary>
+        static void RemoteCasing(Vector3 muzzle, WeaponDef def)
+        {
+            if (def == null || def.fireMode == FireMode.Pump || def.fireMode == FireMode.Bolt || def.fireMode == FireMode.Melee) return;
+            var me = Combatant.Local;
+            if (me == null || (me.EyePosition - muzzle).sqrMagnitude > 12f * 12f || Random.value > 0.6f) return;
+            AudioManager.Casing(muzzle, false, false);
         }
 
         static Vector3 LocalMuzzle(Combatant c)

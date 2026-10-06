@@ -300,7 +300,9 @@ def scenery():
                                          G.box("fr", (w + 0.3, d + 0.3, 0.3), (0, 0, h + 0.15), "stone", bev=0.06)], nc=True)
             if i % 4 == 0:
                 prop(f"FarDome{side}_{i}", [G.sphere("d", min(w, d) * 0.3, (0, 0, h + 0.3), "aegean", segs=12, rings=8, scale=(1, 1, 0.85))], nc=True)
-        G = F.sub(side * 55, side * 5)
+        # far enough out that no part of it rises inside the playable area or over the inlets
+        # (players read it as walkable land and fell through into the water)
+        G = F.sub(side * 66, side * 5)
         prop(f"Hill{side}", [G.blob("h", 30, (0, 0, -6), "rock", subdiv=2, jitter=0.12, scale=(1.0, 1.6, 0.45)),
                              G.blob("h2", 22, (side * 8, 12, -2), "sand_dark", subdiv=2, jitter=0.12, scale=(1.0, 1.4, 0.5))], nc=True)
     # lighthouse islet + distant islands
