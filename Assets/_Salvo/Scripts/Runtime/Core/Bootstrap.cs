@@ -68,8 +68,30 @@ namespace Salvo
 #if DEVELOPMENT_BUILD
         float perfTimer; int perfFrames; float perfWorst; int lastGc;
         public static int FrameRebuilds, FrameBreaks, FrameShots;
+        // frame budget split: C# script time (what the scripting backend affects) vs GPU time
+        static readonly string[] scriptMarkers = { "BehaviourUpdate", "LateBehaviourUpdate", "FixedBehaviourUpdate", "CoroutinesDelayedCalls" };
+        Unity.Profiling.ProfilerRecorder[] scriptRec;
+        readonly FrameTiming[] timing = new FrameTiming[1];
+        double sumScripts, sumGpu; int timedFrames;
+        void OnEnable()
+        {
+            scriptRec = new Unity.Profiling.ProfilerRecorder[scriptMarkers.Length];
+            for (int i = 0; i < scriptMarkers.Length; i++) scriptRec[i] = Unity.Profiling.ProfilerRecorder.StartNew(Unity.Profiling.ProfilerCategory.Scripts, scriptMarkers[i]);
+        }
+        void OnDisable() { if (scriptRec != null) foreach (var r in scriptRec) r.Dispose(); }
+        void SampleBudget()
+        {
+            double scripts = 0;
+            for (int i = 0; i < scriptRec.Length; i++) if (scriptRec[i].Valid) scripts += scriptRec[i].LastValue * 1e-6;
+            FrameTimingManager.CaptureFrameTimings();
+            if (FrameTimingManager.GetLatestTimings(1, timing) == 0) return;
+            sumScripts += scripts;
+            sumGpu += timing[0].gpuFrameTime;
+            timedFrames++;
+        }
         void Update()
         {
+            SampleBudget();
             int gc = System.GC.CollectionCount(0);
             if (Time.unscaledDeltaTime > 0.03f && Time.frameCount > 300)
                 Debug.Log($"[SALVO/Hitch] {Time.unscaledDeltaTime * 1000f:0} ms rebuilds={FrameRebuilds} breaks={FrameBreaks} shots={FrameShots} gc={(gc != lastGc)}");
@@ -79,6 +101,9 @@ namespace Salvo
             if (perfTimer >= 10f)
             {
                 Debug.Log($"[SALVO/Perf] avg {perfFrames / perfTimer:0.0} fps, worst frame {perfWorst * 1000f:0} ms, combatants {Combatant.All.Count}, scene {UnityEngine.SceneManagement.SceneManager.GetActiveScene().name}");
+                if (timedFrames > 0)
+                    Debug.Log($"[SALVO/Budget] frame {1000f * perfTimer / perfFrames:0.00} ms | C# scripts {sumScripts / timedFrames:0.00} ms | GPU {sumGpu / timedFrames:0.00} ms");
+                sumScripts = sumGpu = 0; timedFrames = 0;
                 perfTimer = 0; perfFrames = 0; perfWorst = 0;
             }
         }

@@ -50,6 +50,7 @@ namespace Salvo.EditorTools
             PlayerSettings.bundleVersion = GameRules.Version;
             PlayerSettings.SetScriptingBackend(target, il2cpp ? ScriptingImplementation.IL2CPP : ScriptingImplementation.Mono2x);
             PlayerSettings.SetIl2CppCompilerConfiguration(target, Il2CppCompilerConfiguration.Release);
+            PlayerSettings.enableFrameTimingStats = !release; // dev builds log a CPU/GPU frame budget
             string dir = Path.GetFullPath(Path.Combine(Application.dataPath, "..", "Builds", release ? "Windows" : "Windows-Dev"));
             // the output folder only holds generated builds; start clean so switching Mono <-> IL2CPP works
             if (Directory.Exists(dir)) Directory.Delete(dir, true);
