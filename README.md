@@ -10,6 +10,10 @@ textures (numpy), and all audio (procedural synthesis). No third-party art or so
 ## Features
 
 - **Modes:** Free-for-All and Team Deathmatch, 5/8/12-minute matches, automatic match cycling.
+- **Maps:** *Outpost* (sun-baked desert outpost: container yard, market, raised plaza, rooftops,
+  jump pads) and *Harbor* (whitewashed Aegean fishing town: piers, moored boats, fish-market hall
+  with catwalk, domed chapels on terraces — and the sea is lethal). Pick one or let the server
+  rotate maps between matches.
 - **Multiplayer:** online sessions over **Unity Relay** (quick match, host, join with code),
   **LAN / direct IP**, and **offline practice** with bots. Drop-in/drop-out, bots fill empty slots.
 - **Movement:** quake-style ground accel/friction, air strafing, slide, slide-jump, coyote time,
@@ -78,6 +82,7 @@ Tools/
 "C:/Program Files/Blender Foundation/Blender 5.2/blender.exe" -b --factory-startup --python Tools/Blender/build_characters.py
 "C:/Program Files/Blender Foundation/Blender 5.2/blender.exe" -b --factory-startup --python Tools/Blender/build_props.py
 "C:/Program Files/Blender Foundation/Blender 5.2/blender.exe" -b --factory-startup --python Tools/Blender/build_map_outpost.py
+"C:/Program Files/Blender Foundation/Blender 5.2/blender.exe" -b --factory-startup --python Tools/Blender/build_map_harbor.py
 "C:/Program Files/Blender Foundation/Blender 5.2/blender.exe" -b --factory-startup --python Tools/Blender/render_icons.py
 python Tools/gen_textures.py
 python Tools/gen_audio.py
@@ -101,12 +106,13 @@ LAN/direct-IP play uses UDP port **7777** on the host. Offline practice needs no
 
 The player accepts command-line flags for automated tests:
 `-salvo-practice`, `-salvo-host` (LAN), `-salvo-join <ip[:port]>`, `-salvo-online-host`,
-`-salvo-code <CODE>`, `-salvo-name <name>`.
+`-salvo-code <CODE>`, `-salvo-name <name>` (session only), `-salvo-bots <n>`, `-salvo-map <Outpost|Harbor>`.
 
 ## Verified
 
-- Standalone release build: ~85–88 FPS average (worst frame ~17 ms) in a 6-combatant bot match
-  on an Intel Celeron 5205U + UHD Graphics (dev build measurement).
+- Performance on an Intel Celeron 5205U + UHD Graphics (dev build, 6-combatant bot match):
+  Outpost ~85–88 FPS, Harbor ~87–103 FPS steady, worst frames 15–21 ms after warm-up.
+  Fonts are pre-rasterized and shader variants pre-warmed at boot to avoid mid-fight hitches.
 - LAN: player-build host + Editor client — movement, hit claims, server damage, kills, kill feed,
   scoreboard and respawns replicate correctly.
 - Online: Editor hosts a Relay session, player build joins with the 6-letter code.
