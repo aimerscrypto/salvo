@@ -19,7 +19,8 @@ namespace Salvo
         {
             if (I != null) { Destroy(gameObject); return; }
             I = this;
-            DontDestroyOnLoad(gameObject);
+            // everything authored in the Boot scene (NetworkManager, volume, UI) is persistent
+            foreach (var go in gameObject.scene.GetRootGameObjects()) DontDestroyOnLoad(go);
             Application.runInBackground = true;
             QualitySettings.maxQueuedFrames = 1; // lower input latency
             Profile.Load();

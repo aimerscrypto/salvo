@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e4000f0f14ea8943a2b7cf3e3f1c0dd, type: 3}
+  m_Name: W01_Hornet
+  m_EditorClassIdentifier: Salvo.Runtime::Salvo.WeaponDef
+  id: 1
+  displayName: Hornet
+  description: Compact SMG with a blistering fire rate. Owns close quarters, sprays at range.
+  slot: 0
+  fireMode: 0
+  category: SMG
+  price: 1200
+  unlockLevel: 2
+  ownedByDefault: 0
+  damage: 17
+  headMultiplier: 1.5
+  limbMultiplier: 0.85
+  pellets: 1
+  falloffStart: 10
+  falloffEnd: 26
+  minDamageFactor: 0.55
+  range: 250
+  rpm: 880
+  magSize: 32
+  reserveAmmo: 160
+  reloadTime: 1.75
+  reloadPerShell: 0
+  equipTime: 0.35
+  moveSpeedMultiplier: 1
+  hipSpread: 2.2
+  adsSpread: 0.9
+  moveSpreadAdd: 0.8
+  airSpreadAdd: 2.5
+  spreadPerShot: 0.16
+  maxBloom: 2.4
+  bloomRecovery: 9
+  recoilPitch: 0.55
+  recoilYaw: 0.35
+  recoilRecovery: 12
+  kickBack: 0.03
+  kickRotation: 2.5
+  adsFov: 66
+  adsTime: 0.14
+  scoped: 0
+  adsSensitivity: 0.8
+  adsMoveMultiplier: 0.85
+  model: {fileID: 919132149155446097, guid: b640bffb9a5553d45bd6aff53504cfa8, type: 3}
+  hipPosition: {x: 0.12, y: -0.14, z: 0.22}
+  hipEuler: {x: 0, y: -2, z: 0}
+  sightDistance: 0.21
+  viewScale: 0.5
+  tracerColor: {r: 1, g: 0.9, b: 0.6, a: 1}
+  shakeOnFire: 0.05
+  icon: {fileID: 0}
+  fireSound: {fileID: 8300000, guid: 8e8312a1f080695408ee18682cce3e4a, type: 3}
+  reloadOut: {fileID: 8300000, guid: 61a12850f2df21446950b179d6b8cced, type: 3}
+  reloadIn: {fileID: 8300000, guid: e4052458fb9abd7488dec78f6e6c3321, type: 3}
+  actionSound: {fileID: 0}
+  equipSound: {fileID: 8300000, guid: 19d5f3f597b3c224d9fde57c4dfd462d, type: 3}

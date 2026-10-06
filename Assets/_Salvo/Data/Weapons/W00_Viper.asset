@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e4000f0f14ea8943a2b7cf3e3f1c0dd, type: 3}
+  m_Name: W00_Viper
+  m_EditorClassIdentifier: Salvo.Runtime::Salvo.WeaponDef
+  id: 0
+  displayName: Viper
+  description: Reliable semi-auto sidearm. Quick to draw, punishing in steady hands.
+  slot: 1
+  fireMode: 1
+  category: PISTOL
+  price: 0
+  unlockLevel: 1
+  ownedByDefault: 1
+  damage: 27
+  headMultiplier: 1.8
+  limbMultiplier: 0.85
+  pellets: 1
+  falloffStart: 15
+  falloffEnd: 38
+  minDamageFactor: 0.6
+  range: 250
+  rpm: 420
+  magSize: 12
+  reserveAmmo: 60
+  reloadTime: 1.35
+  reloadPerShell: 0
+  equipTime: 0.3
+  moveSpeedMultiplier: 1.04
+  hipSpread: 1.3
+  adsSpread: 0.25
+  moveSpreadAdd: 1
+  airSpreadAdd: 3
+  spreadPerShot: 0.55
+  maxBloom: 2.5
+  bloomRecovery: 6
+  recoilPitch: 1.5
+  recoilYaw: 0.4
+  recoilRecovery: 10
+  kickBack: 0.05
+  kickRotation: 6
+  adsFov: 68
+  adsTime: 0.13
+  scoped: 0
+  adsSensitivity: 0.8
+  adsMoveMultiplier: 0.85
+  model: {fileID: 919132149155446097, guid: 16919920bf8d39e49947ec029766e4b8, type: 3}
+  hipPosition: {x: 0.13, y: -0.15, z: 0.3}
+  hipEuler: {x: 0, y: -3, z: 0}
+  sightDistance: 0.34
+  viewScale: 0.5
+  tracerColor: {r: 1, g: 0.92, b: 0.65, a: 1}
+  shakeOnFire: 0.08
+  icon: {fileID: 0}
+  fireSound: {fileID: 8300000, guid: 1251cfbcc058bf943be1a9f032beb500, type: 3}
+  reloadOut: {fileID: 8300000, guid: 61a12850f2df21446950b179d6b8cced, type: 3}
+  reloadIn: {fileID: 8300000, guid: 7d571c1ff26a3c1479242c6c8edcf99f, type: 3}
+  actionSound: {fileID: 0}
+  equipSound: {fileID: 8300000, guid: 19d5f3f597b3c224d9fde57c4dfd462d, type: 3}

@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e4000f0f14ea8943a2b7cf3e3f1c0dd, type: 3}
+  m_Name: W04_Longbow
+  m_EditorClassIdentifier: Salvo.Runtime::Salvo.WeaponDef
+  id: 4
+  displayName: Longbow
+  description: Bolt-action sniper rifle. One clean headshot ends the argument.
+  slot: 0
+  fireMode: 3
+  category: SNIPER
+  price: 2500
+  unlockLevel: 5
+  ownedByDefault: 0
+  damage: 95
+  headMultiplier: 2.2
+  limbMultiplier: 0.8
+  pellets: 1
+  falloffStart: 200
+  falloffEnd: 300
+  minDamageFactor: 1
+  range: 400
+  rpm: 46
+  magSize: 5
+  reserveAmmo: 25
+  reloadTime: 2.6
+  reloadPerShell: 0
+  equipTime: 0.6
+  moveSpeedMultiplier: 0.9
+  hipSpread: 7
+  adsSpread: 0
+  moveSpreadAdd: 3
+  airSpreadAdd: 8
+  spreadPerShot: 0
+  maxBloom: 0
+  bloomRecovery: 7
+  recoilPitch: 5.5
+  recoilYaw: 0.8
+  recoilRecovery: 6
+  kickBack: 0.1
+  kickRotation: 10
+  adsFov: 22
+  adsTime: 0.24
+  scoped: 1
+  adsSensitivity: 0.75
+  adsMoveMultiplier: 0.6
+  model: {fileID: 919132149155446097, guid: 2bbb92838cca7a645bb65623fd50ad7b, type: 3}
+  hipPosition: {x: 0.12, y: -0.15, z: 0.17}
+  hipEuler: {x: 0, y: -2, z: 0}
+  sightDistance: 0.1
+  viewScale: 0.5
+  tracerColor: {r: 1, g: 0.95, b: 0.8, a: 1}
+  shakeOnFire: 0.3
+  icon: {fileID: 0}
+  fireSound: {fileID: 8300000, guid: ff18184a190dba5489ecebbb4be74b5e, type: 3}
+  reloadOut: {fileID: 8300000, guid: 61a12850f2df21446950b179d6b8cced, type: 3}
+  reloadIn: {fileID: 8300000, guid: e4052458fb9abd7488dec78f6e6c3321, type: 3}
+  actionSound: {fileID: 8300000, guid: d91c9d4fdad90ac4eb2c40c8cfaf6b36, type: 3}
+  equipSound: {fileID: 8300000, guid: 19d5f3f597b3c224d9fde57c4dfd462d, type: 3}

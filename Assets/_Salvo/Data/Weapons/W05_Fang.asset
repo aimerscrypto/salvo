@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e4000f0f14ea8943a2b7cf3e3f1c0dd, type: 3}
+  m_Name: W05_Fang
+  m_EditorClassIdentifier: Salvo.Runtime::Salvo.WeaponDef
+  id: 5
+  displayName: Fang
+  description: Combat knife. Fast slashes; strike from behind for an instant takedown.
+  slot: 2
+  fireMode: 4
+  category: MELEE
+  price: 0
+  unlockLevel: 1
+  ownedByDefault: 1
+  damage: 55
+  headMultiplier: 1
+  limbMultiplier: 1
+  pellets: 1
+  falloffStart: 20
+  falloffEnd: 50
+  minDamageFactor: 0.6
+  range: 2.3
+  rpm: 110
+  magSize: 1
+  reserveAmmo: 0
+  reloadTime: 2
+  reloadPerShell: 0
+  equipTime: 0.25
+  moveSpeedMultiplier: 1.08
+  hipSpread: 0
+  adsSpread: 0
+  moveSpreadAdd: 1.5
+  airSpreadAdd: 4
+  spreadPerShot: 0.35
+  maxBloom: 3
+  bloomRecovery: 7
+  recoilPitch: 1
+  recoilYaw: 0.35
+  recoilRecovery: 9
+  kickBack: 0.04
+  kickRotation: 5
+  adsFov: 55
+  adsTime: 0.16
+  scoped: 0
+  adsSensitivity: 0.8
+  adsMoveMultiplier: 0.75
+  model: {fileID: 919132149155446097, guid: 9ca5dd61d97ac1d418e58c5b2e4cc333, type: 3}
+  hipPosition: {x: 0.15, y: -0.17, z: 0.25}
+  hipEuler: {x: -10, y: -20, z: 10}
+  sightDistance: 0.3
+  viewScale: 0.5
+  tracerColor: {r: 1, g: 0.9, b: 0.6, a: 1}
+  shakeOnFire: 0.15
+  icon: {fileID: 0}
+  fireSound: {fileID: 0}
+  reloadOut: {fileID: 0}
+  reloadIn: {fileID: 0}
+  actionSound: {fileID: 0}
+  equipSound: {fileID: 8300000, guid: 19d5f3f597b3c224d9fde57c4dfd462d, type: 3}

@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f3ca6e172764704e93f9fabbabc3872, type: 3}
+  m_Name: S03_Arctic
+  m_EditorClassIdentifier: Salvo.Runtime::Salvo.SkinDef
+  id: 3
+  displayName: Arctic
+  rarity: 1
+  price: 600
+  unlockLevel: 3
+  baseColor: {r: 0.9019608, g: 0.91764706, b: 0.92941177, a: 1}
+  patternColor: {r: 0.6039216, g: 0.654902, b: 0.69803923, a: 1}
+  patternStrength: 0.65
+  patternScale: 5
+  grain: 0.12
+  highlight: 0.15

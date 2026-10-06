@@ -1,0 +1,335 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="Salvo.uss" />
+    <ui:VisualElement name="root" class="root" picking-mode="Ignore">
+
+        <!-- ============================================================ HUD -->
+        <ui:VisualElement name="hud" class="screen" picking-mode="Ignore">
+            <ui:VisualElement name="scope" class="scope hidden" picking-mode="Ignore" />
+            <ui:VisualElement name="nameplates" class="fill" picking-mode="Ignore" />
+            <ui:VisualElement name="hit-numbers" class="fill" picking-mode="Ignore" />
+            <ui:VisualElement name="dmg-layer" class="dmg-indicator" picking-mode="Ignore" />
+            <ui:VisualElement name="crosshair" class="crosshair" picking-mode="Ignore">
+                <ui:VisualElement name="ch-top" class="cross-line" picking-mode="Ignore" />
+                <ui:VisualElement name="ch-bottom" class="cross-line" picking-mode="Ignore" />
+                <ui:VisualElement name="ch-left" class="cross-line" picking-mode="Ignore" />
+                <ui:VisualElement name="ch-right" class="cross-line" picking-mode="Ignore" />
+                <ui:VisualElement name="ch-dot" class="cross-dot" picking-mode="Ignore" />
+            </ui:VisualElement>
+            <ui:VisualElement name="hitmarker" class="hitmarker" picking-mode="Ignore">
+                <ui:VisualElement class="hit-line" style="rotate: 45deg; translate: 7px -19px;" picking-mode="Ignore" />
+                <ui:VisualElement class="hit-line" style="rotate: -45deg; translate: -10px -19px;" picking-mode="Ignore" />
+                <ui:VisualElement class="hit-line" style="rotate: -45deg; translate: 7px 7px;" picking-mode="Ignore" />
+                <ui:VisualElement class="hit-line" style="rotate: 45deg; translate: -10px 7px;" picking-mode="Ignore" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="top-center" picking-mode="Ignore">
+                <ui:VisualElement class="score-strip" picking-mode="Ignore">
+                    <ui:Label name="score-red" text="0" class="score-team red" picking-mode="Ignore" />
+                    <ui:Label name="timer" text="8:00" class="timer" picking-mode="Ignore" />
+                    <ui:Label name="score-blue" text="0" class="score-team blue" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:Label name="ffa-info" text="FIRST TO 25" class="ffa-info" picking-mode="Ignore" />
+            </ui:VisualElement>
+            <ui:VisualElement name="killfeed" class="killfeed" picking-mode="Ignore" />
+            <ui:Label name="code-chip" text="CODE" class="code-chip hidden" picking-mode="Ignore" />
+            <ui:Label name="fps" text="" class="fps hidden" picking-mode="Ignore" />
+
+            <ui:VisualElement name="kill-banner" class="kill-banner" picking-mode="Ignore">
+                <ui:Label name="streak" text="" class="streak" picking-mode="Ignore" />
+                <ui:Label name="kill-banner-text" text="" class="kill-banner-text" picking-mode="Ignore" />
+                <ui:Label name="kill-banner-sub" text="" class="kill-banner-sub" picking-mode="Ignore" />
+            </ui:VisualElement>
+            <ui:VisualElement class="center-hint" picking-mode="Ignore">
+                <ui:Label name="hint" text="" class="hint hidden" picking-mode="Ignore" />
+                <ui:VisualElement name="reload-bar" class="reload-bar hidden" picking-mode="Ignore">
+                    <ui:VisualElement name="reload-fill" class="reload-fill" picking-mode="Ignore" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <ui:VisualElement class="hud-bottom-left" picking-mode="Ignore">
+                <ui:VisualElement class="health-box" picking-mode="Ignore">
+                    <ui:Label name="spawn-shield" text="SPAWN SHIELD" class="spawn-shield hidden" picking-mode="Ignore" />
+                    <ui:VisualElement class="row" picking-mode="Ignore">
+                        <ui:Label name="health-num" text="100" class="health-num" picking-mode="Ignore" />
+                        <ui:Label text="HP" class="label" style="margin-left: 6px; margin-top: 10px;" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="health-bar" picking-mode="Ignore">
+                        <ui:VisualElement name="health-ghost" class="health-ghost" picking-mode="Ignore" />
+                        <ui:VisualElement name="health-fill" class="health-fill" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <ui:VisualElement class="hud-bottom-right" picking-mode="Ignore">
+                <ui:VisualElement name="slots" class="slots" picking-mode="Ignore">
+                    <ui:Label name="slot-0" text="1 PRIMARY" class="slot" picking-mode="Ignore" />
+                    <ui:Label name="slot-1" text="2 PISTOL" class="slot" picking-mode="Ignore" />
+                    <ui:Label name="slot-2" text="3 KNIFE" class="slot" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:VisualElement class="ammo-box" picking-mode="Ignore">
+                    <ui:Label name="weapon-name" text="RANGER" class="weapon-name" picking-mode="Ignore" />
+                    <ui:VisualElement class="row" style="align-items: flex-end;" picking-mode="Ignore">
+                        <ui:Label name="ammo-mag" text="30" class="ammo-mag" picking-mode="Ignore" />
+                        <ui:Label name="ammo-res" text="/ 120" class="ammo-res" picking-mode="Ignore" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <ui:VisualElement name="respawn" class="respawn hidden" picking-mode="Ignore">
+                <ui:Label name="respawn-title" text="ELIMINATED" class="title-m" picking-mode="Ignore" />
+                <ui:Label name="respawn-killer" text="by Someone" class="respawn-killer" picking-mode="Ignore" />
+                <ui:Label name="respawn-timer" text="3" class="respawn-timer" picking-mode="Ignore" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- ============================================================ SCOREBOARD -->
+        <ui:VisualElement name="scoreboard" class="screen center" picking-mode="Ignore">
+            <ui:VisualElement class="panel board" picking-mode="Ignore">
+                <ui:VisualElement class="header-band" picking-mode="Ignore">
+                    <ui:Label name="sb-title" text="FREE FOR ALL" class="title-m grow" picking-mode="Ignore" />
+                    <ui:Label name="sb-sub" text="OUTPOST" class="label" picking-mode="Ignore" />
+                </ui:VisualElement>
+                <ui:VisualElement class="sb-head" picking-mode="Ignore">
+                    <ui:Label text="#" class="sb-rank" /><ui:Label text="PLAYER" class="sb-name" /><ui:Label text="K" class="sb-cell" /><ui:Label text="D" class="sb-cell" /><ui:Label text="A" class="sb-cell" /><ui:Label text="SCORE" class="sb-cell" /><ui:Label text="PING" class="sb-cell" />
+                </ui:VisualElement>
+                <ui:VisualElement name="sb-list" picking-mode="Ignore" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- ============================================================ MAIN MENU -->
+        <ui:VisualElement name="main-menu" class="screen">
+            <ui:VisualElement class="menu-left">
+                <ui:Label text="SALVO" class="title-xl" />
+                <ui:Label text="ARENA SHOOTER" class="logo-sub" />
+                <ui:Button name="btn-play" text="PLAY" class="menu-btn primary" />
+                <ui:Button name="btn-loadout" text="LOADOUT" class="menu-btn" />
+                <ui:Button name="btn-shop" text="SHOP" class="menu-btn" />
+                <ui:Button name="btn-profile" text="PROFILE" class="menu-btn" />
+                <ui:Button name="btn-settings" text="SETTINGS" class="menu-btn" />
+                <ui:Button name="btn-quit" text="QUIT" class="menu-btn" />
+            </ui:VisualElement>
+            <ui:VisualElement class="topbar">
+                <ui:VisualElement class="chip">
+                    <ui:Label name="level-badge" text="1" class="chip-badge" />
+                    <ui:VisualElement>
+                        <ui:Label name="player-name" text="Recruit" class="title-s" />
+                        <ui:VisualElement class="xpbar"><ui:VisualElement name="xp-fill" class="xpfill" /></ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement class="chip">
+                    <ui:VisualElement class="coin-dot" />
+                    <ui:Label name="coins" text="0" class="title-s" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement class="bottom-right">
+                <ui:Button name="btn-daily" text="CLAIM DAILY REWARD" class="btn teal small" />
+                <ui:Label name="version" text="v1.0.0" class="version" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- ============================================================ PLAY -->
+        <ui:VisualElement name="play" class="screen page scrim">
+            <ui:VisualElement class="header-band">
+                <ui:Label text="PLAY" class="title-l" />
+                <ui:Button name="btn-play-back" text="BACK" class="btn secondary" />
+            </ui:VisualElement>
+            <ui:VisualElement class="page-body">
+                <ui:VisualElement class="panel" style="width: 560px; margin-right: 24px;">
+                    <ui:Label text="MATCH SETTINGS" class="section-title" />
+                    <ui:VisualElement name="play-options" />
+                </ui:VisualElement>
+                <ui:VisualElement class="grow">
+                    <ui:VisualElement class="row">
+                        <ui:VisualElement class="card grow" name="card-quick">
+                            <ui:Label text="QUICK MATCH" class="card-title" />
+                            <ui:Label text="Jump into the first open online match - or start one others can join." class="card-sub" style="white-space: normal;" />
+                            <ui:Button name="btn-quick" text="FIND MATCH" class="btn" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="card grow">
+                            <ui:Label text="HOST ONLINE" class="card-title" />
+                            <ui:Label text="Create a match with your settings and share the code with friends." class="card-sub" style="white-space: normal;" />
+                            <ui:Button name="btn-host" text="CREATE MATCH" class="btn teal" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement class="row">
+                        <ui:VisualElement class="card grow">
+                            <ui:Label text="JOIN WITH CODE" class="card-title" />
+                            <ui:VisualElement class="row">
+                                <ui:TextField name="join-code" max-length="8" class="textfield" style="width: 200px;" />
+                                <ui:Button name="btn-join" text="JOIN" class="btn small" style="margin-left: 10px;" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                        <ui:VisualElement class="card grow">
+                            <ui:Label text="PRACTICE" class="card-title" />
+                            <ui:Label text="Offline against bots. No connection needed." class="card-sub" style="white-space: normal;" />
+                            <ui:Button name="btn-practice" text="START" class="btn coral" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement class="card">
+                        <ui:Label text="LAN / DIRECT CONNECT" class="card-title" />
+                        <ui:VisualElement class="row">
+                            <ui:Button name="btn-lan-host" text="HOST LAN" class="btn secondary small" />
+                            <ui:TextField name="lan-address" value="127.0.0.1" class="textfield" style="width: 240px; margin-left: 14px;" />
+                            <ui:Button name="btn-lan-join" text="CONNECT" class="btn secondary small" style="margin-left: 10px;" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- ============================================================ LOADOUT -->
+        <ui:VisualElement name="loadout" class="screen page">
+            <ui:VisualElement class="header-band">
+                <ui:Label text="LOADOUT" class="title-l" />
+                <ui:Button name="btn-loadout-back" text="BACK" class="btn secondary" />
+            </ui:VisualElement>
+            <ui:VisualElement class="page-body">
+                <ui:ScrollView class="panel" style="width: 520px;">
+                    <ui:Label text="PRIMARY" class="section-title" />
+                    <ui:VisualElement name="primary-list" />
+                    <ui:Label text="SECONDARY" class="section-title" />
+                    <ui:VisualElement name="secondary-list" />
+                </ui:ScrollView>
+                <ui:VisualElement class="grow" />
+                <ui:ScrollView class="panel" style="width: 470px;">
+                    <ui:Label name="lo-weapon-name" text="RANGER" class="title-m" />
+                    <ui:Label name="lo-weapon-desc" text="" class="card-sub" style="white-space: normal; margin-bottom: 10px;" />
+                    <ui:VisualElement name="lo-stats" />
+                    <ui:Label text="FINISH" class="section-title" />
+                    <ui:VisualElement name="skin-list" class="row" style="flex-wrap: wrap;" />
+                    <ui:Label name="skin-name" text="" class="card-sub" style="margin-left: 6px;" />
+                    <ui:Label text="SQUAD COLOR (FREE FOR ALL)" class="section-title" />
+                    <ui:VisualElement name="color-list" class="row" style="flex-wrap: wrap;" />
+                </ui:ScrollView>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- ============================================================ SHOP -->
+        <ui:VisualElement name="shop" class="screen page scrim">
+            <ui:VisualElement class="header-band">
+                <ui:Label text="SHOP" class="title-l" />
+                <ui:VisualElement class="chip" style="margin-right: 16px;">
+                    <ui:VisualElement class="coin-dot" />
+                    <ui:Label name="shop-coins" text="0" class="title-s" />
+                </ui:VisualElement>
+                <ui:Button name="btn-shop-back" text="BACK" class="btn secondary" />
+            </ui:VisualElement>
+            <ui:VisualElement class="tabs">
+                <ui:Button name="tab-weapons" text="WEAPONS" class="tab active" />
+                <ui:Button name="tab-skins" text="FINISHES" class="tab" />
+            </ui:VisualElement>
+            <ui:ScrollView name="shop-scroll" class="grow">
+                <ui:VisualElement name="shop-grid" class="row" style="flex-wrap: wrap; align-items: flex-start;" />
+            </ui:ScrollView>
+        </ui:VisualElement>
+
+        <!-- ============================================================ PROFILE -->
+        <ui:VisualElement name="profile" class="screen page scrim">
+            <ui:VisualElement class="header-band">
+                <ui:Label text="PROFILE" class="title-l" />
+                <ui:Button name="btn-profile-back" text="BACK" class="btn secondary" />
+            </ui:VisualElement>
+            <ui:VisualElement class="page-body">
+                <ui:VisualElement class="panel" style="width: 520px; margin-right: 24px;">
+                    <ui:Label text="CALLSIGN" class="section-title" />
+                    <ui:VisualElement class="row">
+                        <ui:TextField name="name-field" max-length="16" class="textfield" />
+                        <ui:Button name="btn-save-name" text="SAVE" class="btn small" style="margin-left: 10px;" />
+                    </ui:VisualElement>
+                    <ui:Label text="RANK" class="section-title" />
+                    <ui:VisualElement class="row">
+                        <ui:Label name="pf-level" text="1" class="chip-badge" style="width: 64px; height: 64px; border-radius: 32px; font-size: 34px;" />
+                        <ui:VisualElement class="grow">
+                            <ui:Label name="pf-xp" text="0 / 900 XP" class="title-s" />
+                            <ui:VisualElement class="xpbar" style="width: 100%; height: 14px;"><ui:VisualElement name="pf-xp-fill" class="xpfill" /></ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement class="panel grow">
+                    <ui:Label text="CAREER" class="section-title" />
+                    <ui:VisualElement name="stats-grid" class="row" style="flex-wrap: wrap;" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- ============================================================ SETTINGS -->
+        <ui:VisualElement name="settings" class="screen page scrim">
+            <ui:VisualElement class="header-band">
+                <ui:Label text="SETTINGS" class="title-l" />
+                <ui:Button name="btn-settings-reset" text="RESET" class="btn secondary small" style="margin-right: 12px;" />
+                <ui:Button name="btn-settings-back" text="BACK" class="btn secondary" />
+            </ui:VisualElement>
+            <ui:VisualElement class="tabs">
+                <ui:Button name="tab-graphics" text="GRAPHICS" class="tab active" />
+                <ui:Button name="tab-controls" text="CONTROLS" class="tab" />
+                <ui:Button name="tab-gameplay" text="GAMEPLAY" class="tab" />
+                <ui:Button name="tab-audio" text="AUDIO" class="tab" />
+            </ui:VisualElement>
+            <ui:ScrollView class="panel grow" style="max-width: 1000px;">
+                <ui:VisualElement name="settings-content" />
+            </ui:ScrollView>
+        </ui:VisualElement>
+
+        <!-- ============================================================ PAUSE -->
+        <ui:VisualElement name="pause" class="screen center scrim">
+            <ui:VisualElement class="panel" style="width: 460px; align-items: stretch;">
+                <ui:Label text="PAUSED" class="title-l" style="-unity-text-align: middle-center; margin-bottom: 8px;" />
+                <ui:Label name="pause-code" text="" class="label" style="-unity-text-align: middle-center; margin-bottom: 12px;" />
+                <ui:Button name="btn-resume" text="RESUME" class="btn" />
+                <ui:Button name="btn-pause-loadout" text="LOADOUT" class="btn secondary" />
+                <ui:Button name="btn-pause-settings" text="SETTINGS" class="btn secondary" />
+                <ui:Button name="btn-leave" text="LEAVE MATCH" class="btn coral" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- ============================================================ MATCH END -->
+        <ui:VisualElement name="match-end" class="screen page scrim">
+            <ui:VisualElement class="col center" style="margin-bottom: 14px;">
+                <ui:Label name="end-title" text="VICTORY" class="end-title" />
+                <ui:Label name="end-sub" text="" class="title-s muted" />
+            </ui:VisualElement>
+            <ui:VisualElement class="page-body">
+                <ui:VisualElement class="panel grow" style="margin-right: 24px;">
+                    <ui:Label text="SCOREBOARD" class="section-title" />
+                    <ui:VisualElement name="end-board" />
+                </ui:VisualElement>
+                <ui:VisualElement class="panel" style="width: 460px;">
+                    <ui:Label text="REWARDS" class="section-title" />
+                    <ui:VisualElement name="end-rewards" />
+                    <ui:VisualElement class="row" style="margin-top: 16px; justify-content: space-between;">
+                        <ui:Label name="end-total-xp" text="+0 XP" class="title-s" style="color: rgb(54,168,156);" />
+                        <ui:Label name="end-total-coins" text="+0" class="title-s" style="color: rgb(242,179,61);" />
+                    </ui:VisualElement>
+                    <ui:Label name="end-level" text="LEVEL 1" class="title-s" style="margin-top: 14px;" />
+                    <ui:VisualElement class="xpbar" style="width: 100%; height: 14px;"><ui:VisualElement name="end-xp-fill" class="xpfill" /></ui:VisualElement>
+                    <ui:Label name="end-levelup" text="" class="levelup" />
+                    <ui:VisualElement class="grow" />
+                    <ui:Label name="end-next" text="NEXT MATCH IN 10" class="label" style="-unity-text-align: middle-center; margin: 10px;" />
+                    <ui:Button name="btn-end-leave" text="LEAVE" class="btn secondary" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- ============================================================ CONNECTING / MODAL / TOASTS -->
+        <ui:VisualElement name="connecting" class="screen center scrim">
+            <ui:VisualElement class="panel modal">
+                <ui:VisualElement name="spinner" class="spinner" />
+                <ui:Label name="connect-status" text="Connecting..." class="modal-body" />
+                <ui:Button name="btn-connect-cancel" text="CANCEL" class="btn secondary" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement name="modal" class="screen center scrim">
+            <ui:VisualElement class="panel modal">
+                <ui:Label name="modal-title" text="NOTICE" class="title-m" />
+                <ui:Label name="modal-body" text="" class="modal-body" />
+                <ui:VisualElement class="row">
+                    <ui:Button name="modal-cancel" text="CANCEL" class="btn secondary" style="margin-right: 12px;" />
+                    <ui:Button name="modal-ok" text="OK" class="btn" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement name="toast-layer" class="toast-layer" picking-mode="Ignore" />
+    </ui:VisualElement>
+</ui:UXML>

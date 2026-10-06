@@ -1,0 +1,104 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 422c4f3e6fe15b64a96c18b9dae6d3f1, type: 3}
+  m_Name: SalvoConfig
+  m_EditorClassIdentifier: Salvo.Runtime::Salvo.GameConfig
+  weapons:
+  - {fileID: 11400000, guid: 58c7bed3dda593541b716a86fe0d9d40, type: 2}
+  - {fileID: 11400000, guid: d834430a2f5a7f84e900f55b355b9cce, type: 2}
+  - {fileID: 11400000, guid: 60901f0700a644549a9c2bb5045eafdf, type: 2}
+  - {fileID: 11400000, guid: 68757d407c8039f4fa63779f16cc1e2a, type: 2}
+  - {fileID: 11400000, guid: d503fa02716a8a74880f34a72edd4e5d, type: 2}
+  - {fileID: 11400000, guid: e0b1ff812b253ad4d989673aac942f1c, type: 2}
+  skins:
+  - {fileID: 11400000, guid: ee682fe258303454497a4b9adec27052, type: 2}
+  - {fileID: 11400000, guid: b32414805f01aae44b0d02f651492cf2, type: 2}
+  - {fileID: 11400000, guid: a5c316c2f4d5f2a4dbda23ad7d0632ff, type: 2}
+  - {fileID: 11400000, guid: e0bd542be8ef25d46bfa0763d37175de, type: 2}
+  - {fileID: 11400000, guid: b6707d58540f0be4ea5e9d564620187e, type: 2}
+  - {fileID: 11400000, guid: 9dbaa6e3af8d91b47b023cb544ad7ef8, type: 2}
+  - {fileID: 11400000, guid: df5950a3efec10d4db4ed915b34e27da, type: 2}
+  - {fileID: 11400000, guid: a3b39663a80efd340808ccc6cda46c4f, type: 2}
+  - {fileID: 11400000, guid: a821957d3005a7343be6ee66d5d6f5fc, type: 2}
+  - {fileID: 11400000, guid: 496d42cce994dd34e982743a75ee4e54, type: 2}
+  - {fileID: 11400000, guid: 044e54a5aa082cb488995b130a3be29f, type: 2}
+  maps:
+  - sceneName: Outpost
+    displayName: Outpost
+    blurb: Sun-baked desert outpost. Containers west, market east, plaza in the middle.
+  combatantPrefab: {fileID: 4007441227666334914, guid: ea8355714f36de8489de816771e2c3d7, type: 3}
+  trooperModel: {fileID: 919132149155446097, guid: 5973ab564b04b834196ca7eb95dfbbba, type: 3}
+  fpArmsModel: {fileID: 919132149155446097, guid: 1e14b3f2dba62ef43a782723233dcf05, type: 3}
+  worldMaterial: {fileID: 2100000, guid: 71d4a02ae6d1d9b49889d9c27024a47f, type: 2}
+  characterMaterial: {fileID: 2100000, guid: 68c621084b5dc22499fba5ac3e86571b, type: 2}
+  weaponMaterial: {fileID: 2100000, guid: e753471a42e69cf4da820c581de87e55, type: 2}
+  skinTemplate: {fileID: 2100000, guid: 6db5d00cceecbf548a1f2d5274f7922f, type: 2}
+  glassMaterial: {fileID: 2100000, guid: 8cd508b6e23f952468ead67f0ebb7631, type: 2}
+  teamRed: {fileID: 2100000, guid: 7e7e63888a85fed40aaaa7176d27c56b, type: 2}
+  teamBlue: {fileID: 2100000, guid: 5550a36025df8e44195521f53785712e, type: 2}
+  fxAlpha: {fileID: 2100000, guid: ccd75ffb286cb9540bd55b5f9a287ad9, type: 2}
+  fxDecal: {fileID: 2100000, guid: 24e4f2849031c9d43ae98544cb0b9ec2, type: 2}
+  fxTracer: {fileID: 2100000, guid: 433d0e8ed67009e42a65ff6793944aa6, type: 2}
+  fxFlash: {fileID: 2100000, guid: f2d2f110506a61049bd0bc434af0929a, type: 2}
+  puffTexture: {fileID: 2800000, guid: 01b86f7ef8579944e90475eb01cb9293, type: 3}
+  sparkTexture: {fileID: 2800000, guid: 85c3556f4379dc748afc0498db3a6ed3, type: 3}
+  playerColors:
+  - {r: 0.9098039, g: 0.4509804, b: 0.3529412, a: 1}
+  - {r: 0.21176471, g: 0.65882355, b: 0.6117647, a: 1}
+  - {r: 0.9490196, g: 0.7019608, b: 0.23921569, a: 1}
+  - {r: 0.2901961, g: 0.56078434, b: 0.8392157, a: 1}
+  - {r: 0.60784316, g: 0.43529412, b: 0.8392157, a: 1}
+  - {r: 0.43529412, g: 0.7490196, b: 0.3529412, a: 1}
+  - {r: 0.9490196, g: 0.54509807, b: 0.69803923, a: 1}
+  - {r: 0.9411765, g: 0.5411765, b: 0.23529412, a: 1}
+  - {r: 0.36078432, g: 0.78431374, b: 0.8509804, a: 1}
+  - {r: 0.8392157, g: 0.27058825, b: 0.22745098, a: 1}
+  - {r: 0.72156864, g: 0.8392157, b: 0.2901961, a: 1}
+  - {r: 0.9137255, g: 0.89411765, b: 0.84705883, a: 1}
+  rendererData: {fileID: 11400000, guid: f288ae1f4751b564a96ac7587541f7a2, type: 2}
+  panelSettings: {fileID: 11400000, guid: 4923ae5748fcaea4c86c25e9891805ac, type: 2}
+  uiLayout: {fileID: 9197481963319205126, guid: 23233c690986e894ab5c9015f12779d1, type: 3}
+  uiStyle: {fileID: 7433441132597879392, guid: 7b8bff8794c3bc2408950f14f789a29b, type: 3}
+  scopeOverlay: {fileID: 2800000, guid: 78fbfcbdd6e689448bdca1ae4a4d8576, type: 3}
+  logo: {fileID: 0}
+  sounds: {fileID: 11400000, guid: 5c42664a9dc828c4c9a9c3439923d1db, type: 2}
+  botNames:
+  - Viper
+  - Mako
+  - Dune
+  - Ghost
+  - Rook
+  - Nova
+  - Tango
+  - Bishop
+  - Saber
+  - Jinx
+  - Kestrel
+  - Onyx
+  - Pixel
+  - Rocco
+  - Hex
+  - Blitz
+  - Mirage
+  - Cobalt
+  - Sly
+  - Bandit
+  - Echo
+  - Flint
+  - Gecko
+  - Havoc
+  - Lynx
+  - Moxie
+  - Noodle
+  - Pepper
+  - Quill
+  - Rascal

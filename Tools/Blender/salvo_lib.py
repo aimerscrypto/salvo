@@ -161,6 +161,8 @@ def box(name, size, loc=(0, 0, 0), color="sand", rot=(0, 0, 0), bev=0.02, segs=2
     bmesh.ops.scale(bm, vec=Vector(size), verts=bm.verts)
     ob = _from_bm(name, bm, color)
     _place(ob, loc, rot)
+    if min(size) < 0.2:
+        segs = 1  # small parts: one bevel segment reads the same and halves the triangles
     bevel(ob, min(bev, min(size) * 0.45), segs)
     return ob
 
@@ -352,11 +354,13 @@ def palette_to_vcolor(ob):
     for n in names:
         base = n.split(".")[0]
         idx_map.append(keep.index(base) if base in SPECIAL_SLOTS else 0)
-    for p in me.polygons:
-        p.material_index = idx_map[p.material_index] if idx_map else 0
+    new_idx = [idx_map[p.material_index] if idx_map else 0 for p in me.polygons]
     me.materials.clear()
     for k in keep:
         me.materials.append(get_mat(k))
+    # assign after rebuilding slots: materials.clear() resets every face to slot 0
+    me.polygons.foreach_set("material_index", new_idx)
+    me.update()
     return ob
 
 

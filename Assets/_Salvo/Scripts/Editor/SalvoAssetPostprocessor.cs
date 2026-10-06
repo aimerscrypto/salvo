@@ -28,7 +28,14 @@ namespace Salvo.EditorTools
             mi.importBlendShapes = false;
             mi.importAnimation = false;
             mi.animationType = ModelImporterAnimationType.None;
-            mi.materialImportMode = ModelImporterMaterialImportMode.None;
+            // Blender slots -> shared SALVO materials (one material for most of the world)
+            mi.materialImportMode = ModelImporterMaterialImportMode.ImportStandard;
+            mi.materialLocation = ModelImporterMaterialLocation.InPrefab;
+            string main = assetPath.Contains("/Weapons/") ? "M_Weapon" : assetPath.Contains("/Map/") ? "M_World" : "M_Character";
+            Remap(mi, "Salvo_Main", main);
+            Remap(mi, "TEAM", "M_TeamRed");
+            Remap(mi, "SKIN", "M_SkinTemplate");
+            Remap(mi, "GLASS", "M_Glass");
             mi.importNormals = ModelImporterNormals.Import;
             mi.importTangents = ModelImporterTangents.None;
             mi.weldVertices = true;
@@ -41,6 +48,15 @@ namespace Salvo.EditorTools
             mi.addCollider = false;
             // Map geometry is read by NavMesh baking and MeshColliders at edit time only; keep it non-readable for runtime memory.
             mi.isReadable = assetPath.Contains("/Map/");
+        }
+
+        public const string MaterialRoot = "Assets/_Salvo/Art/Materials/";
+
+        static void Remap(ModelImporter mi, string slot, string material)
+        {
+            var mat = AssetDatabase.LoadAssetAtPath<Material>(MaterialRoot + material + ".mat");
+            var id = new AssetImporter.SourceAssetIdentifier(typeof(Material), slot);
+            if (mat != null) mi.AddRemap(id, mat);
         }
 
         void OnPreprocessTexture()
