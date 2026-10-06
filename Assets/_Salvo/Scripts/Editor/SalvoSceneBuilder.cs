@@ -92,6 +92,7 @@ namespace Salvo.EditorTools
             cam.clearFlags = CameraClearFlags.SolidColor;
             cam.backgroundColor = new Color(0.07f, 0.09f, 0.13f);
             cam.cullingMask = 0;
+            camGo.AddComponent<AudioListener>();
             var data = camGo.AddComponent<UniversalAdditionalCameraData>();
             data.renderPostProcessing = false;
             data.renderShadows = false;

@@ -57,6 +57,20 @@ namespace Salvo
             }
         }
 
+#if DEVELOPMENT_BUILD
+        float perfTimer; int perfFrames; float perfWorst;
+        void Update()
+        {
+            perfTimer += Time.unscaledDeltaTime; perfFrames++;
+            perfWorst = Mathf.Max(perfWorst, Time.unscaledDeltaTime);
+            if (perfTimer >= 10f)
+            {
+                Debug.Log($"[SALVO/Perf] avg {perfFrames / perfTimer:0.0} fps, worst frame {perfWorst * 1000f:0} ms, combatants {Combatant.All.Count}, scene {UnityEngine.SceneManagement.SceneManager.GetActiveScene().name}");
+                perfTimer = 0; perfFrames = 0; perfWorst = 0;
+            }
+        }
+#endif
+
         void OnApplicationQuit()
         {
             Profile.Save();
