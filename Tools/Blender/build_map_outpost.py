@@ -378,14 +378,25 @@ def arch_gate(F, name, x, y, w, h, depth, rz=0.0, color="sand", trim="terracotta
              G.box("r", (side_w, depth, h), (opening / 2 + side_w / 2, 0, h / 2), color, bev=0.05, dense=1.6),
              G.box("top", (opening + 0.02, depth, h - open_h), (0, 0, open_h + (h - open_h) / 2), color, bev=0.05),
              G.box("cap", (w + 0.2, depth + 0.25, 0.22), (0, 0, h + 0.11), trim, bev=0.05)]
-    # arch curve: stepped voussoirs under the lintel
-    for i in range(7):
-        a = math.pi * (i + 0.5) / 7
-        px = math.cos(a) * opening / 2 * 0.98
-        pz = open_h - 0.75 + math.sin(a) * 0.75
-        parts.append(G.box("vous", (0.5, depth + 0.06, 0.32), (px, 0, pz + 0.12), trim, rot=(0, math.degrees(a) - 90, 0), bev=0.03))
+    # segmental arch: voussoirs on a large-radius arc so the clear height stays high
+    half = opening / 2
+    Rr = half * 1.45
+    sag = Rr - math.sqrt(Rr * Rr - half * half)
+    cz = open_h - Rr
+    amax = math.degrees(math.asin(half / Rr))
+    n = 9
+    for i in range(n):
+        a = -amax + (2 * amax) * (i + 0.5) / n
+        px = Rr * math.sin(math.radians(a))
+        pz = cz + Rr * math.cos(math.radians(a))
+        seg = 2 * Rr * math.sin(math.radians(amax / n)) + 0.04
+        parts.append(G.box("vous", (seg, depth + 0.08, 0.34), (px, 0, pz + 0.05), trim, rot=(0, a, 0), bev=0.03))
+        # spandrel fill above each stone up to the lintel
+        fill_h = open_h - (pz + 0.2)
+        if fill_h > 0.02:
+            parts.append(G.box("span", (seg, depth, fill_h), (px, 0, pz + 0.2 + fill_h / 2), color, bev=0.0))
     for sx in (-1, 1):
-        parts.append(G.box("pier", (0.45, depth + 0.12, open_h - 0.75), (sx * (opening / 2 + 0.2), 0, (open_h - 0.75) / 2), trim, bev=0.04))
+        parts.append(G.box("pier", (0.42, depth + 0.12, open_h - sag), (sx * (half + 0.18), 0, (open_h - sag) / 2), trim, bev=0.04))
     return prop(name, parts)
 
 
@@ -498,6 +509,11 @@ def build_half(F, accent, cloth, spawn_team):
     barrel(F, "ContBarrel1", -24.0, 5.2, 0, accent)
     barrel(F, "ContBarrel2", -24.7, 5.6, 0, "dark", tipped=True)
     sandbags(F, "ContBags", -15.0, 15.5, 2.4, 3, 90)
+    crate(F, "LaneCrate1", -12.6, 10.4, 0, 1.2, 20)
+    crate(F, "LaneCrate2", -11.6, 11.4, 0, 1.0, -12)
+    barrel(F, "LaneBarrel1", -14.6, 3.2, 0, "teal")
+    sandbags(F, "LaneBags", -10.8, 19.6, 2.8, 3, 0)
+    low_wall(F, "LaneWall", -17.5, 23.6, 3.0, 0)
     pad(F, "west", -21.4, 3.0, 180, 12.0, 9.0)   # launches north onto Cont4 roof
     F.marker("PK_HEALTH_cont", (-20.0, 15.6, 0.1))
     F.marker("PK_AMMO_yard", (-9.0, 31.0, 0.1))

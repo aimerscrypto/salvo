@@ -49,6 +49,8 @@ namespace Salvo
                     case "-salvo-host": autoStarted = true; GameFlow.StartLocal(new MatchSettings { fillWithBots = 4 }, true); break;
                     case "-salvo-practice": autoStarted = true; GameFlow.StartLocal(new MatchSettings { fillWithBots = 6, offline = true }, false); break;
                     case "-salvo-join" when i + 1 < args.Length: autoStarted = true; GameFlow.JoinDirect(args[i + 1]); break;
+                    case "-salvo-code" when i + 1 < args.Length: autoStarted = true; GameFlow.JoinCode(args[i + 1]); break;
+                    case "-salvo-online-host": autoStarted = true; GameFlow.HostOnline(new MatchSettings { fillWithBots = 4 }); break;
                 }
             }
         }

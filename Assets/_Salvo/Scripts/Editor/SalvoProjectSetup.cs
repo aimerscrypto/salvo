@@ -73,6 +73,9 @@ namespace Salvo.EditorTools
             Physics.defaultSolverVelocityIterations = 1;
             Physics.queriesHitTriggers = false;
             Physics.queriesHitBackfaces = false;
+            // static registries/events rely on a fresh domain each play session
+            EditorSettings.enterPlayModeOptionsEnabled = false;
+            EditorPrefs.SetInt("ScriptCompilationDuringPlay", 1);
             Time.fixedDeltaTime = 1f / 50f;
             Time.maximumDeltaTime = 0.1f;
             log.AppendLine("physics matrix + time");
