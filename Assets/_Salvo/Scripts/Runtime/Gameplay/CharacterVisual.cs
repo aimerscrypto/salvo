@@ -231,8 +231,8 @@ namespace Salvo
                 lastStep = step;
                 if (!c.IsLocalHuman && !airborne && hs > 2.5f && !c.Motor.Crouching)
                 {
-                    var fs = AudioManager.Bank != null ? AudioManager.Bank.footsteps : null;
-                    if (fs != null && fs.Length > 0) AudioManager.Play3D(fs[Random.Range(0, fs.Length)], transform.position, 0.55f, Random.Range(0.9f, 1.1f), 28f);
+                    var bank = AudioManager.Bank;
+                    if (bank != null) AudioManager.PlayWorld(bank.Step(Surfaces.Under(transform.position)), transform.position, hs > GameRules.RunSpeed * 0.8f ? 0.7f : 0.5f, Random.Range(0.92f, 1.08f), 32f);
                 }
             }
             float amp = Mathf.Lerp(0f, 38f, run) * (1f - airT);

@@ -62,6 +62,17 @@ namespace Salvo.EditorTools
 
         static Color Hex(string h) { ColorUtility.TryParseHtmlString("#" + h, out var c); return c; }
         static Texture2D T(string name) => AssetDatabase.LoadAssetAtPath<Texture2D>(Tex + name + ".png");
+        /// <summary>All clips in Audio/Surfaces whose file name starts with prefix + "_", sorted by name.</summary>
+        static AudioClip[] Set(string prefix)
+        {
+            return AssetDatabase.FindAssets(prefix + "_ t:AudioClip", new[] { Audio + "Surfaces" })
+                .Select(AssetDatabase.GUIDToAssetPath)
+                .Where(p => Path.GetFileNameWithoutExtension(p).StartsWith(prefix + "_"))
+                .OrderBy(p => p)
+                .Select(AssetDatabase.LoadAssetAtPath<AudioClip>)
+                .ToArray();
+        }
+
         static AudioClip A(string path) => AssetDatabase.LoadAssetAtPath<AudioClip>(Audio + path + ".wav");
 
         // ------------------------------------------------------------------ materials
@@ -169,6 +180,10 @@ namespace Salvo.EditorTools
             b.uiReward = A("UI/Reward"); b.levelUp = A("UI/LevelUp"); b.countdown = A("UI/Countdown"); b.matchStart = A("UI/MatchStart");
             b.victory = A("UI/Victory"); b.defeat = A("UI/Defeat");
             b.menuMusic = A("Music/MenuTheme"); b.ambience = A("Ambience/Desert_Wind");
+            // per-surface sets: every Audio/Surfaces/<Kind>_<Surface>_*.wav (drop recorded files in with these names)
+            b.stepsSand = Set("Step_Sand"); b.stepsStone = Set("Step_Stone"); b.stepsWood = Set("Step_Wood"); b.stepsMetal = Set("Step_Metal");
+            b.impactsSand = Set("Impact_Sand"); b.impactsStone = Set("Impact_Stone"); b.impactsWood = Set("Impact_Wood"); b.impactsMetal = Set("Impact_Metal");
+            b.distantShot = A("Surfaces/Distant_Shot");
             EditorUtility.SetDirty(b);
             log.AppendLine("sound bank");
             return b;

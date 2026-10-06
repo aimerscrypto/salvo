@@ -303,7 +303,51 @@ def ambience():
     save_loop("Desert_Wind", amb, "Ambience", xfade=2.0)
 
 
+# ----------------------------------------------------------------------------- surfaces
+# Placeholders with the naming the game loads: Audio/Surfaces/<Kind>_<Surface>_<n>.wav
+# (Step_Sand_0..., Impact_Metal_0...). Recorded sounds dropped in with the same names replace them.
+def surfaces():
+    for i in range(5):
+        v = 1 + 0.08 * (i - 2)
+        # sand: soft heel thud + grainy crunch, no ring
+        sand = mix(sweep(95 * v, 45, 0.1) * env_exp(0.1, 0.02) * 0.6,
+                   at(bp(noise(0.2), 1200 * v, 7000) * env_exp(0.2, 0.045, 0.01) * 0.8, 0.01),
+                   at(hp(noise(0.12), 4000) * env_exp(0.12, 0.02, 0.01) * 0.25, 0.03))
+        save(f"Step_Sand_{i}", sand, 0.55, sub="Surfaces")
+        # stone / paving: hard short heel click over a dull thud
+        stone = mix(sweep(140 * v, 60, 0.08) * env_exp(0.08, 0.015) * 0.7,
+                    bp(noise(0.05), 1800 * v, 6500) * env_exp(0.05, 0.006) * 1.1,
+                    at(bp(noise(0.06), 2200, 7000) * env_exp(0.06, 0.008) * 0.5, 0.045))
+        save(f"Step_Stone_{i}", stone, 0.6, sub="Surfaces")
+        # wood: hollow knock with a low body resonance
+        knock = sum(a * np.sin(2 * np.pi * f * v * t(0.22)) for f, a in ((165, 1.0), (330, 0.35), (510, 0.2))) * env_exp(0.22, 0.05)
+        wood = mix(knock * 0.8, bp(noise(0.08), 700, 3500) * env_exp(0.08, 0.012) * 0.7)
+        save(f"Step_Wood_{i}", wood, 0.6, sub="Surfaces")
+        # metal (container roofs, catwalk): dull boom of a sheet plus a short clank
+        sheet = sum(a * np.sin(2 * np.pi * f * v * t(0.45)) for f, a in ((92, 1.0), (231, 0.5), (377, 0.35), (611, 0.25))) * env_exp(0.45, 0.12)
+        metal = mix(sheet * 0.7, metal_click(1300 * v, 0.12, 0.02) * 0.6, bp(noise(0.05), 900, 4000) * env_exp(0.05, 0.01) * 0.5)
+        save(f"Step_Metal_{i}", metal, 0.6, sub="Surfaces")
+    for i in range(3):
+        v = 1 + 0.1 * (i - 1)
+        save(f"Impact_Sand_{i}", mix(lp(noise(0.25), 1800 * v) * env_exp(0.25, 0.04), hp(noise(0.3), 3000) * env_exp(0.3, 0.08, 0.01) * 0.4), 0.55, sub="Surfaces")
+        save(f"Impact_Stone_{i}", mix(hp(noise(0.05), 3500) * env_exp(0.05, 0.004) * 1.2, lp(noise(0.25), 2400 * v) * env_exp(0.25, 0.03),
+                                       at(bp(noise(0.4), 2500, 8000) * env_exp(0.4, 0.09, 0.02) * 0.25, 0.02)), 0.6, sub="Surfaces")
+        save(f"Impact_Wood_{i}", mix(sum(a * np.sin(2 * np.pi * f * v * t(0.18)) for f, a in ((240, 1), (520, 0.4))) * env_exp(0.18, 0.03),
+                                      bp(noise(0.08), 900, 5000) * env_exp(0.08, 0.01)), 0.6, sub="Surfaces")
+        save(f"Impact_Metal_{i}", mix(bell(1250 * v, 0.6, 0.12, ((1, 1), (2.32, 0.6), (3.9, 0.35), (5.1, 0.2))) * 0.8,
+                                       hp(noise(0.04), 3000) * env_exp(0.04, 0.004)), 0.6, sub="Surfaces")
+    # distant gunfire: what's left of a shot after a few hundred metres - a low boom and a rolling tail
+    boom = lp(noise(1.6), 420) * env_exp(1.6, 0.12, 0.004)
+    roll = lp(noise(1.6), 260) * env_exp(1.6, 0.55, 0.06) * 0.6
+    save("Distant_Shot", echo(mix(boom, at(roll, 0.03)), 0.23, 0.45, n=3, lowpass=500), 0.8, sub="Surfaces")
+
+
 if __name__ == "__main__":
+    import sys
+    if "--surfaces" in sys.argv:
+        surfaces()
+        raise SystemExit
+    surfaces()
     weapons()
     player()
     ui()

@@ -6,7 +6,6 @@ namespace Salvo
     public class LocalFeedback : MonoBehaviour
     {
         Combatant c;
-        int stepIndex;
 
         public void Bind(Combatant combatant)
         {
@@ -15,14 +14,16 @@ namespace Salvo
             var bank = AudioManager.Bank;
             m.Footstep += () =>
             {
-                if (bank == null || bank.footsteps == null || bank.footsteps.Length == 0) return;
-                stepIndex = (stepIndex + 1 + Random.Range(0, bank.footsteps.Length - 1)) % bank.footsteps.Length;
-                AudioManager.Play2D(bank.footsteps[stepIndex], c.Motor.Crouching ? 0.25f : 0.5f, Random.Range(0.92f, 1.08f));
+                if (bank == null) return;
+                AudioManager.Play2D(bank.Step(Surfaces.Under(c.transform.position)), c.Motor.Crouching ? 0.22f : 0.45f, Random.Range(0.92f, 1.08f));
             };
             m.Jumped += () => AudioManager.Play2D(bank?.jump, 0.45f, Random.Range(0.95f, 1.05f));
             m.Landed += speed =>
             {
-                AudioManager.Play2D(bank?.land, Mathf.Clamp01(speed / 14f) * 0.8f + 0.2f, Random.Range(0.9f, 1.05f));
+                float k = Mathf.Clamp01(speed / 14f);
+                AudioManager.Play2D(bank?.land, k * 0.8f + 0.2f, Random.Range(0.9f, 1.05f));
+                // the surface you land on: sand puff, wood thump, metal clang
+                if (bank != null) AudioManager.Play2D(bank.Step(Surfaces.Under(c.transform.position)), k * 0.5f + 0.35f, Random.Range(0.85f, 0.95f));
                 GameCamera.I?.LandImpact(speed);
             };
             m.SlideStarted += () => AudioManager.Play2D(bank?.slide, 0.6f);

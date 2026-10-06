@@ -178,7 +178,9 @@ namespace Salvo
             float k = Mathf.Lerp(1f, 0.45f, ads);
             kickPos.Kick(new Vector3(Random.Range(-0.15f, 0.15f) * d.kickBack, d.kickBack * 0.4f, -d.kickBack * 10f) * k);
             kickRot.Kick(new Vector3(-d.kickRotation * 12f, Random.Range(-1f, 1f) * d.kickRotation * 3f, Random.Range(-1f, 1f) * d.kickRotation * 4f) * k);
-            AudioManager.Play2D(d.fireSound, 0.9f, Random.Range(0.96f, 1.04f));
+            float shotPitch = Random.Range(0.96f, 1.04f);
+            AudioManager.Play2D(d.fireSound, 0.9f, shotPitch);
+            AudioManager.OwnGunshot(d.fireSound, c.EyePosition, shotPitch);
             if (cur != null && cur.flash != null)
             {
                 cur.flash.enabled = true;

@@ -198,7 +198,7 @@ namespace Salvo
             if (!shooter.IsLocalHuman)
             {
                 MuzzleFlash(muzzle, def != null && def.pellets > 1 ? 0.55f : 0.4f);
-                AudioManager.Play3D(def?.fireSound, muzzle, 1f, Random.Range(0.95f, 1.05f), 90f);
+                AudioManager.Gunshot(def?.fireSound, muzzle, Random.Range(0.95f, 1.05f));
             }
             PlayEnds(shot, muzzle, def);
         }
@@ -217,7 +217,7 @@ namespace Salvo
             }
             Vector3 muzzle = shooter.Visual != null ? shooter.Visual.MuzzlePosition : shot.origin;
             MuzzleFlash(muzzle, def.pellets > 1 ? 0.55f : 0.4f);
-            AudioManager.Play3D(def.fireSound, muzzle, 1f, Random.Range(0.95f, 1.05f), 90f);
+            AudioManager.Gunshot(def.fireSound, muzzle, Random.Range(0.95f, 1.05f));
             PlayEnds(shot, muzzle, def);
             // whiz when a shot passes close to the local player
             var me = Combatant.Local;
@@ -250,7 +250,8 @@ namespace Salvo
                 {
                     case 0:
                         Impact(end, shot.normals[i]);
-                        if (i == 0) AudioManager.Play3D(AudioManager.Bank?.bulletImpact, end, 0.45f, Random.Range(0.85f, 1.15f), 25f);
+                        if (i == 0 && AudioManager.Bank != null)
+                            AudioManager.PlayWorld(AudioManager.Bank.Impact(Surfaces.At(end, shot.normals[i])), end, 0.5f, Random.Range(0.9f, 1.1f), 30f);
                         break;
                     case 1:
                         CharacterHit(end, (end - shot.origin).normalized, new Color(1f, 0.85f, 0.4f), false);
