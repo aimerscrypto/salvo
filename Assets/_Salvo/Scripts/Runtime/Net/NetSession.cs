@@ -42,7 +42,7 @@ namespace Salvo
             return new ConnectionPayload
             {
                 version = GameRules.NetVersion,
-                name = d.playerName,
+                name = string.IsNullOrEmpty(NetSession.NameOverride) ? d.playerName : NetSession.NameOverride,
                 primary = d.primary,
                 secondary = d.secondary,
                 primarySkin = Profile.EquippedSkin(d.primary),
@@ -61,6 +61,8 @@ namespace Salvo
     /// </summary>
     public static class NetSession
     {
+        /// <summary>Session-only display name (command line testing); never written to the profile.</summary>
+        public static string NameOverride;
         public static MatchSettings Settings = new MatchSettings();
         public static ISession Session { get; private set; }
         public static string JoinCode => Session?.Code;

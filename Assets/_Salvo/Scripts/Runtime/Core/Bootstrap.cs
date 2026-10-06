@@ -47,7 +47,7 @@ namespace Salvo
             {
                 switch (args[i])
                 {
-                    case "-salvo-name" when i + 1 < args.Length: Profile.Data.playerName = NetSession.SanitizeName(args[i + 1]); break;
+                    case "-salvo-name" when i + 1 < args.Length: NetSession.NameOverride = NetSession.SanitizeName(args[i + 1]); break;
                     case "-salvo-host": autoStarted = true; GameFlow.StartLocal(new MatchSettings { fillWithBots = bots }, true); break;
                     case "-salvo-practice": autoStarted = true; GameFlow.StartLocal(new MatchSettings { fillWithBots = 6, offline = true }, false); break;
                     case "-salvo-join" when i + 1 < args.Length: autoStarted = true; GameFlow.JoinDirect(args[i + 1]); break;

@@ -36,7 +36,7 @@ namespace Salvo
             var s = new MatchSummary
             {
                 kills = e.kills, deaths = e.deaths, assists = e.assists, headshots = e.headshots,
-                placement = mm.IsTeamMode ? (won ? 1 : 2) : mm.PlacementOf(me.NetworkObjectId),
+                placement = mm.IsTeamMode ? (won ? 1 : 0) : mm.PlacementOf(me.NetworkObjectId),
                 playerCount = mm.Scores.Count, won = completed && won, completed = completed,
                 shotsFired = me.Weapons.ShotsFired, shotsHit = me.Weapons.ShotsHit,
                 bestStreak = e.streak, seconds = Time.time - roundStart
