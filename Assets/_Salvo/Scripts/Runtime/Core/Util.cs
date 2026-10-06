@@ -11,11 +11,18 @@ namespace Salvo
 
         public void Step(Vector3 target, float frequency, float damping, float dt)
         {
-            // semi-implicit damped spring, stable for large dt
+            // semi-implicit damped spring, sub-stepped so frame hitches can't make it explode
             float w = frequency * 2f * Mathf.PI;
-            Vector3 f = (target - Value) * (w * w) - Velocity * (2f * damping * w);
-            Velocity += f * dt;
-            Value += Velocity * dt;
+            dt = Mathf.Min(dt, 0.1f);
+            while (dt > 0f)
+            {
+                float h = Mathf.Min(dt, 0.008f);
+                Vector3 f = (target - Value) * (w * w) - Velocity * (2f * damping * w);
+                Velocity += f * h;
+                Value += Velocity * h;
+                dt -= h;
+            }
+            if (!float.IsFinite(Value.x + Value.y + Value.z + Velocity.x + Velocity.y + Velocity.z)) { Value = target; Velocity = Vector3.zero; }
         }
 
         public void Kick(Vector3 impulse) => Velocity += impulse;
@@ -29,9 +36,16 @@ namespace Salvo
         public void Step(float target, float frequency, float damping, float dt)
         {
             float w = frequency * 2f * Mathf.PI;
-            float f = (target - Value) * (w * w) - Velocity * (2f * damping * w);
-            Velocity += f * dt;
-            Value += Velocity * dt;
+            dt = Mathf.Min(dt, 0.1f);
+            while (dt > 0f)
+            {
+                float h = Mathf.Min(dt, 0.008f);
+                float f = (target - Value) * (w * w) - Velocity * (2f * damping * w);
+                Velocity += f * h;
+                Value += Velocity * h;
+                dt -= h;
+            }
+            if (!float.IsFinite(Value + Velocity)) { Value = target; Velocity = 0f; }
         }
     }
 

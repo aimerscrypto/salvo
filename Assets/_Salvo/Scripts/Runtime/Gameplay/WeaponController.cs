@@ -94,12 +94,13 @@ namespace Salvo
         readonly System.Random rng = new System.Random();
         readonly RaycastHit[] hitBuffer = new RaycastHit[16];
         readonly List<HitClaim> claimScratch = new List<HitClaim>();
-        float serverLastShot;
+        float serverLastShot, serverBudget = 3f;
         public int ShotsFired, ShotsHit;
 
         public static readonly int MeleeWeaponId = 5;
         /// <summary>Automation/test hook: hold ADS on the local player.</summary>
         public static bool DebugForceAim;
+        public static bool DebugForceFire;
 
         public void OnSpawned(Combatant combatant)
         {
@@ -215,6 +216,7 @@ namespace Salvo
             // fire
             bool wants = d.fireMode == FireMode.Auto ? In.fireHeld : In.firePressed;
             if (meleeQueued && d.fireMode == FireMode.Melee) wants = true;
+            if (DebugForceFire && c.IsLocalHuman) wants = true;
             if (wants && Time.time >= nextFire && Time.time >= equipEnd)
             {
                 if (d.fireMode == FireMode.Melee) { meleeQueued = false; DoMelee(d); }
@@ -420,9 +422,13 @@ namespace Salvo
             if (!trusted)
             {
                 // rate limit (generous to absorb jitter)
-                if (Time.time - serverLastShot < d.FireInterval * 0.55f) return;
-                if ((shot.origin - c.EyePosition).sqrMagnitude > 3.0f * 3.0f) return;
-                if (shot.claims != null && shot.claims.Length > Mathf.Max(1, d.pellets)) return;
+                // token bucket: tolerates network batching/jitter, still caps sustained rate at ~115%
+                float rate = 1f / d.FireInterval;
+                serverBudget = Mathf.Min(3f, serverBudget + (Time.time - serverLastShot) * rate * 1.15f);
+                if (serverBudget < 1f) { Reject("rate"); return; }
+                serverBudget -= 1f;
+                if ((shot.origin - c.EyePosition).sqrMagnitude > 3.0f * 3.0f) { Reject($"origin {Vector3.Distance(shot.origin, c.EyePosition):0.0}m"); return; }
+                if (shot.claims != null && shot.claims.Length > Mathf.Max(1, d.pellets)) { Reject("claims"); return; }
             }
             serverLastShot = Time.time;
 
@@ -437,9 +443,9 @@ namespace Salvo
                     if (!trusted)
                     {
                         // claimed point must be near where the server believes the target is
-                        if ((cl.point - target.CenterMass).sqrMagnitude > 4.5f * 4.5f) continue;
+                        if ((cl.point - target.CenterMass).sqrMagnitude > 4.5f * 4.5f) { Reject($"target offset {Vector3.Distance(cl.point, target.CenterMass):0.0}m (claim {cl.point:F1}, server target {target.transform.position:F1}, shooter {c.transform.position:F1})"); continue; }
                         // and must not be behind solid world geometry
-                        if (Physics.Linecast(shot.origin, cl.point, Layers.WorldMask, QueryTriggerInteraction.Ignore)) continue;
+                        if (Physics.Linecast(shot.origin, cl.point, out var block, Layers.WorldMask, QueryTriggerInteraction.Ignore)) { Reject("los " + block.collider.name); continue; }
                     }
                     var zone = (HitZone)cl.zone;
                     float dmg;
@@ -458,6 +464,16 @@ namespace Salvo
             // replicate visuals
             if (c.IsBot) ShotFxRpc(shot, RpcTarget.Everyone);
             else ShotFxRpc(shot, RpcTarget.NotOwner);
+        }
+
+        float lastRejectLog;
+
+        [System.Diagnostics.Conditional("UNITY_EDITOR"), System.Diagnostics.Conditional("DEVELOPMENT_BUILD")]
+        void Reject(string why)
+        {
+            if (Time.time - lastRejectLog < 0.5f) return;
+            lastRejectLog = Time.time;
+            Debug.Log($"[SALVO/Server] rejected shot from {c.Name}: {why}");
         }
 
         [Rpc(SendTo.SpecifiedInParams)]

@@ -57,3 +57,5 @@ desktop.ini
 __pycache__/
 *.pyc
 /Assets/Temp*
+/Assets/Resources/PerformanceTestRun*
+/Assets/Resources.meta

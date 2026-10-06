@@ -41,16 +41,18 @@ namespace Salvo
         void ParseCommandLine()
         {
             var args = System.Environment.GetCommandLineArgs();
+            int bots = 4;
+            for (int i = 0; i < args.Length - 1; i++) if (args[i] == "-salvo-bots") int.TryParse(args[i + 1], out bots);
             for (int i = 0; i < args.Length; i++)
             {
                 switch (args[i])
                 {
                     case "-salvo-name" when i + 1 < args.Length: Profile.Data.playerName = NetSession.SanitizeName(args[i + 1]); break;
-                    case "-salvo-host": autoStarted = true; GameFlow.StartLocal(new MatchSettings { fillWithBots = 4 }, true); break;
+                    case "-salvo-host": autoStarted = true; GameFlow.StartLocal(new MatchSettings { fillWithBots = bots }, true); break;
                     case "-salvo-practice": autoStarted = true; GameFlow.StartLocal(new MatchSettings { fillWithBots = 6, offline = true }, false); break;
                     case "-salvo-join" when i + 1 < args.Length: autoStarted = true; GameFlow.JoinDirect(args[i + 1]); break;
                     case "-salvo-code" when i + 1 < args.Length: autoStarted = true; GameFlow.JoinCode(args[i + 1]); break;
-                    case "-salvo-online-host": autoStarted = true; GameFlow.HostOnline(new MatchSettings { fillWithBots = 4 }); break;
+                    case "-salvo-online-host": autoStarted = true; GameFlow.HostOnline(new MatchSettings { fillWithBots = bots }); break;
                 }
             }
         }
@@ -81,7 +83,7 @@ namespace Salvo
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
             var op = SceneManager.LoadSceneAsync(MenuMap, LoadSceneMode.Single);
-            op.completed += _ => EnteredMenu?.Invoke();
+            if (op != null) op.completed += _ => EnteredMenu?.Invoke();
         }
 
         public static Task LoadTransition()
