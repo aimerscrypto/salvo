@@ -41,6 +41,8 @@ namespace Salvo
         public readonly NetworkVariable<bool> FrozenNV = new NetworkVariable<bool>();
         public readonly NetworkVariable<LoadoutData> Loadout = new NetworkVariable<LoadoutData>();
         public readonly NetworkVariable<double> SpawnTime = new NetworkVariable<double>();
+        /// <summary>On the join weapon picker: can't be hurt, bots ignore you, fresh spawn shield on deploy.</summary>
+        public readonly NetworkVariable<bool> Picking = new NetworkVariable<bool>();
         // owner-written presentation state
         public readonly NetworkVariable<byte> Slot = new NetworkVariable<byte>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
         public readonly NetworkVariable<short> AimPitch = new NetworkVariable<short>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
@@ -75,7 +77,7 @@ namespace Salvo
         public Vector3 EyePosition => transform.position + Vector3.up * Motor.EyeHeight;
         public Vector3 CenterMass => transform.position + Vector3.up * (Motor.Crouching ? 0.75f : 1.1f);
         public Color TeamColor => GameConfig.TeamColor(Team, ColorNV.Value);
-        public bool SpawnProtected => NetworkManager != null && NetworkManager.ServerTime.Time - SpawnTime.Value < GameRules.SpawnProtection;
+        public bool SpawnProtected => Picking.Value || NetworkManager != null && NetworkManager.ServerTime.Time - SpawnTime.Value < GameRules.SpawnProtection;
 
         // server-only bookkeeping
         struct DamageRecord { public ulong attacker; public float amount; public float time; }
@@ -144,6 +146,18 @@ namespace Salvo
             if (Local == this) Local = null;
         }
 
+        /// <summary>
+        /// The weapon picker shown on joining swaps the guns at once (the player hasn't played yet).
+        /// Sent with the loadout itself so peers never rebuild from a stale network variable.
+        /// </summary>
+        [Rpc(SendTo.Everyone)]
+        public void SwapLoadoutRpc(LoadoutData l)
+        {
+            Weapons.OnRespawned(l);
+            Visual?.Rebuild();
+            if (IsOwner && !IsBot) GetComponent<ViewModel>()?.Build();
+        }
+
         void OnAliveChanged(bool prev, bool now)
         {
             if (!now) AnyDied?.Invoke(this);
@@ -193,6 +207,7 @@ namespace Salvo
             Health.Value = GameRules.MaxHealth;
             AliveNV.Value = true;
             FrozenNV.Value = false;
+            Picking.Value = false;
             SpawnTime.Value = NetworkManager.ServerTime.Time;
             damageLog.Clear();
             RespawnRpc(pos, yaw);

@@ -116,6 +116,8 @@ namespace Salvo
                 // hard = one 1024 cascade (~3 ms cheaper on integrated GPUs), soft = two 2048 cascades
                 urp.shadowCascadeCount = d.shadows >= 2 ? 2 : 1;
                 urp.mainLightShadowmapResolution = d.shadows >= 2 ? 2048 : 1024;
+                // the grade runs in the Salvo shaders (ShaderGrade), so no HDR target / post pass is needed
+                urp.supportsHDR = false;
             }
             ApplySun();
             QualitySettings.vSyncCount = d.vsync ? 1 : 0;
@@ -174,7 +176,7 @@ namespace Salvo
                 if (GraphicsSettings.currentRenderPipeline is UniversalRenderPipelineAsset urp)
                 {
                     urp.renderScale = 1f; urp.msaaSampleCount = 2; urp.shadowDistance = 55f;
-                    urp.shadowCascadeCount = 2; urp.mainLightShadowmapResolution = 2048; urp.upscalingFilter = UpscalingFilterSelection.Auto;
+                    urp.shadowCascadeCount = 2; urp.mainLightShadowmapResolution = 2048; urp.upscalingFilter = UpscalingFilterSelection.Auto; urp.supportsHDR = true;
                 }
             };
         }

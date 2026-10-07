@@ -61,8 +61,13 @@ weapon handling, footsteps and impacts are CC0 field recordings from Freesound
 ## Performance
 
 Built and tuned on an Intel Celeron + UHD integrated GPU:
-- One sun light, no additional-light loop; forward renderer; 32-bit HDR. Hard shadows use a single
-  1024 cascade, soft shadows two 2048 cascades (the biggest GPU cost on integrated graphics).
+- One sun light, no additional-light loop; forward renderer, LDR. Hard shadows use a single
+  1024 cascade, soft shadows two 2048 cascades.
+- **No post-processing pass.** The color grade (exposure, white balance, contrast, lift/gamma/gain,
+  saturation, neutral tonemap) is baked on the CPU into a 32³ LUT (`ShaderGrade.cs`, URP's own
+  math) and applied with one texture fetch at the end of the Salvo shaders, together with the
+  vignette and the damage / low-health effects. URP's post pass cost ~7 ms per frame at 1080p on
+  the UHD laptop; this costs ~1.7 ms.
 - Custom `Salvo/StylizedLit` shader: albedo from vertex colors, ambient occlusion **baked into
   vertex alpha** in Blender (zero runtime cost), soft light ramp, optional triplanar grain.
   One shared material for the whole world → SRP Batcher + static batching.
@@ -124,14 +129,16 @@ The player accepts command-line flags for automated tests:
 `-salvo-practice`, `-salvo-host` (LAN), `-salvo-join <ip[:port]>`, `-salvo-online-host`,
 `-salvo-code <CODE>`, `-salvo-name <name>` (session only), `-salvo-bots <n>`, `-salvo-map <Outpost|Harbor>`,
 `-salvo-preset <Performance|Balanced|Quality>` (session only). Development builds also log a frame
-budget (C# vs GPU time) every 10 s and accept `-salvo-gfx "post=0,msaa=1,shadows=1,..."` for GPU
-cost experiments (`Tools/gfxbench.sh`).
+budget every 10 s - CPU main / render thread, GPU, scripts, physics, UI, audio, draw calls,
+triangles, shadow casters - and accept `-salvo-gfx "grade=0,msaa=1,shadows=1,scale=0.8,..."` for
+cost experiments (`Tools/perfsplit.sh` runs variants and prints the split).
 
 ## Verified
 
-- Performance on an Intel Celeron 5205U + UHD Graphics at 1280x720 (dev build, 6-combatant bot
-  match on Outpost): Performance preset holds a 60 FPS cap (~9 ms GPU), Balanced ~46 FPS,
-  Quality ~44 FPS. C# scripts take ~1.1 ms per frame. Fonts are pre-rasterized and shader
+- Performance on an Intel Celeron 5205U + UHD Graphics at **1920x1080** (dev build, 6-combatant
+  bot match on Outpost): Performance preset ~58 FPS against a 60 cap (10.8 ms GPU, shadows off;
+  11.5 ms with hard shadows), Balanced ~37 FPS (19.7 ms GPU: full resolution, MSAA 2x, soft
+  shadows), Quality ~33 FPS. The CPU is not the limit: main thread ~4.3 ms, C# scripts ~1.3 ms. Fonts are pre-rasterized and shader
   variants pre-warmed at boot to avoid mid-fight hitches.
 - LAN: player-build host + Editor client — movement, hit claims, server damage, kills, kill feed,
   scoreboard and respawns replicate correctly.

@@ -238,3 +238,13 @@
 .reward-xp { color: var(--c-teal); width: 90px; -unity-text-align: middle-right; }
 .reward-coins { color: var(--c-accent); width: 90px; -unity-text-align: middle-right; }
 .levelup { -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/LilitaOne-Regular SDF.asset"); font-size: 30px; color: var(--c-accent); }
+
+/* weapon picker (match start / death screen) */
+.pick-panel { align-items: center; padding: 26px 30px; }
+.pick-label { margin: 16px 0 8px 0; align-self: flex-start; }
+.pick-row { flex-wrap: wrap; justify-content: center; }
+.pick-card { width: 230px; margin: 6px; align-items: center; padding: 12px; }
+.pick-card:hover { border-color: rgba(255,255,255,0.35); }
+.pick-card .icon-img { width: 200px; height: 70px; }
+.pick-deploy { margin-top: 20px; min-width: 260px; }
+.respawn-change { margin-top: 16px; }

@@ -76,6 +76,7 @@
                 <ui:Label name="respawn-title" text="ELIMINATED" class="title-m" picking-mode="Ignore" />
                 <ui:Label name="respawn-killer" text="by Someone" class="respawn-killer" picking-mode="Ignore" />
                 <ui:Label name="respawn-timer" text="3" class="respawn-timer" picking-mode="Ignore" />
+                <ui:Button name="respawn-change" text="CHANGE WEAPON" class="btn secondary respawn-change" />
             </ui:VisualElement>
         </ui:VisualElement>
 
@@ -309,6 +310,19 @@
                 <ui:VisualElement name="spinner" class="spinner" />
                 <ui:Label name="connect-status" text="Connecting..." class="modal-body" />
                 <ui:Button name="btn-connect-cancel" text="CANCEL" class="btn secondary" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement name="pick" class="screen center scrim">
+            <ui:VisualElement class="panel pick-panel">
+                <ui:Label name="pick-title" text="CHOOSE YOUR WEAPON" class="title-m" />
+                <ui:Label text="PRIMARY" class="label pick-label" />
+                <ui:VisualElement name="pick-primary" class="row pick-row" />
+                <ui:VisualElement name="pick-secondary-wrap">
+                    <ui:Label text="SIDEARM" class="label pick-label" />
+                    <ui:VisualElement name="pick-secondary" class="row pick-row" />
+                </ui:VisualElement>
+                <ui:Button name="pick-deploy" text="DEPLOY" class="btn pick-deploy" />
             </ui:VisualElement>
         </ui:VisualElement>
 

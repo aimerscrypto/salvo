@@ -48,6 +48,7 @@ namespace Salvo
         {
             I = this;
             Cam = GetComponent<Camera>();
+            if (GetComponent<ShaderGrade>() == null) gameObject.AddComponent<ShaderGrade>();
             Cam.nearClipPlane = 0.02f;
             Cam.farClipPlane = 600f;
             var vm = new GameObject("ViewModelRoot");

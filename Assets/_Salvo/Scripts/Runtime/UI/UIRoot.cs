@@ -111,7 +111,7 @@ namespace Salvo
             foreach (var p in MenuPages) Show(p, false);
         }
 
-        public bool AnyOverlayOpen => IsShown("pause") || IsShown("settings") || IsShown("loadout") || IsShown("match-end") || IsShown("modal") || IsShown("connecting");
+        public bool AnyOverlayOpen => IsShown("pause") || IsShown("settings") || IsShown("loadout") || IsShown("match-end") || IsShown("modal") || IsShown("connecting") || IsShown("pick");
 
         // ------------------------------------------------------------------ flows
         void OnEnteredMenu()

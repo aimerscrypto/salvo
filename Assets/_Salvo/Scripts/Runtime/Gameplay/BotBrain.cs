@@ -182,7 +182,7 @@ namespace Salvo
             Vector3 eye = self.EyePosition;
             foreach (var c in Combatant.All)
             {
-                if (!c.Alive || !self.IsEnemyOf(c)) continue;
+                if (!c.Alive || !self.IsEnemyOf(c) || c.Picking.Value) continue;
                 Vector3 to = c.CenterMass - eye;
                 float d = to.magnitude;
                 if (d > ViewDistance) continue;

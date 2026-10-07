@@ -30,6 +30,7 @@ Shader "Salvo/StylizedLit"
     HLSLINCLUDE
     #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
     #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Color.hlsl"
+    #include "SalvoGrade.hlsl"
 
     CBUFFER_START(UnityPerMaterial)
         float4 _BaseMap_ST;
@@ -172,7 +173,7 @@ Shader "Salvo/StylizedLit"
 
                 half3 col = albedo * (ambient + direct) + mainLight.color * spec + _Emission.rgb;
                 col = MixFog(col, i.detailPos.w);
-                return half4(col, 1.0h);
+                return half4(SalvoGrade(col, i.positionCS), 1.0h);
             }
             ENDHLSL
         }

@@ -110,10 +110,11 @@ namespace Salvo
             Select(0, true);
         }
 
-        void BuildStates()
+        void BuildStates() => BuildStates(c.Loadout.Value);
+
+        void BuildStates(LoadoutData l)
         {
             var cfg = GameConfig.I;
-            var l = c.Loadout.Value;
             States[0] = Make(cfg.Weapon(l.primary), l.primarySkin);
             States[1] = Make(cfg.Weapon(l.secondary), l.secondarySkin);
             States[2] = Make(cfg.Weapon(MeleeWeaponId), 0);
@@ -128,9 +129,11 @@ namespace Salvo
             if (c.IsLocalHuman && GameCamera.I != null) GameCamera.I.ZoomT = 0f;
         }
 
-        public void OnRespawned()
+        public void OnRespawned() => OnRespawned(c.Loadout.Value);
+
+        public void OnRespawned(LoadoutData l)
         {
-            BuildStates();
+            BuildStates(l);
             Bloom = 0f;
             Select(0, true);
         }
@@ -418,6 +421,7 @@ namespace Salvo
         void ServerProcessShot(ShotData shot, bool trusted)
         {
             if (!c.Alive || c.Frozen) return;
+            c.Picking.Value = false;   // firing ends the picker's protection
             var d = GameConfig.I.Weapon(shot.weapon);
             if (d == null) return;
             if (!trusted)

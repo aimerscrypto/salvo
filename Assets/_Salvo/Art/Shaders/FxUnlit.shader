@@ -33,6 +33,7 @@ Shader "Salvo/FxUnlit"
             #pragma multi_compile_fog
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Color.hlsl"
+            #include "SalvoGrade.hlsl"
 
             CBUFFER_START(UnityPerMaterial)
                 float4 _BaseMap_ST;
@@ -59,6 +60,7 @@ Shader "Salvo/FxUnlit"
             {
                 half4 c = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, i.uv) * i.color;
                 c.rgb = lerp(c.rgb, MixFog(c.rgb, i.fog), _FogAmount);
+                c.rgb = SalvoGrade(c.rgb, i.positionCS);
                 return c;
             }
             ENDHLSL

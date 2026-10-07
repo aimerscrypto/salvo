@@ -30,6 +30,7 @@ Shader "Salvo/Sky"
             #pragma fragment frag
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/RealtimeLights.hlsl"
+            #include "SalvoGrade.hlsl"
 
             CBUFFER_START(UnityPerMaterial)
                 half4 _ZenithColor, _HorizonColor, _GroundColor, _SunColor, _CloudColor, _CloudShade;
@@ -70,7 +71,7 @@ Shader "Salvo/Sky"
                 half disc = smoothstep(_SunSize, _SunSize + 0.0003, s);
                 half halo = pow(saturate(s), 64.0) * _SunHalo;
                 sky += _SunColor.rgb * (disc * (1.0 - cover * band) * 0.6 + halo);
-                return half4(sky, 1);
+                return half4(SalvoGrade(sky, i.positionCS), 1);
             }
             ENDHLSL
         }

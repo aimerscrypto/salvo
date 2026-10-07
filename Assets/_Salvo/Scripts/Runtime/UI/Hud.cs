@@ -41,10 +41,6 @@ namespace Salvo
         readonly List<(VisualElement el, float t, Vector3 from)> indicators = new List<(VisualElement, float, Vector3)>();
         readonly Dictionary<Combatant, VisualElement> plates = new Dictionary<Combatant, VisualElement>();
 
-        Volume volume;
-        Vignette vignette;
-        ColorAdjustments colorAdj;
-        float baseVignette = 0.18f;
 
         public void Init(UIRoot root)
         {
@@ -72,18 +68,13 @@ namespace Salvo
             ui.Q<Button>("btn-leave").clicked += () => ui.Modal("LEAVE MATCH", NetworkManager.Singleton != null && NetworkManager.Singleton.IsHost && !NetSession.Settings.offline
                 ? "You are the host - leaving ends the match for everyone." : "Return to the main menu?", "LEAVE", () => GameFlow.ReturnToMenu(), "STAY", null);
             ui.Q<Button>("btn-end-leave").clicked += () => GameFlow.ReturnToMenu();
+            ui.Q<Button>("pick-deploy").clicked += ClosePicker;
+            ui.Q<Button>("respawn-change").clicked += () => OpenPicker();
 
             MatchManager.OnKill += OnKill;
             MatchManager.OnMatchEnded += OnMatchEnded;
             MatchManager.OnMatchStarted += OnMatchStarted;
 
-            volume = FindAnyObjectByType<Volume>();
-            if (volume != null && volume.profile != null)
-            {
-                volume.profile.TryGet(out vignette);
-                volume.profile.TryGet(out colorAdj);
-                if (vignette != null) baseVignette = vignette.intensity.value;
-            }
         }
 
         void OnDestroy()
@@ -140,6 +131,69 @@ namespace Salvo
             RefreshSlots();
             if (mm != null && mm.MatchPhase == MatchPhase.Ended) OnMatchEnded();
             AudioManager.Play2D(AudioManager.Bank?.matchStart, 0.6f);
+            if (!SkipPicker && (mm == null || mm.MatchPhase != MatchPhase.Ended)) OpenPicker();
+        }
+
+        // ------------------------------------------------------------------ weapon picker
+        /// <summary>Automation (benchmarks / screenshot scripts) starts matches without the picker.</summary>
+        public static bool SkipPicker;
+        bool pickSwap;
+
+        /// <summary>
+        /// Pick a primary (and sidearm when there's a choice). Opened when you join a match - the guns
+        /// swap right away - and from the death screen, where the pick waits for the respawn.
+        /// </summary>
+        public void OpenPicker()
+        {
+            if (me == null) return;
+            ui.Q<Label>("pick-title").text = me.Alive ? "CHOOSE YOUR WEAPON" : "NEXT LIFE LOADOUT";
+            ui.Q<Button>("pick-deploy").text = me.Alive ? "DEPLOY" : "CONFIRM";
+            pickSwap = me.Alive && me.Weapons.ShotsFired == 0;   // only the join picker swaps on the spot
+            if (pickSwap) me.GetComponent<LoadoutSync>()?.SetPickingRpc(true);
+            BuildPicker();
+            ui.Show("pick", true);
+            ui.FocusFirst("pick", ui.Q<Button>("pick-deploy"));
+        }
+
+        void ClosePicker()
+        {
+            ui.Show("pick", false);
+            me?.GetComponent<LoadoutSync>()?.Push(pickSwap && me.Weapons.ShotsFired == 0);
+        }
+
+        void BuildPicker()
+        {
+            var d = Profile.Data;
+            var prim = ui.Q("pick-primary"); prim.Clear();
+            var sec = ui.Q("pick-secondary"); sec.Clear();
+            int sidearms = 0;
+            foreach (var w in GameConfig.I.weapons)
+            {
+                if (w == null || w.slot == WeaponSlot.Melee) continue;
+                if (w.slot == WeaponSlot.Secondary) sidearms++;
+                bool selected = (w.slot == WeaponSlot.Primary ? d.primary : d.secondary) == w.id;
+                var card = new VisualElement();
+                card.AddToClassList("card"); card.AddToClassList("pick-card");
+                if (selected) card.AddToClassList("selected");
+                var icon = new VisualElement();
+                icon.AddToClassList("icon-img");
+                if (w.icon != null) icon.style.backgroundImage = w.icon;
+                card.Add(icon);
+                card.Add(UIRoot.Lbl(w.displayName.ToUpperInvariant(), "card-title"));
+                card.Add(UIRoot.Lbl(w.category, "card-sub"));
+                var weapon = w;
+                card.RegisterCallback<ClickEvent>(e =>
+                {
+                    Profile.EquipWeapon(weapon);
+                    AudioManager.PlayUI(AudioManager.Bank?.uiClick);
+                    BuildPicker();
+                    if (e.clickCount >= 2) ClosePicker();   // double-click: pick and go
+                });
+                card.RegisterCallback<MouseEnterEvent>(_ => AudioManager.PlayUI(AudioManager.Bank?.uiHover, 0.35f));
+                (w.slot == WeaponSlot.Primary ? prim : sec).Add(card);
+            }
+            ui.Q("pick-secondary-wrap").EnableInClassList("hidden", sidearms < 2);
+            ui.WireSounds(ui.Q("pick"));
         }
 
         void RefreshSlots()
@@ -166,7 +220,8 @@ namespace Salvo
         {
             bool inMatch = me != null && GameFlow.InMatch;
             bool overlay = ui.AnyOverlayOpen || paused;
-            bool lockIt = inMatch && !overlay;
+            // dead: free the cursor so the death screen's CHANGE WEAPON button can be clicked
+            bool lockIt = inMatch && !overlay && me.Alive;
             SalvoInput.GameplayEnabled = lockIt;
             var want = lockIt ? CursorLockMode.Locked : CursorLockMode.None;
             if (UnityEngine.Cursor.lockState != want) UnityEngine.Cursor.lockState = want;
@@ -364,7 +419,8 @@ namespace Salvo
             // pause / scoreboard input (works even while gameplay input is disabled)
             if (SalvoInput.Pause.WasPressedThisFrame() && !ui.IsShown("match-end"))
             {
-                if (ui.IsShown("settings") || ui.IsShown("loadout")) { ui.Show("settings", false); ui.Show("loadout", false); ui.Show("pause", true); Settings.Save(); }
+                if (ui.IsShown("pick")) ClosePicker();
+                else if (ui.IsShown("settings") || ui.IsShown("loadout")) { ui.Show("settings", false); ui.Show("loadout", false); ui.Show("pause", true); Settings.Save(); }
                 else if (ui.IsShown("modal")) ui.Show("modal", false);
                 else SetPaused(!paused);
             }
@@ -603,14 +659,11 @@ namespace Salvo
             SetPost(Mathf.Max(pulse, damageFlash * 0.6f), low);
         }
 
+        /// <summary>Damage vignette and low-health desaturation, drawn by the shaders (ShaderGrade).</summary>
         void SetPost(float hurt, float desat)
         {
-            if (vignette != null)
-            {
-                vignette.intensity.value = Mathf.Lerp(baseVignette, 0.48f, hurt);
-                vignette.color.value = Color.Lerp(Color.black, new Color(0.55f, 0.08f, 0.05f), hurt);
-            }
-            if (colorAdj != null) colorAdj.saturation.value = Mathf.Lerp(8f, -45f, desat);
+            ShaderGrade.Hurt = hurt;
+            ShaderGrade.Desaturate = desat;
         }
     }
 }

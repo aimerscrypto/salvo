@@ -68,6 +68,7 @@ namespace Salvo
                     case "-salvo-online-host": autoStarted = true; GameFlow.HostOnline(new MatchSettings { fillWithBots = bots }); break;
                 }
             }
+            if (autoStarted) Hud.SkipPicker = true; // test / benchmark runs play without the weapon picker
         }
 
 #if DEVELOPMENT_BUILD
@@ -92,6 +93,7 @@ namespace Salvo
                     case "shadowdist": urp.shadowDistance = v; break;
                     case "shadows": if (RenderSettings.sun != null) RenderSettings.sun.shadows = v <= 0 ? LightShadows.None : v < 2 ? LightShadows.Hard : LightShadows.Soft; break;
                     case "post": if (camData != null) camData.renderPostProcessing = v > 0; break;
+                    case "grade": ShaderGrade.DevDisabled = v <= 0; break;
                 }
             }
             Debug.Log("[SALVO] dev gfx " + spec + $" (scale {urp.renderScale}, msaa {urp.msaaSampleCount}, hdr {urp.supportsHDR}, cascades {urp.shadowCascadeCount}, res {urp.mainLightShadowmapResolution})");
@@ -103,13 +105,40 @@ namespace Salvo
         static readonly string[] scriptMarkers = { "BehaviourUpdate", "LateBehaviourUpdate", "FixedBehaviourUpdate", "CoroutinesDelayedCalls" };
         Unity.Profiling.ProfilerRecorder[] scriptRec;
         readonly FrameTiming[] timing = new FrameTiming[1];
-        double sumScripts, sumGpu; int timedFrames;
+        double sumScripts, sumGpu, sumMain, sumRender; int timedFrames;
+        // where the main thread goes (ms per frame), and how much the GPU is asked to draw
+        static readonly (string label, Unity.Profiling.ProfilerCategory cat, string marker)[] systems =
+        {
+            ("physics", Unity.Profiling.ProfilerCategory.Physics, "Physics.Simulate"),
+            ("anim", Unity.Profiling.ProfilerCategory.Animation, "Animators.Update"),
+            ("particles", Unity.Profiling.ProfilerCategory.Particles, "ParticleSystem.Update"),
+            ("ui", Unity.Profiling.ProfilerCategory.Gui, "UIElementsUpdatePanels"),
+            ("uiRepaint", Unity.Profiling.ProfilerCategory.Gui, "UIR.DrawChain"),
+            ("audio", Unity.Profiling.ProfilerCategory.Audio, "AudioManager.Update"),
+            ("render", Unity.Profiling.ProfilerCategory.Render, "UniversalRenderPipeline.RenderSingleCameraInternal"),
+            ("shadowsCpu", Unity.Profiling.ProfilerCategory.Render, "MainLightShadow"),
+            ("netcode", Unity.Profiling.ProfilerCategory.Network, "NetworkManager.NetworkUpdate"),
+            ("nav", Unity.Profiling.ProfilerCategory.Ai, "NavMeshManager"),
+            ("gcAlloc", Unity.Profiling.ProfilerCategory.Memory, "GC.Alloc"),
+        };
+        static readonly string[] counters = { "Batches Count", "SetPass Calls Count", "Triangles Count", "Shadow Casters Count" };
+        Unity.Profiling.ProfilerRecorder[] sysRec, cntRec;
+        double[] sysSum = new double[systems.Length], cntSum = new double[counters.Length];
         void OnEnable()
         {
             scriptRec = new Unity.Profiling.ProfilerRecorder[scriptMarkers.Length];
             for (int i = 0; i < scriptMarkers.Length; i++) scriptRec[i] = Unity.Profiling.ProfilerRecorder.StartNew(Unity.Profiling.ProfilerCategory.Scripts, scriptMarkers[i]);
+            sysRec = new Unity.Profiling.ProfilerRecorder[systems.Length];
+            for (int i = 0; i < systems.Length; i++) sysRec[i] = Unity.Profiling.ProfilerRecorder.StartNew(systems[i].cat, systems[i].marker);
+            cntRec = new Unity.Profiling.ProfilerRecorder[counters.Length];
+            for (int i = 0; i < counters.Length; i++) cntRec[i] = Unity.Profiling.ProfilerRecorder.StartNew(Unity.Profiling.ProfilerCategory.Render, counters[i]);
         }
-        void OnDisable() { if (scriptRec != null) foreach (var r in scriptRec) r.Dispose(); }
+        void OnDisable()
+        {
+            if (scriptRec != null) foreach (var r in scriptRec) r.Dispose();
+            if (sysRec != null) foreach (var r in sysRec) r.Dispose();
+            if (cntRec != null) foreach (var r in cntRec) r.Dispose();
+        }
         void SampleBudget()
         {
             double scripts = 0;
@@ -118,6 +147,10 @@ namespace Salvo
             if (FrameTimingManager.GetLatestTimings(1, timing) == 0) return;
             sumScripts += scripts;
             sumGpu += timing[0].gpuFrameTime;
+            sumMain += timing[0].cpuMainThreadFrameTime;
+            sumRender += timing[0].cpuRenderThreadFrameTime;
+            for (int i = 0; i < sysRec.Length; i++) if (sysRec[i].Valid) sysSum[i] += sysRec[i].LastValue * (systems[i].label == "gcAlloc" ? 1.0 / 1024 : 1e-6);
+            for (int i = 0; i < cntRec.Length; i++) if (cntRec[i].Valid) cntSum[i] += cntRec[i].LastValue;
             timedFrames++;
         }
         void Update()
@@ -133,8 +166,16 @@ namespace Salvo
             {
                 Debug.Log($"[SALVO/Perf] avg {perfFrames / perfTimer:0.0} fps, worst frame {perfWorst * 1000f:0} ms, combatants {Combatant.All.Count}, scene {UnityEngine.SceneManagement.SceneManager.GetActiveScene().name}");
                 if (timedFrames > 0)
+                {
                     Debug.Log($"[SALVO/Budget] frame {1000f * perfTimer / perfFrames:0.00} ms | C# scripts {sumScripts / timedFrames:0.00} ms | GPU {sumGpu / timedFrames:0.00} ms");
-                sumScripts = sumGpu = 0; timedFrames = 0;
+                    var sb = new System.Text.StringBuilder($"[SALVO/Split] cpuMain {sumMain / timedFrames:0.00} cpuRender {sumRender / timedFrames:0.00} gpu {sumGpu / timedFrames:0.00} scripts {sumScripts / timedFrames:0.00}");
+                    for (int i = 0; i < systems.Length; i++) sb.Append($" {systems[i].label} {(sysRec[i].Valid ? (sysSum[i] / timedFrames).ToString("0.00") : "n/a")}");
+                    for (int i = 0; i < counters.Length; i++) sb.Append($" | {counters[i].Replace(" Count", "")} {(cntRec[i].Valid ? (cntSum[i] / timedFrames).ToString("0") : "n/a")}");
+                    sb.Append($" | res {Screen.width}x{Screen.height}");
+                    Debug.Log(sb.ToString());
+                }
+                sumScripts = sumGpu = sumMain = sumRender = 0; timedFrames = 0;
+                System.Array.Clear(sysSum, 0, sysSum.Length); System.Array.Clear(cntSum, 0, cntSum.Length);
                 perfTimer = 0; perfFrames = 0; perfWorst = 0;
             }
         }
