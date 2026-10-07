@@ -270,7 +270,7 @@ namespace Salvo.EditorTools
                     w.adsFov = 68; w.adsTime = 0.18f; w.adsMoveMultiplier = 0.85f;
                     w.hipPosition = new Vector3(0.2f, -0.25f, 0.47f); w.hipEuler = new Vector3(0, -1, 0); w.sightDistance = 0.33f; w.adsOffset = new Vector3(0f, -0.035f, 0f); // cheek on the stock, looking down the rib
                     w.tracerColor = new Color(1f, 0.85f, 0.55f); w.shakeOnFire = 0.25f;
-                    Sounds(w, "Bulldog"); w.reloadIn = A("Weapons/Shell_Load");
+                    Sounds(w, "Bulldog"); w.shotVolume = 1.75f; w.reloadIn = A("Weapons/Shell_Load");
                     w.actionSound = A("Weapons/Pump_Action"); w.equipSound = equip;
                 }),
                 W("W04_Longbow", 4, "Longbow", w =>
@@ -284,7 +284,7 @@ namespace Salvo.EditorTools
                     w.adsFov = 22; w.adsTime = 0.24f; w.scoped = true; w.adsSensitivity = 0.75f; w.adsMoveMultiplier = 0.6f;
                     w.hipPosition = new Vector3(0.19f, -0.23f, 0.44f); w.hipEuler = new Vector3(0, -1, 0); w.sightDistance = 0.12f;
                     w.tracerColor = new Color(1f, 0.95f, 0.8f); w.shakeOnFire = 0.3f;
-                    Sounds(w, "Longbow"); w.actionSound = A("Weapons/Bolt_Action"); w.equipSound = equip;
+                    Sounds(w, "Longbow"); w.shotVolume = 1.75f; w.actionSound = A("Weapons/Bolt_Action"); w.equipSound = equip;
                 }),
                 W("W05_Fang", 5, "Fang", w =>
                 {

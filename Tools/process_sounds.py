@@ -104,7 +104,7 @@ RNG = np.random.default_rng(7)
 # mix targets (active loudness, dB full scale, before the game's own volume): bigger guns are
 # louder, and a reload sits ~9 dB under a rifle shot so it reads clearly between bursts
 SHOT_DB = {"Viper": -7.5, "Hornet": -7.5, "Ranger": -7.0, "Bulldog": -8.0, "Longbow": -8.0}
-RELOAD_DB = -16.0
+RELOAD_DB = -14.0
 
 
 def bandpass(x, lo, hi, order=2):
@@ -260,7 +260,7 @@ def chain(parts, xfade=0.03):
         out[-n:] = out[-n:] * np.cos(t) + seg[:n] * np.sin(t)
         out = np.concatenate([out, seg[n:]])
     fo = int(0.06 * SR); out[-fo:] *= np.linspace(1, 0, fo)
-    return level(out, 0.92)
+    return loudness(out, RELOAD_DB)
 
 
 def tighten(name, keep, xfade=0.03):
@@ -329,11 +329,11 @@ def build():
     # the Uzi take has two long pauses (hand to pouch, hand to bolt): shorten the pauses only
     save(W + "Hornet_Reload", tighten("smg_reload", [(0.0, 0.6), (1.45, 2.3), (2.9, 3.75)]))  # out 0.05, in 1.1, charge 1.61
     # one shell pushed into the tube (shell against the lifter, then the click past the latch)
-    save(W + "Shell_Load", level(whole_raw("shell_insert_a", 0.55, 1.12), 0.92))
+    save(W + "Shell_Load", loudness(whole_raw("shell_insert_a", 0.55, 1.12), RELOAD_DB + 1))
     # one pump stroke: back (0.11) and forward (0.36) in time with the view-model pump
-    save(W + "Pump_Action", level(whole_raw("pump_cycle", 3.30, 3.98), 0.92))
+    save(W + "Pump_Action", loudness(whole_raw("pump_cycle", 3.30, 3.98), RELOAD_DB + 1))
     # one bolt cycle after a shot: lift, back, forward, down (~1.1 s)
-    save(W + "Bolt_Action", level(whole_raw("bolt_cycle", 5.70, 6.95), 0.92))
+    save(W + "Bolt_Action", loudness(whole_raw("bolt_cycle", 5.70, 6.95), RELOAD_DB + 1))
     # body foley
     P = "Player/"
     save(P + "Land", loudness(whole_raw("jump_gravel", 0.27, 0.95), -14))

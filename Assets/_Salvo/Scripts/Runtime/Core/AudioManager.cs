@@ -179,11 +179,11 @@ namespace Salvo
         public static void OwnGunshot(WeaponDef d, Vector3 pos, float pitch)
         {
             if (d == null || I == null) return;
-            Play2D(d.fireSound, OwnShotVolume, pitch);
+            Play2D(d.fireSound, Mathf.Min(1f, OwnShotVolume * d.shotVolume), pitch);
             if (I.ownTailOut == null) { I.ownTailOut = I.TailSource("ownTailOut"); I.ownTailIn = I.TailSource("ownTailIn"); }
             float enc = Enclosure(pos);
-            Restart(I.ownTailOut, d.tailOutdoor, (1f - enc) * 0.38f, pitch);
-            Restart(I.ownTailIn, d.tailIndoor, enc * 0.45f, pitch);
+            Restart(I.ownTailOut, d.tailOutdoor, (1f - enc) * 0.38f * d.shotVolume, pitch);
+            Restart(I.ownTailIn, d.tailIndoor, enc * 0.45f * d.shotVolume, pitch);
             I.duck = Mathf.Max(I.duck, d.pellets > 1 || d.fireMode == FireMode.Bolt ? 1f : 0.6f);
         }
 
@@ -209,7 +209,7 @@ namespace Salvo
             // dull pop and the space ringing (the close layer is mixed for point-blank, not 60 m)
             float far = Mathf.Clamp01((dist - 8f) / 55f);
             float cutoff = Mathf.Lerp(22000f, 1500f, Mathf.Pow(far, 0.6f));
-            PlayWorld(d.fireSound, pos, Mathf.Lerp(0.6f, 0.22f, far), pitch, 170f, true, true, 0f, cutoff);
+            PlayWorld(d.fireSound, pos, Mathf.Min(1f, Mathf.Lerp(0.6f, 0.22f, far) * d.shotVolume), pitch, 170f, true, true, 0f, cutoff);
             // one tail at a time across all remote guns: a firefight rings, it doesn't pile up voices
             if (Time.time - lastRemoteTail > 0.11f)
             {

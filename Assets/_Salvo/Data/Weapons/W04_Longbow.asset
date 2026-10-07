@@ -65,6 +65,7 @@ MonoBehaviour:
   shakeOnFire: 0.3
   icon: {fileID: 2800000, guid: 5ac83e7fb115a4140b30df08012ab32a, type: 3}
   fireSound: {fileID: 8300000, guid: ff18184a190dba5489ecebbb4be74b5e, type: 3}
+  shotVolume: 1.75
   tailOutdoor: {fileID: 8300000, guid: d64f6abe557d294439a6a65df153d3b0, type: 3}
   tailIndoor: {fileID: 8300000, guid: 51bac48445c520845a02bac5d51d7e61, type: 3}
   reloadSequence: {fileID: 8300000, guid: 14b545c1803d6924f83b7b3e50a9ebb4, type: 3}

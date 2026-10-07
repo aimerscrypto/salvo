@@ -75,6 +75,8 @@ namespace Salvo
 
         [Header("Audio")]
         public AudioClip fireSound;      // close-up shot, short so automatic fire stays crisp
+        [Tooltip("Shot loudness relative to the rifles (shotgun / sniper > 1: the big guns are the loudest).")]
+        public float shotVolume = 1f;
         public AudioClip tailOutdoor;    // the shot ringing off buildings in the open
         public AudioClip tailIndoor;     // ...and under a roof / between close walls
         public AudioClip reloadSequence; // whole magazine reload, timed to the reload animation
