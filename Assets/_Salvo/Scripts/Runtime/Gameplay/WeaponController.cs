@@ -338,7 +338,7 @@ namespace Salvo
             {
                 float adsDamp = Mathf.Lerp(1f, 0.6f, AimT);
                 GameCamera.I.AddRecoil(d.recoilPitch * adsDamp, d.recoilYaw * adsDamp, d.recoilRecovery, Mathf.Clamp(d.recoilPitch * 0.6f, 0.4f, 3f));
-                GameCamera.I.Shake(d.shakeOnFire);
+                if (d.pellets > 1 || d.fireMode == FireMode.Bolt) GameCamera.I.Shake(d.shakeOnFire * 0.4f); // only the big guns rock the view
             }
             else if (c.IsBot && c.Brain != null) c.Brain.OnRecoil(d.recoilPitch);
             if (d.fireMode == FireMode.Pump || d.fireMode == FireMode.Bolt) actionAt = Time.time + Mathf.Min(0.3f, d.FireInterval * 0.35f);
@@ -402,6 +402,7 @@ namespace Salvo
             }
             if (target != null)
             {
+                if (c.IsLocalHuman) AudioManager.Play2D(AudioManager.Bank?.meleeHit, 0.9f, UnityEngine.Random.Range(0.95f, 1.05f));
                 shot.claims = new[] { new HitClaim { target = target.Owner.NetworkObjectId, zone = (byte)HitZone.Body, point = point, pellets = 1 } };
                 ShotsHit++;
             }

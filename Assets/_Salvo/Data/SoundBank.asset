@@ -20,6 +20,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 535eed3601a77244ebf2f19d6b3ba8ee, type: 3}
   jump: {fileID: 8300000, guid: 2a91373cc27eb4d4389f3400545317e6, type: 3}
   land: {fileID: 8300000, guid: 061e275bd165caf4099c9fbde24dca59, type: 3}
+  landLight: {fileID: 8300000, guid: 76ab821a562c23141808ca23d14203f1, type: 3}
   slide: {fileID: 8300000, guid: 482c9baac1bd7e74495ad6663e00b07e, type: 3}
   jumpPad: {fileID: 8300000, guid: 1084c18261399ed4c9333150d10b58b9, type: 3}
   hitmarker: {fileID: 8300000, guid: b9045cc74978cad47a6898c1941a69b0, type: 3}

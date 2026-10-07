@@ -109,19 +109,20 @@ namespace Salvo
             lastRecoil = Time.time;
             float first = burst == 1 ? 1.3f : 1f;
             RecoilPitch = Mathf.Min(RecoilPitch + pitch * first * Random.Range(0.9f, 1.1f), MaxClimb);
-            float side = Mathf.Sin(burst * 0.55f + burstSeed) * 0.75f + Random.Range(-0.35f, 0.35f);
+            float side = Mathf.Sin(burst * 0.55f + burstSeed) * 0.85f + Random.Range(-0.12f, 0.12f);
             RecoilYaw = Mathf.Clamp(RecoilYaw + yaw * side, -MaxClimb * 0.5f, MaxClimb * 0.5f);
             recoilRecovery = recovery;
             // spring impulses ~ peak * w / 0.57: a snap of ~0.5 deg per degree of recoil
-            kick.Kick(new Vector3(-pitch * 0.5f, yaw * side * 0.4f, Random.Range(-1f, 1f) * (0.25f + pitch * 0.3f)) * 50f);
-            fovPunch.Velocity -= punch * 90f;
+            // a small, clean upward punch only: no roll or sideways jitter on the camera
+            kick.Kick(new Vector3(-pitch * 0.35f, 0f, 0f) * 30f);
+            fovPunch.Velocity -= punch * 40f;
         }
 
         public void Shake(float amount) => trauma = Mathf.Min(1f, trauma + amount);
 
         public void LandImpact(float speed)
         {
-            land.Velocity -= Mathf.Clamp(speed * 0.06f, 0.05f, 0.6f);
+            land.Velocity -= Mathf.Clamp(speed * 0.035f, 0.03f, 0.35f);
         }
 
         public Ray AimRay => new Ray(transform.position, transform.forward);
@@ -187,7 +188,7 @@ namespace Salvo
                 RecoilPitch = SalvoMath.Damp(RecoilPitch, 0f, recoilRecovery, dt);
                 RecoilYaw = SalvoMath.Damp(RecoilYaw, 0f, recoilRecovery, dt);
             }
-            kick.Step(Vector3.zero, 6f, 0.45f, dt);
+            kick.Step(Vector3.zero, 6f, 0.7f, dt);   // well damped: settles without wobbling
             fovPunch.Step(0f, 4f, 0.5f, dt);
             land.Step(0f, 2.6f, 0.45f, dt);
 
@@ -196,12 +197,13 @@ namespace Salvo
             float bobTarget = motor.Grounded && !motor.Sliding ? Mathf.Clamp01(hs / GameRules.RunSpeed) : 0f;
             bobAmount = SalvoMath.Damp(bobAmount, bobTarget * (Settings.Data.viewBob ? 1f : 0.25f) * (1f - ZoomT * 0.85f), 10f, dt);
             bobPhase += dt * Mathf.Lerp(6f, 11f, Mathf.Clamp01(hs / GameRules.RunSpeed));
-            Vector3 bob = new Vector3(Mathf.Sin(bobPhase) * 0.022f, Mathf.Abs(Mathf.Cos(bobPhase)) * 0.032f, 0f) * bobAmount;
+            // arena-shooter feel (CS / Krunker): the eye barely bobs; the weapon carries the motion
+            Vector3 bob = new Vector3(Mathf.Sin(bobPhase) * 0.004f, Mathf.Abs(Mathf.Cos(bobPhase)) * 0.007f, 0f) * bobAmount;
 
             // shake (perlin, trauma^2)
             trauma = Mathf.MoveTowards(trauma, 0f, dt * 1.8f);
             float sh = trauma * trauma;
-            Vector3 shakeRot = new Vector3(Mathf.PerlinNoise(Time.time * 25f, 1f) - 0.5f, Mathf.PerlinNoise(2f, Time.time * 25f) - 0.5f, Mathf.PerlinNoise(Time.time * 25f, 5f) - 0.5f) * (sh * 6f);
+            Vector3 shakeRot = new Vector3(Mathf.PerlinNoise(Time.time * 25f, 1f) - 0.5f, Mathf.PerlinNoise(2f, Time.time * 25f) - 0.5f, Mathf.PerlinNoise(Time.time * 25f, 5f) - 0.5f) * (sh * 3f);
 
             eyeHeight = SalvoMath.Damp(eyeHeight, motor.EyeHeight, 18f, dt);
             // stairs: the controller pops up each step; absorb the pop and ease the eye up instead
@@ -218,7 +220,7 @@ namespace Salvo
 
             // strafe roll
             float strafe = Vector3.Dot(motor.Velocity, Target.transform.right);
-            roll = SalvoMath.Damp(roll, -strafe * 0.35f + (motor.Sliding ? 4f : 0f), 8f, dt);
+            roll = SalvoMath.Damp(roll, motor.Sliding ? 2.5f : 0f, 6f, dt);   // no strafe lean: the horizon stays level
 
             Quaternion look = Quaternion.Euler(pitch - RecoilPitch, yaw + RecoilYaw, 0f);
             Quaternion fx = Quaternion.Euler(kick.Value.x + shakeRot.x, kick.Value.y + shakeRot.y, kick.Value.z + roll + shakeRot.z);

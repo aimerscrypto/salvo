@@ -12,6 +12,19 @@ namespace Salvo
     {
         public static Hud I { get; private set; }
 
+        bool fullResScope;
+        /// <summary>
+        /// Looking through the scope magnifies the picture, so a reduced render scale turns to mush:
+        /// render at full resolution while scoped (most of the screen is the black eyepiece anyway).
+        /// </summary>
+        void ScopeResolution(bool scoped)
+        {
+            if (scoped == fullResScope) return;
+            fullResScope = scoped;
+            if (GraphicsSettings.currentRenderPipeline is UniversalRenderPipelineAsset urp)
+                urp.renderScale = scoped ? 1f : Mathf.Clamp(Settings.Data.renderScale, 0.5f, 1f);
+        }
+
         UIRoot ui;
         Combatant me;
         VisualElement crosshair, chTop, chBottom, chLeft, chRight, chDot, hitmarker, healthFill, healthGhost, killfeed, killBanner, dmgLayer,
@@ -51,7 +64,7 @@ namespace Salvo
             fps = ui.Q<Label>("fps"); codeChip = ui.Q<Label>("code-chip"); spawnShield = ui.Q<Label>("spawn-shield");
             for (int i = 0; i < 3; i++) slots[i] = ui.Q<Label>("slot-" + i);
             sbList = ui.Q("sb-list"); endBoard = ui.Q("end-board"); endRewards = ui.Q("end-rewards");
-            if (GameConfig.I.scopeOverlay != null) scope.style.backgroundImage = GameConfig.I.scopeOverlay;
+            scope.Add(new ScopeView());
 
             ui.Q<Button>("btn-resume").clicked += () => SetPaused(false);
             ui.Q<Button>("btn-pause-settings").clicked += () => ui.Menu.OpenSettings(true);
@@ -75,6 +88,7 @@ namespace Salvo
 
         void OnDestroy()
         {
+            ScopeResolution(false);
             MatchManager.OnKill -= OnKill;
             MatchManager.OnMatchEnded -= OnMatchEnded;
             MatchManager.OnMatchStarted -= OnMatchStarted;
@@ -416,6 +430,7 @@ namespace Salvo
             // scope
             bool scoped = def != null && def.scoped && w.AimT > 0.92f && me.Alive;
             scope.EnableInClassList("hidden", !scoped);
+            ScopeResolution(scoped);
             crosshair.style.display = scoped || !me.Alive ? DisplayStyle.None : DisplayStyle.Flex;
 
             // match info

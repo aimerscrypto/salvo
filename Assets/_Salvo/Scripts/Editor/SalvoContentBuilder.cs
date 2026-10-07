@@ -171,7 +171,7 @@ namespace Salvo.EditorTools
         {
             var b = LoadOrCreate<SoundBank>(Data + "SoundBank.asset");
             b.footsteps = Enumerable.Range(0, 5).Select(i => A("Player/Step_" + i)).ToArray();
-            b.jump = A("Player/Jump"); b.land = A("Player/Land"); b.slide = A("Player/Slide"); b.jumpPad = A("Player/JumpPad");
+            b.jump = A("Player/Jump"); b.land = A("Player/Land"); b.landLight = A("Player/Land_Light"); b.slide = A("Player/Slide"); b.jumpPad = A("Player/JumpPad");
             b.hurt = A("Player/Hurt"); b.death = A("Player/Death"); b.bulletImpact = A("Player/Impact"); b.bulletWhiz = A("Player/Whiz");
             b.hitmarker = A("Feedback/Hitmarker"); b.headshot = A("Feedback/Headshot"); b.killConfirm = A("Feedback/Kill");
             b.pickupHealth = A("Feedback/Pickup_Health"); b.pickupAmmo = A("Feedback/Pickup_Ammo");
@@ -278,7 +278,7 @@ namespace Salvo.EditorTools
                     w.description = "Bolt-action sniper rifle. One clean headshot ends the argument.";
                     w.category = "SNIPER"; w.slot = WeaponSlot.Primary; w.fireMode = FireMode.Bolt;
                     w.damage = 95; w.headMultiplier = 2.2f; w.limbMultiplier = 0.8f; w.falloffStart = 200; w.falloffEnd = 300; w.minDamageFactor = 1f; w.range = 400;
-                    w.rpm = 46; w.magSize = 5; w.reserveAmmo = 25; w.reloadTime = 3.45f; w.reloadOutAt = 0.53f; w.reloadInAt = 1.35f; w.reloadChargeAt = 2.91f; w.equipTime = 0.6f; w.moveSpeedMultiplier = 0.9f;
+                    w.rpm = 40; w.magSize = 5; w.reserveAmmo = 25; w.reloadTime = 2.2f; w.reloadOutAt = 0.55f; w.reloadInAt = 1.36f; w.reloadChargeAt = 1.55f; w.equipTime = 0.6f; w.moveSpeedMultiplier = 0.9f;
                     w.hipSpread = 7f; w.adsSpread = 0f; w.moveSpreadAdd = 3f; w.airSpreadAdd = 8f; w.spreadPerShot = 0f; w.maxBloom = 0f;
                     w.recoilPitch = 5.5f; w.recoilYaw = 0.8f; w.recoilRecovery = 6f; w.kickBack = 0.1f; w.kickRotation = 10f;
                     w.adsFov = 22; w.adsTime = 0.24f; w.scoped = true; w.adsSensitivity = 0.75f; w.adsMoveMultiplier = 0.6f;

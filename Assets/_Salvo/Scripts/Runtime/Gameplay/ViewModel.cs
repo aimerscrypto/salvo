@@ -248,7 +248,7 @@ namespace Salvo
             lookRate = Vector2.Lerp(lookRate, rawLook / Mathf.Max(dt, 1e-4f), 1f - Mathf.Exp(-14f * dt));
             Vector2 look = lookRate / 60f; // in "pixels per 60 Hz frame", the scale the sway was tuned for
             float swayK = Mathf.Lerp(1f, 0.2f, ads);
-            swayRot.Step(new Vector3(Mathf.Clamp(look.y * 0.08f, -4f, 4f), Mathf.Clamp(-look.x * 0.08f, -5f, 5f), Mathf.Clamp(-look.x * 0.06f, -4f, 4f)) * swayK, 3.5f, 0.6f, dt);
+            swayRot.Step(new Vector3(Mathf.Clamp(look.y * 0.045f, -2.5f, 2.5f), Mathf.Clamp(-look.x * 0.045f, -3f, 3f), Mathf.Clamp(-look.x * 0.03f, -2f, 2f)) * swayK, 5f, 0.8f, dt);
             Vector3 localVel = c.transform.InverseTransformDirection(motor.Velocity);
             swayPos.Step(new Vector3(-localVel.x * 0.0025f, -Mathf.Clamp(localVel.y, -12f, 12f) * 0.0025f, -localVel.z * 0.0012f) * swayK, 4f, 0.7f, dt);
 
@@ -257,8 +257,8 @@ namespace Salvo
             float run = motor.Grounded && !motor.Sliding ? Mathf.Clamp01(hs / GameRules.RunSpeed) : 0f;
             bobPhase += dt * Mathf.Lerp(5f, 10.5f, run);
             float bobK = run * Mathf.Lerp(1f, 0.12f, ads) * (Settings.Data.viewBob ? 1f : 0.4f);
-            Vector3 bob = new Vector3(Mathf.Sin(bobPhase) * 0.012f, -Mathf.Abs(Mathf.Cos(bobPhase)) * 0.012f, 0) * bobK;
-            Vector3 bobRot = new Vector3(Mathf.Abs(Mathf.Cos(bobPhase)) * 1.2f, Mathf.Sin(bobPhase) * 1.4f, Mathf.Sin(bobPhase) * 1.2f) * bobK;
+            Vector3 bob = new Vector3(Mathf.Sin(bobPhase) * 0.01f, -Mathf.Abs(Mathf.Cos(bobPhase)) * 0.008f, 0) * bobK;
+            Vector3 bobRot = new Vector3(Mathf.Abs(Mathf.Cos(bobPhase)) * 0.5f, Mathf.Sin(bobPhase) * 0.6f, Mathf.Sin(bobPhase) * 0.5f) * bobK;
 
             // --- base pose
             Vector3 hipPos = d.hipPosition;
@@ -312,8 +312,15 @@ namespace Salvo
                     float charge = d.reloadChargeAt > 0f ? Mathf.Sin(Mathf.Clamp01((t - d.reloadChargeAt + 0.08f) / 0.28f) * Mathf.PI) : 0f;
                     rot *= Quaternion.Euler(-3f * slap - 4f * charge, 0f, -7f * charge);
                     pos += new Vector3(0f, 0.006f * slap, -0.014f * charge);
-                    if (d.fireMode == FireMode.Bolt && d.reloadChargeAt > 0f && t > d.reloadChargeAt - 0.05f && t < d.reloadChargeAt + 0.45f)
-                        actionT = (t - d.reloadChargeAt + 0.05f) / 0.45f; // work the bolt with the sound
+                    if (d.fireMode == FireMode.Bolt)
+                    {
+                        // bolt rifle: bolt opened at the start (lift 0.07 s, back 0.35 s), held open over the
+                        // mag swap, run home at reloadChargeAt (forward, then down ~0.4 s later)
+                        float c0 = d.reloadChargeAt;
+                        boltLift = Mathf.SmoothStep(0, 1, Mathf.Clamp01(t / 0.1f)) * (1f - Mathf.SmoothStep(0, 1, Mathf.Clamp01((t - c0 - 0.38f) / 0.1f)));
+                        boltBack = Mathf.SmoothStep(0, 1, Mathf.Clamp01((t - 0.2f) / 0.17f)) * (1f - Mathf.SmoothStep(0, 1, Mathf.Clamp01((t - c0) / 0.1f)));
+                        charge = 0f;
+                    }
                     armLOffset = new Vector3(0.0f, -0.12f, -0.12f) * magOut + new Vector3(0, -0.02f, 0) * tilt
                                + new Vector3(0.02f, 0.03f, -0.1f) * charge;
                 }
@@ -325,21 +332,28 @@ namespace Salvo
             shellBump = Mathf.MoveTowards(shellBump, 0f, dt * 5f);
             pos += new Vector3(0, 0.01f, 0.01f) * shellBump;
 
-            // --- pump / bolt
-            actionT = Mathf.MoveTowards(actionT, 1f, dt / 0.38f);
+            // --- pump / bolt, timed to their recordings: pump back 0.11 s / forward 0.36 s;
+            // bolt lift 0.07, back 0.35, forward 0.72, down 1.1 s
+            float actionLen = d.fireMode == FireMode.Bolt ? BoltCycle : 0.38f;
+            actionT = Mathf.MoveTowards(actionT, 1f, dt / actionLen);
             float act = Mathf.Sin(Mathf.Clamp01(actionT) * Mathf.PI);
+            if (d.fireMode == FireMode.Bolt && !w.Reloading)
+            {
+                float u = Mathf.Clamp01(actionT) * BoltCycle;
+                boltLift = Mathf.SmoothStep(0, 1, Mathf.Clamp01(u / 0.1f)) * (1f - Mathf.SmoothStep(0, 1, Mathf.Clamp01((u - 0.98f) / 0.12f)));
+                boltBack = Mathf.SmoothStep(0, 1, Mathf.Clamp01((u - 0.2f) / 0.17f)) * (1f - Mathf.SmoothStep(0, 1, Mathf.Clamp01((u - 0.62f) / 0.12f)));
+            }
             if (cur.action != null)
             {
                 if (d.fireMode == FireMode.Pump) cur.action.localPosition = cur.actionBase + Node(0, 0, -0.09f) * act;
                 else if (d.fireMode == FireMode.Bolt)
                 {
-                    float lift = Mathf.Clamp01(act * 2f);
-                    cur.action.localRotation = cur.actionRot * Quaternion.Euler(0, -70f * lift, 0);
-                    cur.action.localPosition = cur.actionBase + Node(0, 0, -0.06f) * Mathf.Clamp01(act * 2f - 0.6f);
+                    cur.action.localRotation = cur.actionRot * Quaternion.Euler(0, -70f * boltLift, 0);
+                    cur.action.localPosition = cur.actionBase + Node(0, 0, -0.06f) * boltBack;
                 }
             }
             if (d.fireMode == FireMode.Pump) { armLOffset += new Vector3(0, 0, -0.09f) * act; rot *= Quaternion.Euler(-3f * act, 0, 4f * act); }
-            if (d.fireMode == FireMode.Bolt) rot *= Quaternion.Euler(-4f * act, 0, 8f * act);
+            if (d.fireMode == FireMode.Bolt) rot *= Quaternion.Euler(-3f * boltLift, 0, 6f * boltLift);
 
             // --- melee swing
             meleeT = Mathf.MoveTowards(meleeT, 1f, dt / 0.42f);
@@ -367,6 +381,9 @@ namespace Salvo
             if (flashTime > 0f) { flashTime -= dt; if (flashTime <= 0f && cur.flash != null) cur.flash.enabled = false; }
             if (cur.flash != null && cur.muzzle != null) cur.flash.transform.position = cur.muzzle.position;
         }
+
+        const float BoltCycle = 1.15f;   // length of the bolt recording
+        float boltLift, boltBack;
 
         // recoil springs: a velocity impulse v peaks at v * exp(-z/sqrt(1-z^2) * atan(sqrt(1-z^2)/z)) / w,
         // so the gains below turn "peak units / degrees" into impulses

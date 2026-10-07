@@ -27,14 +27,14 @@ MonoBehaviour:
   falloffEnd: 300
   minDamageFactor: 1
   range: 400
-  rpm: 46
+  rpm: 40
   magSize: 5
   reserveAmmo: 25
-  reloadTime: 3.45
+  reloadTime: 2.2
   reloadPerShell: 0
-  reloadOutAt: 0.53
-  reloadInAt: 1.35
-  reloadChargeAt: 2.91
+  reloadOutAt: 0.55
+  reloadInAt: 1.36
+  reloadChargeAt: 1.55
   equipTime: 0.6
   moveSpeedMultiplier: 0.9
   hipSpread: 7

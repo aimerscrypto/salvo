@@ -8,6 +8,7 @@ namespace Salvo
         public AudioClip[] footsteps;
         public AudioClip jump;
         public AudioClip land;
+        public AudioClip landLight;     // short hops / small drops
         public AudioClip slide;
         public AudioClip jumpPad;
         public AudioClip hitmarker;
