@@ -34,6 +34,8 @@ namespace Salvo
         public int reserveAmmo = 120;
         public float reloadTime = 2f;
         public bool reloadPerShell;
+        [Tooltip("Seconds into a magazine reload where the recording has: the mag leaving, the new one seated, the charging handle / bolt / slide (0 = none). The animation follows these.")]
+        public float reloadOutAt = 0.3f, reloadInAt = 1.4f, reloadChargeAt;
         public float equipTime = 0.4f;
         public float moveSpeedMultiplier = 1f;
 

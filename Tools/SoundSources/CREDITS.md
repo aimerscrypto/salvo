@@ -26,9 +26,11 @@ provides the synthesized UI sounds, music, ambience and remaining placeholders).
 | impact_sand.mp3 | [Sticks in dirt 2](https://freesound.org/people/worthahep88/sounds/319214/) | worthahep88 | bullet hits on sand |
 | impact_stone.mp3 | [ricochet](https://freesound.org/people/cedarstudios/sounds/148840/) | cedarstudios | bullet hits on stone |
 | impact_metal.mp3 | [bullet impacts](https://freesound.org/people/pushkin/sounds/144444/) | pushkin | bullet hits on metal |
-| rifle_reload.mp3 | [An M16 Rifle being reloaded while empty; full sequence](https://freesound.org/people/ser%C3%B8ut%C5%8Dnin--depriv%C9%99d/sounds/725397/) | serøutōnin--deprivəd | Ranger / Longbow reloads |
-| smg_reload.mp3 | [Uzi submachine gun being reloaded while empty](https://freesound.org/people/ser%C3%B8ut%C5%8Dnin--depriv%C9%99d/sounds/677160/) | serøutōnin--deprivəd | Hornet reload |
-| pistol_reload_full.mp3 | [PistolReloadSound.wav](https://freesound.org/people/MaximBomba/sounds/432139/) | MaximBomba | Viper reload |
+| rifle_reload_game.mp3 | [Assault Rifle Reload](https://freesound.org/people/qubodup/sounds/815879/) | qubodup | Ranger reload |
+| sniper_reload.mp3 | [Assault Rifle Reload](https://freesound.org/people/Kodack/sounds/256912/) | Kodack | Longbow reload |
+| rifle_reload.mp3 | [An M16 Rifle being reloaded while empty; full sequence](https://freesound.org/people/ser%C3%B8ut%C5%8Dnin--depriv%C9%99d/sounds/725397/) | serøutōnin--deprivəd | (spare, not used) |
+| smg_reload.mp3 | [Uzi submachine gun being reloaded while empty](https://freesound.org/people/ser%C3%B8ut%C5%8Dnin--depriv%C9%99d/sounds/677160/) | serøutōnin--deprivəd | Hornet reload (pauses shortened) |
+| pistol_reload_full.mp3 | [PistolReloadSound.wav](https://freesound.org/people/MaximBomba/sounds/432139/) | MaximBomba | Viper reload (whole take) |
 | shell_load.mp3 | [Shotgun Shell Load](https://freesound.org/people/Bratish/sounds/500293/) | Bratish | Bulldog shell insert |
 | casings_concrete.mp3 | [Brass bullet shell casing drop onto concrete](https://freesound.org/people/GrayJoy/sounds/210102/) | GrayJoy | spent casings |
 | casings_tile.mp3 | [Bouncing Shell Casings (Various Sizes)](https://freesound.org/people/GryffDavid/sounds/318964/) | GryffDavid | spent casings |

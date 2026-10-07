@@ -292,17 +292,30 @@ namespace Salvo
                 }
                 else
                 {
-                    float tilt = Mathf.SmoothStep(0, 1, Mathf.Clamp01(p / 0.15f)) * (1f - Mathf.SmoothStep(0, 1, Mathf.Clamp01((p - 0.82f) / 0.18f)));
+                    // keyed in seconds to the reload recording: mag leaves at reloadOutAt, is seated at
+                    // reloadInAt, charging handle / slide / bolt at reloadChargeAt
+                    float t = p * d.reloadTime, end = d.reloadTime;
+                    float tilt = Mathf.SmoothStep(0, 1, Mathf.Clamp01(t / 0.22f)) * (1f - Mathf.SmoothStep(0, 1, Mathf.Clamp01((t - (end - 0.3f)) / 0.3f)));
                     rot *= Quaternion.Euler(10f * tilt, 12f * tilt, 30f * tilt);
                     pos += new Vector3(-0.01f, -0.03f, 0.01f) * tilt;
-                    // mag: out (0.15-0.4) away, back in (0.5-0.75)
-                    float magOut = Mathf.SmoothStep(0, 1, Mathf.Clamp01((p - 0.15f) / 0.2f)) * (1f - Mathf.SmoothStep(0, 1, Mathf.Clamp01((p - 0.5f) / 0.22f)));
+                    float travel = Mathf.Clamp((d.reloadInAt - d.reloadOutAt) * 0.4f, 0.12f, 0.3f);
+                    float leave = Mathf.SmoothStep(0, 1, Mathf.Clamp01((t - d.reloadOutAt) / travel));
+                    float seat = Mathf.SmoothStep(0, 1, Mathf.Clamp01((t - (d.reloadInAt - travel)) / travel));
+                    float magOut = leave * (1f - seat);
                     if (cur.mag != null)
                     {
                         cur.mag.localPosition = cur.magBase + Node(0, -0.22f, -0.02f) * magOut;
-                        cur.mag.gameObject.SetActive(!(p > 0.33f && p < 0.5f));
+                        cur.mag.gameObject.SetActive(magOut < 0.97f);
                     }
-                    armLOffset = new Vector3(0.0f, -0.12f, -0.12f) * magOut + new Vector3(0, -0.02f, 0) * tilt;
+                    // seating slap and the charging handle / slide: a short jolt of the whole gun
+                    float slap = Mathf.Sin(Mathf.Clamp01((t - d.reloadInAt + 0.03f) / 0.18f) * Mathf.PI);
+                    float charge = d.reloadChargeAt > 0f ? Mathf.Sin(Mathf.Clamp01((t - d.reloadChargeAt + 0.08f) / 0.28f) * Mathf.PI) : 0f;
+                    rot *= Quaternion.Euler(-3f * slap - 4f * charge, 0f, -7f * charge);
+                    pos += new Vector3(0f, 0.006f * slap, -0.014f * charge);
+                    if (d.fireMode == FireMode.Bolt && d.reloadChargeAt > 0f && t > d.reloadChargeAt - 0.05f && t < d.reloadChargeAt + 0.45f)
+                        actionT = (t - d.reloadChargeAt + 0.05f) / 0.45f; // work the bolt with the sound
+                    armLOffset = new Vector3(0.0f, -0.12f, -0.12f) * magOut + new Vector3(0, -0.02f, 0) * tilt
+                               + new Vector3(0.02f, 0.03f, -0.1f) * charge;
                 }
             }
             else

@@ -176,21 +176,29 @@ def gunshot(name, close_len, sub_hz, sub_gain, drive, seed):
     return close, tails["out"], tails["in"]
 
 
-def sequence(length, parts):
-    """Lay recorded segments (source, start, end, at, gain) on a timeline: one reload, start to finish."""
-    out = np.zeros(int(length * SR))
-    cache = {}
-    for src, a, b, at, gain in parts:
-        if src not in cache:
-            cache[src] = load(src)
-        seg = cache[src][int(a * SR):int(b * SR)].copy()
-        seg = seg - np.mean(seg)
-        fi, fo = int(0.006 * SR), int(0.04 * SR)
-        seg[:fi] *= np.linspace(0, 1, fi); seg[-fo:] *= np.linspace(1, 0, fo)
-        i = int(at * SR)
-        seg = seg[:max(0, len(out) - i)]
-        out[i:i + len(seg)] += seg * gain
-    return level(tidy(out, 0.05, -55), 0.9)
+def whole(name, a, b):
+    """A recording as one piece (no slicing), trimmed to [a, b], de-clicked and leveled."""
+    x = load(name)
+    seg = x[int(a * SR):int(b * SR)].copy()
+    seg -= np.mean(seg)
+    fi, fo = int(0.004 * SR), int(0.06 * SR)
+    seg[:fi] *= np.linspace(0, 1, fi); seg[-fo:] *= np.linspace(1, 0, fo)
+    return level(seg, 0.9)
+
+
+def tighten(name, keep, xfade=0.03):
+    """One recording with the silent pauses between its parts shortened (equal-power crossfades)."""
+    x = load(name)
+    n = int(xfade * SR)
+    out = x[int(keep[0][0] * SR):int(keep[0][1] * SR)].copy()
+    for a, b in keep[1:]:
+        seg = x[int(a * SR):int(b * SR)].copy()
+        t = np.linspace(0, np.pi / 2, n)
+        out[-n:] = out[-n:] * np.cos(t) + seg[:n] * np.sin(t)
+        out = np.concatenate([out, seg[n:]])
+    out -= np.mean(out)
+    fo = int(0.06 * SR); out[-fo:] *= np.linspace(1, 0, fo)
+    return level(out, 0.9)
 
 
 def takes(name, count, length, gap=0.6, thresh=-30):
@@ -233,26 +241,13 @@ def build():
         save(W + out + "_TailOut", tail_out)
         save(W + out + "_TailIn", tail_in)
     save(W + "Empty_Click", events("dry_fire", 1, 0.25, rms=0.1)[0])
-    # full reloads, laid out to match each weapon's reload animation (mag out ~15-35%, seated ~72%)
-    save(W + "Viper_Reload", sequence(1.45, [
-        ("pistol_reload_full", 0.0, 0.42, 0.14, 1.0),       # mag release + mag out
-        ("pistol_reload_full", 0.52, 0.98, 0.62, 1.0),      # new mag in
-        ("pistol_reload_full", 1.05, 1.6, 0.92, 1.0)]))     # slide released
-    save(W + "Hornet_Reload", sequence(1.85, [
-        ("smg_reload", 0.0, 0.62, 0.22, 1.0),
-        ("smg_reload", 1.55, 2.32, 0.78, 1.0),
-        ("smg_reload", 3.0, 3.75, 1.2, 0.9)]))
-    save(W + "Ranger_Reload", sequence(2.15, [
-        ("rifle_reload", 0.12, 0.48, 0.02, 0.6),            # grip shift
-        ("rifle_reload", 0.5, 0.98, 0.3, 1.0),              # mag release + out
-        ("rifle_reload", 2.08, 2.66, 1.0, 1.0),             # new mag in
-        ("rifle_reload", 3.08, 3.42, 1.44, 1.0),            # seat
-        ("rifle_reload", 3.62, 3.98, 1.7, 0.9)]))           # bolt release
-    save(W + "Longbow_Reload", sequence(2.7, [
-        ("rifle_reload", 0.5, 0.98, 0.38, 1.0),
-        ("rifle_reload", 2.08, 2.66, 1.3, 1.0),
-        ("rifle_reload", 3.08, 3.42, 1.86, 1.0),
-        ("rifle_reload", 6.45, 6.9, 2.2, 0.6)]))            # shouldered
+    # full reloads: one continuous recording per gun. The game's reload time and the animation's
+    # mag-out / mag-in / charging-handle moments are set to this recording (SalvoContentBuilder).
+    save(W + "Ranger_Reload", whole("rifle_reload_game", 0.0, 1.87))      # out 0.03, seated 0.84, charge 1.68
+    save(W + "Viper_Reload", whole("pistol_reload_full", 0.0, 1.5))       # out 0.02, in 0.62, slide 1.28
+    save(W + "Longbow_Reload", whole("sniper_reload", 0.0, 3.45))         # out 0.53, in 1.35, bolt 2.91
+    # the Uzi take has two long pauses (hand to pouch, hand to bolt): shorten the pauses only
+    save(W + "Hornet_Reload", tighten("smg_reload", [(0.0, 0.6), (1.45, 2.3), (2.9, 3.75)]))  # out 0.05, in 1.1, charge 1.61
     # one shell pushed into the tube
     x = load("shell_load")
     st, env = onsets(x, -24, 0.2)

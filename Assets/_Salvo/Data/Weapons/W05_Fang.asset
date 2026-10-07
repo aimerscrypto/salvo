@@ -34,6 +34,9 @@ MonoBehaviour:
   reserveAmmo: 0
   reloadTime: 2
   reloadPerShell: 0
+  reloadOutAt: 0.3
+  reloadInAt: 1.4
+  reloadChargeAt: 0
   equipTime: 0.25
   moveSpeedMultiplier: 1.08
   hipSpread: 0

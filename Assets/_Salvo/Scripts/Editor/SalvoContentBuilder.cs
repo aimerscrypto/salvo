@@ -202,6 +202,9 @@ namespace Salvo.EditorTools
             return w;
         }
 
+        // reload times and the reloadOutAt / InAt / ChargeAt moments are measured from each gun's
+        // reload recording (Tools/process_sounds.py), so the animation lands on the sounds
+
         /// <summary>Shot, tails and reload from Audio/Weapons/&lt;name&gt;_*.wav (Tools/process_sounds.py).</summary>
         static void Sounds(WeaponDef w, string name)
         {
@@ -222,7 +225,7 @@ namespace Salvo.EditorTools
                     w.description = "Reliable semi-auto sidearm. Quick to draw, punishing in steady hands.";
                     w.category = "PISTOL"; w.slot = WeaponSlot.Secondary; w.fireMode = FireMode.Semi; w.ownedByDefault = true; w.supportGrip = SupportGrip.Pistol;
                     w.damage = 27; w.headMultiplier = 1.8f; w.limbMultiplier = 0.85f; w.falloffStart = 15; w.falloffEnd = 38; w.minDamageFactor = 0.6f;
-                    w.rpm = 420; w.magSize = 12; w.reserveAmmo = 60; w.reloadTime = 1.35f; w.equipTime = 0.3f; w.moveSpeedMultiplier = 1.04f;
+                    w.rpm = 420; w.magSize = 12; w.reserveAmmo = 60; w.reloadTime = 1.5f; w.reloadOutAt = 0.02f; w.reloadInAt = 0.62f; w.reloadChargeAt = 1.28f; w.equipTime = 0.3f; w.moveSpeedMultiplier = 1.04f;
                     w.hipSpread = 1.3f; w.adsSpread = 0.25f; w.moveSpreadAdd = 1.0f; w.airSpreadAdd = 3f; w.spreadPerShot = 0.55f; w.maxBloom = 2.5f; w.bloomRecovery = 6f;
                     w.recoilPitch = 1.5f; w.recoilYaw = 0.4f; w.recoilRecovery = 10f; w.kickBack = 0.05f; w.kickRotation = 6f;
                     w.adsFov = 68; w.adsTime = 0.13f; w.adsMoveMultiplier = 0.85f;
@@ -235,7 +238,7 @@ namespace Salvo.EditorTools
                     w.description = "Compact SMG with a blistering fire rate. Owns close quarters, sprays at range.";
                     w.category = "SMG"; w.slot = WeaponSlot.Primary; w.fireMode = FireMode.Auto; w.price = 1200; w.unlockLevel = 2; w.supportGrip = SupportGrip.Foregrip;
                     w.damage = 17; w.headMultiplier = 1.5f; w.limbMultiplier = 0.85f; w.falloffStart = 10; w.falloffEnd = 26; w.minDamageFactor = 0.55f;
-                    w.rpm = 880; w.magSize = 32; w.reserveAmmo = 160; w.reloadTime = 1.75f; w.equipTime = 0.35f; w.moveSpeedMultiplier = 1.0f;
+                    w.rpm = 880; w.magSize = 32; w.reserveAmmo = 160; w.reloadTime = 2.25f; w.reloadOutAt = 0.05f; w.reloadInAt = 1.01f; w.reloadChargeAt = 1.55f; w.equipTime = 0.35f; w.moveSpeedMultiplier = 1.0f;
                     w.hipSpread = 2.2f; w.adsSpread = 0.9f; w.moveSpreadAdd = 0.8f; w.airSpreadAdd = 2.5f; w.spreadPerShot = 0.16f; w.maxBloom = 2.4f; w.bloomRecovery = 9f;
                     w.recoilPitch = 0.55f; w.recoilYaw = 0.35f; w.recoilRecovery = 12f; w.kickBack = 0.03f; w.kickRotation = 2.5f;
                     w.adsFov = 66; w.adsTime = 0.14f; w.adsMoveMultiplier = 0.85f;
@@ -248,7 +251,7 @@ namespace Salvo.EditorTools
                     w.description = "All-round assault rifle. Controllable recoil and solid damage at every range.";
                     w.category = "ASSAULT RIFLE"; w.slot = WeaponSlot.Primary; w.fireMode = FireMode.Auto; w.ownedByDefault = true;
                     w.damage = 24; w.headMultiplier = 1.6f; w.limbMultiplier = 0.85f; w.falloffStart = 25; w.falloffEnd = 60; w.minDamageFactor = 0.7f;
-                    w.rpm = 640; w.magSize = 30; w.reserveAmmo = 120; w.reloadTime = 2.05f; w.equipTime = 0.45f; w.moveSpeedMultiplier = 0.95f;
+                    w.rpm = 640; w.magSize = 30; w.reserveAmmo = 120; w.reloadTime = 1.9f; w.reloadOutAt = 0.03f; w.reloadInAt = 0.84f; w.reloadChargeAt = 1.68f; w.equipTime = 0.45f; w.moveSpeedMultiplier = 0.95f;
                     w.hipSpread = 2.6f; w.adsSpread = 0.35f; w.moveSpreadAdd = 1.4f; w.airSpreadAdd = 4f; w.spreadPerShot = 0.22f; w.maxBloom = 2.8f; w.bloomRecovery = 7f;
                     w.recoilPitch = 0.85f; w.recoilYaw = 0.3f; w.recoilRecovery = 9f; w.kickBack = 0.035f; w.kickRotation = 3.5f;
                     w.adsFov = 56; w.adsTime = 0.17f; w.adsMoveMultiplier = 0.75f;
@@ -275,7 +278,7 @@ namespace Salvo.EditorTools
                     w.description = "Bolt-action sniper rifle. One clean headshot ends the argument.";
                     w.category = "SNIPER"; w.slot = WeaponSlot.Primary; w.fireMode = FireMode.Bolt; w.price = 2500; w.unlockLevel = 5;
                     w.damage = 95; w.headMultiplier = 2.2f; w.limbMultiplier = 0.8f; w.falloffStart = 200; w.falloffEnd = 300; w.minDamageFactor = 1f; w.range = 400;
-                    w.rpm = 46; w.magSize = 5; w.reserveAmmo = 25; w.reloadTime = 2.6f; w.equipTime = 0.6f; w.moveSpeedMultiplier = 0.9f;
+                    w.rpm = 46; w.magSize = 5; w.reserveAmmo = 25; w.reloadTime = 3.45f; w.reloadOutAt = 0.53f; w.reloadInAt = 1.35f; w.reloadChargeAt = 2.91f; w.equipTime = 0.6f; w.moveSpeedMultiplier = 0.9f;
                     w.hipSpread = 7f; w.adsSpread = 0f; w.moveSpreadAdd = 3f; w.airSpreadAdd = 8f; w.spreadPerShot = 0f; w.maxBloom = 0f;
                     w.recoilPitch = 5.5f; w.recoilYaw = 0.8f; w.recoilRecovery = 6f; w.kickBack = 0.1f; w.kickRotation = 10f;
                     w.adsFov = 22; w.adsTime = 0.24f; w.scoped = true; w.adsSensitivity = 0.75f; w.adsMoveMultiplier = 0.6f;

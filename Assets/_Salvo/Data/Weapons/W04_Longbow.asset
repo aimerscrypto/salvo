@@ -32,8 +32,11 @@ MonoBehaviour:
   rpm: 46
   magSize: 5
   reserveAmmo: 25
-  reloadTime: 2.6
+  reloadTime: 3.45
   reloadPerShell: 0
+  reloadOutAt: 0.53
+  reloadInAt: 1.35
+  reloadChargeAt: 2.91
   equipTime: 0.6
   moveSpeedMultiplier: 0.9
   hipSpread: 7
