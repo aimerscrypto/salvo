@@ -173,14 +173,17 @@ namespace Salvo
         /// The tail restarts on every shot, so a burst rings out once when you let go, and the
         /// ambience ducks under the shot the way your ears do.
         /// </summary>
+        /// <summary>Your own shot sits a little under full scale so reloads, steps and callouts stay audible.</summary>
+        const float OwnShotVolume = 0.75f;
+
         public static void OwnGunshot(WeaponDef d, Vector3 pos, float pitch)
         {
             if (d == null || I == null) return;
-            Play2D(d.fireSound, 1f, pitch);
+            Play2D(d.fireSound, OwnShotVolume, pitch);
             if (I.ownTailOut == null) { I.ownTailOut = I.TailSource("ownTailOut"); I.ownTailIn = I.TailSource("ownTailIn"); }
             float enc = Enclosure(pos);
-            Restart(I.ownTailOut, d.tailOutdoor, (1f - enc) * 0.75f, pitch);
-            Restart(I.ownTailIn, d.tailIndoor, enc * 0.85f, pitch);
+            Restart(I.ownTailOut, d.tailOutdoor, (1f - enc) * 0.38f, pitch);
+            Restart(I.ownTailIn, d.tailIndoor, enc * 0.45f, pitch);
             I.duck = Mathf.Max(I.duck, d.pellets > 1 || d.fireMode == FireMode.Bolt ? 1f : 0.6f);
         }
 
@@ -202,18 +205,21 @@ namespace Salvo
         {
             if (d == null || d.fireSound == null || I == null) return;
             float dist = Vector3.Distance(I.Ear, pos);
-            float far = Mathf.Clamp01((dist - 15f) / 70f);
-            PlayWorld(d.fireSound, pos, Mathf.Lerp(1f, 0.45f, far), pitch, 170f, true, true);
+            // up close it's the full blast; with distance the punch and highs go first, leaving a
+            // dull pop and the space ringing (the close layer is mixed for point-blank, not 60 m)
+            float far = Mathf.Clamp01((dist - 8f) / 55f);
+            float cutoff = Mathf.Lerp(22000f, 1500f, Mathf.Pow(far, 0.6f));
+            PlayWorld(d.fireSound, pos, Mathf.Lerp(0.8f, 0.3f, far), pitch, 170f, true, true, 0f, cutoff);
             // one tail at a time across all remote guns: a firefight rings, it doesn't pile up voices
             if (Time.time - lastRemoteTail > 0.11f)
             {
                 lastRemoteTail = Time.time;
                 float enc = Enclosure(pos);
                 var tail = enc > 0.5f ? d.tailIndoor : d.tailOutdoor;
-                PlayWorld(tail, pos, Mathf.Lerp(0.6f, 0.95f, far), pitch, 220f, false, true, 0f, Mathf.Lerp(9000f, 2400f, far));
+                PlayWorld(tail, pos, Mathf.Lerp(0.3f, 0.42f, far), pitch, 220f, false, true, 0f, Mathf.Lerp(7000f, 1800f, far));
             }
             if (far > 0f && Bank != null && Bank.distantShot != null)
-                PlayWorld(Bank.distantShot, pos, far * 0.9f, pitch * Random.Range(0.94f, 1.04f), 260f, false, true);
+                PlayWorld(Bank.distantShot, pos, far * 0.3f, pitch * Random.Range(0.94f, 1.04f), 260f, false, true);
         }
 
         /// <summary>A spent case bouncing off the ground a moment after it was ejected.</summary>

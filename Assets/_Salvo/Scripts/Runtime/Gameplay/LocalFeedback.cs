@@ -15,7 +15,7 @@ namespace Salvo
             m.Footstep += () =>
             {
                 if (bank == null) return;
-                AudioManager.Play2D(bank.Step(Surfaces.Under(c.transform.position)), c.Motor.Crouching ? 0.22f : 0.45f, Random.Range(0.92f, 1.08f));
+                AudioManager.Play2D(bank.Step(Surfaces.Under(c.transform.position)), c.Motor.Crouching ? 0.45f : 0.95f, Random.Range(0.92f, 1.08f));
             };
             m.Jumped += () => AudioManager.Play2D(bank?.jump, 0.45f, Random.Range(0.95f, 1.05f));
             m.Landed += speed =>
@@ -23,7 +23,7 @@ namespace Salvo
                 float k = Mathf.Clamp01(speed / 14f);
                 AudioManager.Play2D(bank?.land, k * 0.8f + 0.2f, Random.Range(0.9f, 1.05f));
                 // the surface you land on: sand puff, wood thump, metal clang
-                if (bank != null) AudioManager.Play2D(bank.Step(Surfaces.Under(c.transform.position)), k * 0.5f + 0.35f, Random.Range(0.85f, 0.95f));
+                if (bank != null) AudioManager.Play2D(bank.Step(Surfaces.Under(c.transform.position)), k * 0.5f + 0.55f, Random.Range(0.85f, 0.95f));
                 GameCamera.I?.LandImpact(speed);
             };
             m.SlideStarted += () => AudioManager.Play2D(bank?.slide, 0.6f);

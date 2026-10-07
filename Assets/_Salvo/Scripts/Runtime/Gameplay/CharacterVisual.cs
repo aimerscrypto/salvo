@@ -232,7 +232,7 @@ namespace Salvo
                 if (!c.IsLocalHuman && !airborne && hs > 2.5f && !c.Motor.Crouching)
                 {
                     var bank = AudioManager.Bank;
-                    if (bank != null) AudioManager.PlayWorld(bank.Step(Surfaces.Under(transform.position)), transform.position, hs > GameRules.RunSpeed * 0.8f ? 0.7f : 0.5f, Random.Range(0.92f, 1.08f), 32f);
+                    if (bank != null) AudioManager.PlayWorld(bank.Step(Surfaces.Under(transform.position)), transform.position, hs > GameRules.RunSpeed * 0.8f ? 1f : 0.75f, Random.Range(0.92f, 1.08f), 40f);
                 }
             }
             float amp = Mathf.Lerp(0f, 38f, run) * (1f - airT);

@@ -101,6 +101,11 @@ def analyze():
 
 RNG = np.random.default_rng(7)
 
+# mix targets (active loudness, dB full scale, before the game's own volume): bigger guns are
+# louder, and a reload sits ~9 dB under a rifle shot so it reads clearly between bursts
+SHOT_DB = {"Viper": -7.5, "Hornet": -7.5, "Ranger": -7.0, "Bulldog": -5.5, "Longbow": -5.0}
+RELOAD_DB = -16.0
+
 
 def bandpass(x, lo, hi, order=2):
     if lo:
@@ -176,6 +181,34 @@ def gunshot(name, close_len, sub_hz, sub_gain, drive, seed):
     return close, tails["out"], tails["in"]
 
 
+def compress(x, thresh_db=-30, ratio=5.0, smooth_ms=12):
+    """
+    Downward compressor: loud clicks are pulled toward the quiet handling noise between them, so
+    a reload reads clearly at the same peak level instead of being a few spikes over near-silence.
+    """
+    env = envelope(x, 3)
+    peak = env.max() or 1
+    db = 20 * np.log10(np.maximum(env / peak, 1e-6))
+    gr = np.maximum(0, db - thresh_db) * (1 - 1 / ratio)
+    k = max(1, int(SR * smooth_ms / 1000))
+    gr = np.convolve(gr, np.ones(k) / k, mode="same")   # smooth the gain so it doesn't crackle
+    return x * 10 ** (-gr / 20)
+
+
+def active_db(x):
+    """Loudness while something is sounding: RMS of the 50 ms windows above -26 dB of the loudest."""
+    n = int(0.05 * SR)
+    r = np.array([np.sqrt(np.mean(x[i:i + n] ** 2)) for i in range(0, max(1, len(x) - n), n)])
+    a = r[r > r.max() * 0.05]
+    return 20 * np.log10(np.sqrt(np.mean(a ** 2)) + 1e-9)
+
+
+def loudness(x, target_db, ceiling=0.95):
+    """Bring a clip to a loudness target; peaks that would pass the ceiling are soft-limited."""
+    x = x * 10 ** ((target_db - active_db(x)) / 20)
+    return ceiling * np.tanh(x / ceiling)
+
+
 def whole(name, a, b):
     """A recording as one piece (no slicing), trimmed to [a, b], de-clicked and leveled."""
     x = load(name)
@@ -183,7 +216,7 @@ def whole(name, a, b):
     seg -= np.mean(seg)
     fi, fo = int(0.004 * SR), int(0.06 * SR)
     seg[:fi] *= np.linspace(0, 1, fi); seg[-fo:] *= np.linspace(1, 0, fo)
-    return level(seg, 0.9)
+    return loudness(compress(seg), RELOAD_DB)
 
 
 def tighten(name, keep, xfade=0.03):
@@ -198,7 +231,7 @@ def tighten(name, keep, xfade=0.03):
         out = np.concatenate([out, seg[n:]])
     out -= np.mean(out)
     fo = int(0.06 * SR); out[-fo:] *= np.linspace(1, 0, fo)
-    return level(out, 0.9)
+    return loudness(compress(out), RELOAD_DB)
 
 
 def takes(name, count, length, gap=0.6, thresh=-30):
@@ -237,7 +270,7 @@ def build():
             ("bulldog_fire", "Bulldog", 0.6, 48, 0.55, 2.0),
             ("longbow_fire", "Longbow", 0.75, 42, 0.6, 2.2))):
         close, tail_out, tail_in = gunshot(name, close_len, sub_hz, sub_gain, drive, 11 + i)
-        save(W + out + "_Fire", close)
+        save(W + out + "_Fire", loudness(close, SHOT_DB[out], 0.98))
         save(W + out + "_TailOut", tail_out)
         save(W + out + "_TailIn", tail_in)
     save(W + "Empty_Click", events("dry_fire", 1, 0.25, rms=0.1)[0])
@@ -252,7 +285,7 @@ def build():
     x = load("shell_load")
     st, env = onsets(x, -24, 0.2)
     best = max(st, key=lambda s: env[s:s + int(0.05 * SR)].max())
-    save(W + "Shell_Load", level(tidy(cut(x, best, 0.42), 0.06), 0.9, 0.13))
+    save(W + "Shell_Load", loudness(compress(tidy(cut(x, best, 0.42), 0.06)), RELOAD_DB + 2))
     # draw / handling rattle
     x = load("handling")
     st, env = onsets(x, -24, 0.4)

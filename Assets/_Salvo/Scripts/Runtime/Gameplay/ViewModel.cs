@@ -39,13 +39,13 @@ namespace Salvo
             c = combatant;
             var w = c.Weapons;
             w.Fired += OnFired;
-            w.Equipped += d => { equipT = 0f; StopReloadSound(); if (built) AudioManager.Play2D(d.equipSound, 0.55f, Random.Range(0.95f, 1.05f)); };
-            w.ReloadShell += d => { shellBump = 1f; AudioManager.Play2D(d.reloadIn, 0.6f, Random.Range(0.95f, 1.05f)); };
+            w.Equipped += d => { equipT = 0f; StopReloadSound(); if (built) AudioManager.Play2D(d.equipSound, 0.9f, Random.Range(0.95f, 1.05f)); };
+            w.ReloadShell += d => { shellBump = 1f; AudioManager.Play2D(d.reloadIn, 1f, Random.Range(0.95f, 1.05f)); };
             w.ActionCycled += _ => { actionT = 0f; PlayAction(); };
             w.Meleed += _ => { meleeT = 0f; meleeSide = -meleeSide; AudioManager.Play2D(AudioManager.Bank?.meleeSwing, 0.8f, Random.Range(0.95f, 1.1f)); };
-            w.DryFired += d => { dryT = 0f; AudioManager.Play2D(AudioManager.Bank?.emptyClick, 0.7f); };
+            w.DryFired += d => { dryT = 0f; AudioManager.Play2D(AudioManager.Bank?.emptyClick, 0.9f); };
             // the whole reload is one recording laid out to the animation; stop it if the reload is cut short
-            w.ReloadStarted += (d, dur) => { StopReloadSound(); reloadVoice = AudioManager.Play2DTracked(d.reloadSequence, 0.85f); reloadClip = d.reloadSequence; };
+            w.ReloadStarted += (d, dur) => { StopReloadSound(); reloadVoice = AudioManager.Play2DTracked(d.reloadSequence, 1f); reloadClip = d.reloadSequence; };
             w.ReloadFinished += d => reloadClip = null;
             c.Motor.Landed += s => landT = Mathf.Clamp01(s / 12f);
             Build();
@@ -211,7 +211,7 @@ namespace Salvo
         {
             var d = c.Weapons.Current;
             if (d == null) return;
-            AudioManager.Play2D(d.actionSound, 0.8f);
+            AudioManager.Play2D(d.actionSound, 1f);
             if (cur != null && cur.eject != null)
             {
                 FxManager.I?.EjectShell(cur.eject.position, GameCamera.I.transform.right, d.pellets > 1);
