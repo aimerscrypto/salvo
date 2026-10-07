@@ -18,9 +18,7 @@ MonoBehaviour:
   slot: 2
   fireMode: 4
   category: MELEE
-  price: 0
-  unlockLevel: 1
-  ownedByDefault: 1
+  starter: 1
   damage: 55
   headMultiplier: 1
   limbMultiplier: 1

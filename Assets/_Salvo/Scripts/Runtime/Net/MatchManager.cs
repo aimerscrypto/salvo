@@ -181,7 +181,7 @@ namespace Salvo
         {
             var w = GameConfig.I.Weapon(id);
             if (w != null && w.slot == slot) return w.id;
-            foreach (var x in GameConfig.I.weapons) if (x.slot == slot && x.ownedByDefault) return x.id;
+            foreach (var x in GameConfig.I.weapons) if (x.slot == slot && x.starter) return x.id;
             return 0;
         }
 
@@ -195,7 +195,7 @@ namespace Salvo
             var c = go.GetComponent<Combatant>();
             // bots pick from the primary pool with a bias towards rifles
             var primaries = new List<WeaponDef>();
-            foreach (var w in GameConfig.I.weapons) if (w.slot == WeaponSlot.Primary) { primaries.Add(w); if (w.ownedByDefault) primaries.Add(w); }
+            foreach (var w in GameConfig.I.weapons) if (w.slot == WeaponSlot.Primary) { primaries.Add(w); if (w.starter) primaries.Add(w); }
             var prim = primaries[UnityEngine.Random.Range(0, primaries.Count)];
             int skinCount = GameConfig.I.skins.Length;
             c.PendingInit = new Combatant.InitData

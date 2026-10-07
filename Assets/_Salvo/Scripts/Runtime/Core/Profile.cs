@@ -31,7 +31,7 @@ namespace Salvo
         public int level = 1;
         public int xp;
         public int coins = 500;
-        public List<int> ownedWeapons = new List<int>();
+        public List<int> ownedWeapons = new List<int>();   // legacy: guns used to be bought; kept so old saves still verify
         public List<WeaponSkinEntry> ownedSkins = new List<WeaponSkinEntry>();
         public List<WeaponSkinEntry> equippedSkins = new List<WeaponSkinEntry>();
         public int primary = 2;
@@ -98,8 +98,6 @@ namespace Salvo
         {
             var cfg = GameConfig.I;
             if (cfg == null) return;
-            foreach (var w in cfg.weapons)
-                if (w != null && w.ownedByDefault && !Data.ownedWeapons.Contains(w.id)) Data.ownedWeapons.Add(w.id);
             if (!Owns(Data.primary) || cfg.Weapon(Data.primary).slot != WeaponSlot.Primary)
                 Data.primary = FirstOwned(WeaponSlot.Primary);
             if (!Owns(Data.secondary) || cfg.Weapon(Data.secondary).slot != WeaponSlot.Secondary)
@@ -133,7 +131,8 @@ namespace Salvo
         }
 
         // ------------------------------------------------------------------ ownership
-        public static bool Owns(int weaponId) => Data.ownedWeapons.Contains(weaponId);
+        /// <summary>Every gun is free; only finishes (skins) are bought.</summary>
+        public static bool Owns(int weaponId) => GameConfig.I != null && GameConfig.I.Weapon(weaponId) != null;
 
         public static bool OwnsSkin(int weaponId, int skinId)
         {
@@ -165,17 +164,6 @@ namespace Salvo
         }
 
         public enum BuyResult { Ok, AlreadyOwned, NotEnoughCoins, Locked }
-
-        public static BuyResult BuyWeapon(WeaponDef w)
-        {
-            if (Owns(w.id)) return BuyResult.AlreadyOwned;
-            if (Data.level < w.unlockLevel) return BuyResult.Locked;
-            if (Data.coins < w.price) return BuyResult.NotEnoughCoins;
-            Data.coins -= w.price;
-            Data.ownedWeapons.Add(w.id);
-            Save();
-            return BuyResult.Ok;
-        }
 
         public static BuyResult BuySkin(WeaponDef w, SkinDef s)
         {

@@ -11,7 +11,6 @@ namespace Salvo
     {
         readonly UIRoot ui;
         readonly MatchSettings play = new MatchSettings { fillWithBots = 6, maxPlayers = 8 };
-        int shopTab;
         int shopSkinWeapon = 2;
         int settingsTab;
         WeaponDef loadoutSel;
@@ -50,8 +49,6 @@ namespace Salvo
             // loadout / shop / profile / settings
             ui.Q<Button>("btn-loadout-back").clicked += Back;
             ui.Q<Button>("btn-shop-back").clicked += Back;
-            ui.Q<Button>("tab-weapons").clicked += () => { shopTab = 0; BuildShop(); };
-            ui.Q<Button>("tab-skins").clicked += () => { shopTab = 1; BuildShop(); };
             ui.Q<Button>("btn-profile-back").clicked += Back;
             ui.Q<Button>("btn-save-name").clicked += () =>
             {
@@ -187,14 +184,12 @@ namespace Salvo
         VisualElement WeaponCard(WeaponDef w, bool loadout)
         {
             var d = Profile.Data;
-            bool owned = Profile.Owns(w.id);
             bool equipped = (w.slot == WeaponSlot.Primary ? d.primary : d.secondary) == w.id;
             var card = new VisualElement();
             card.AddToClassList("card");
             card.style.flexDirection = FlexDirection.Row;
             card.style.alignItems = Align.Center;
             if (loadoutSel == w) card.AddToClassList("selected");
-            if (!owned) card.AddToClassList("locked");
             var icon = new VisualElement();
             icon.AddToClassList("icon-img");
             icon.style.width = 150; icon.style.height = 54;
@@ -206,20 +201,19 @@ namespace Salvo
             title.Add(UIRoot.Lbl(w.displayName.ToUpperInvariant(), "card-title"));
             if (equipped) title.Add(UIRoot.Lbl("EQUIPPED", "tag equipped"));
             col.Add(title);
-            col.Add(UIRoot.Lbl(owned ? w.category : (d.level < w.unlockLevel ? $"UNLOCKS AT LEVEL {w.unlockLevel}" : $"{w.price:N0} COINS - BUY IN SHOP"), "card-sub"));
+            col.Add(UIRoot.Lbl(w.category, "card-sub"));
             card.Add(col);
             card.RegisterCallback<ClickEvent>(_ =>
             {
                 loadoutSel = w;
                 MenuState.PreviewWeapon = w.id;
                 MenuState.PreviewSkin = -1;
-                if (owned && !equipped)
+                if (!equipped)
                 {
                     Profile.EquipWeapon(w);
                     AudioManager.PlayUI(AudioManager.Bank?.uiClick);
                     RequestLoadoutUpdate();
                 }
-                else if (!owned) AudioManager.PlayUI(AudioManager.Bank?.uiError, 0.5f);
                 BuildLoadout();
             });
             return card;
@@ -313,20 +307,10 @@ namespace Salvo
         // ================================================================== SHOP
         void BuildShop()
         {
-            ui.Q<Button>("tab-weapons").EnableInClassList("active", shopTab == 0);
-            ui.Q<Button>("tab-skins").EnableInClassList("active", shopTab == 1);
+            // every gun is free: the shop sells weapon finishes only
             var grid = ui.Q("shop-grid");
             grid.Clear();
             var cfg = GameConfig.I;
-            if (shopTab == 0)
-            {
-                foreach (var w in cfg.weapons)
-                {
-                    if (w.slot == WeaponSlot.Melee) continue;
-                    grid.Add(ShopWeaponCard(w));
-                }
-            }
-            else
             {
                 var bar = new VisualElement { style = { width = Length.Percent(100), marginBottom = 8 } };
                 var names = new List<string>();
@@ -339,31 +323,6 @@ namespace Salvo
             }
             ui.WireSounds(grid);
             Refresh();
-        }
-
-        VisualElement ShopWeaponCard(WeaponDef w)
-        {
-            bool owned = Profile.Owns(w.id);
-            bool locked = Profile.Data.level < w.unlockLevel;
-            var card = new VisualElement();
-            card.AddToClassList("card");
-            card.style.width = 330;
-            var icon = new VisualElement();
-            icon.AddToClassList("icon-img");
-            icon.style.width = 300; icon.style.height = 110;
-            if (w.icon != null) icon.style.backgroundImage = w.icon;
-            card.Add(icon);
-            card.Add(UIRoot.Lbl(w.displayName.ToUpperInvariant(), "card-title"));
-            card.Add(UIRoot.Lbl(w.category + (w.slot == WeaponSlot.Secondary ? "  -  SECONDARY" : ""), "card-sub"));
-            var desc = UIRoot.Lbl(w.description, "card-sub");
-            desc.style.whiteSpace = WhiteSpace.Normal;
-            desc.style.height = 54;
-            card.Add(desc);
-            if (owned) card.Add(UIRoot.Btn("OWNED", "secondary small", null));
-            else if (locked) card.Add(UIRoot.Btn($"LEVEL {w.unlockLevel}", "secondary small", null));
-            else card.Add(UIRoot.Btn($"BUY  {w.price:N0}", "small", () => ConfirmWeaponPurchase(w)));
-            if (owned || locked) card.Q<Button>().SetEnabled(false);
-            return card;
         }
 
         VisualElement ShopSkinCard(WeaponDef w, SkinDef s)
@@ -393,16 +352,6 @@ namespace Salvo
             card.Add(b);
             card.RegisterCallback<MouseEnterEvent>(_ => { MenuState.PreviewWeapon = w.id; MenuState.PreviewSkin = s.id; });
             return card;
-        }
-
-        void ConfirmWeaponPurchase(WeaponDef w)
-        {
-            ui.Modal("BUY " + w.displayName.ToUpperInvariant(), $"Spend {w.price:N0} coins?\nYou have {Profile.Data.coins:N0}.", "BUY", () =>
-            {
-                var r = Profile.BuyWeapon(w);
-                Purchased(r, w.displayName);
-                BuildShop();
-            }, "CANCEL", null);
         }
 
         void ConfirmSkinPurchase(WeaponDef w, SkinDef s, Action after)

@@ -18,9 +18,7 @@ MonoBehaviour:
   slot: 0
   fireMode: 0
   category: ASSAULT RIFLE
-  price: 0
-  unlockLevel: 1
-  ownedByDefault: 1
+  starter: 1
   damage: 24
   headMultiplier: 1.6
   limbMultiplier: 0.85

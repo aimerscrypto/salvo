@@ -18,9 +18,7 @@ MonoBehaviour:
   slot: 0
   fireMode: 2
   category: SHOTGUN
-  price: 1500
-  unlockLevel: 3
-  ownedByDefault: 0
+  starter: 0
   damage: 13
   headMultiplier: 1.3
   limbMultiplier: 0.9

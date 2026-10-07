@@ -13,10 +13,9 @@ namespace Salvo
         public FireMode fireMode;
         public string category = "RIFLE";
 
-        [Header("Economy")]
-        public int price;
-        public int unlockLevel = 1;
-        public bool ownedByDefault;
+        [Tooltip("Default pick for its slot (new players, invalid loadouts); bots favour these. Every gun is free.")]
+        [UnityEngine.Serialization.FormerlySerializedAs("ownedByDefault")]
+        public bool starter;
 
         [Header("Damage")]
         public float damage = 25f;

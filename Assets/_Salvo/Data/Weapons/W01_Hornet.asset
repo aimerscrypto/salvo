@@ -18,9 +18,7 @@ MonoBehaviour:
   slot: 0
   fireMode: 0
   category: SMG
-  price: 1200
-  unlockLevel: 2
-  ownedByDefault: 0
+  starter: 0
   damage: 17
   headMultiplier: 1.5
   limbMultiplier: 0.85

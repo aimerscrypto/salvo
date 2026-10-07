@@ -174,7 +174,7 @@ namespace Salvo
         /// ambience ducks under the shot the way your ears do.
         /// </summary>
         /// <summary>Your own shot sits a little under full scale so reloads, steps and callouts stay audible.</summary>
-        const float OwnShotVolume = 0.75f;
+        const float OwnShotVolume = 0.56f;
 
         public static void OwnGunshot(WeaponDef d, Vector3 pos, float pitch)
         {
@@ -209,7 +209,7 @@ namespace Salvo
             // dull pop and the space ringing (the close layer is mixed for point-blank, not 60 m)
             float far = Mathf.Clamp01((dist - 8f) / 55f);
             float cutoff = Mathf.Lerp(22000f, 1500f, Mathf.Pow(far, 0.6f));
-            PlayWorld(d.fireSound, pos, Mathf.Lerp(0.8f, 0.3f, far), pitch, 170f, true, true, 0f, cutoff);
+            PlayWorld(d.fireSound, pos, Mathf.Lerp(0.6f, 0.22f, far), pitch, 170f, true, true, 0f, cutoff);
             // one tail at a time across all remote guns: a firefight rings, it doesn't pile up voices
             if (Time.time - lastRemoteTail > 0.11f)
             {

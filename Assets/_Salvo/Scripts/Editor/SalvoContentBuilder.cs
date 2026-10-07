@@ -223,7 +223,7 @@ namespace Salvo.EditorTools
                 W("W00_Viper", 0, "Viper", w =>
                 {
                     w.description = "Reliable semi-auto sidearm. Quick to draw, punishing in steady hands.";
-                    w.category = "PISTOL"; w.slot = WeaponSlot.Secondary; w.fireMode = FireMode.Semi; w.ownedByDefault = true; w.supportGrip = SupportGrip.Pistol;
+                    w.category = "PISTOL"; w.slot = WeaponSlot.Secondary; w.fireMode = FireMode.Semi; w.starter = true; w.supportGrip = SupportGrip.Pistol;
                     w.damage = 27; w.headMultiplier = 1.8f; w.limbMultiplier = 0.85f; w.falloffStart = 15; w.falloffEnd = 38; w.minDamageFactor = 0.6f;
                     w.rpm = 420; w.magSize = 12; w.reserveAmmo = 60; w.reloadTime = 1.5f; w.reloadOutAt = 0.02f; w.reloadInAt = 0.62f; w.reloadChargeAt = 1.28f; w.equipTime = 0.3f; w.moveSpeedMultiplier = 1.04f;
                     w.hipSpread = 1.3f; w.adsSpread = 0.25f; w.moveSpreadAdd = 1.0f; w.airSpreadAdd = 3f; w.spreadPerShot = 0.55f; w.maxBloom = 2.5f; w.bloomRecovery = 6f;
@@ -236,7 +236,7 @@ namespace Salvo.EditorTools
                 W("W01_Hornet", 1, "Hornet", w =>
                 {
                     w.description = "Compact SMG with a blistering fire rate. Owns close quarters, sprays at range.";
-                    w.category = "SMG"; w.slot = WeaponSlot.Primary; w.fireMode = FireMode.Auto; w.price = 1200; w.unlockLevel = 2; w.supportGrip = SupportGrip.Foregrip;
+                    w.category = "SMG"; w.slot = WeaponSlot.Primary; w.fireMode = FireMode.Auto; w.supportGrip = SupportGrip.Foregrip;
                     w.damage = 17; w.headMultiplier = 1.5f; w.limbMultiplier = 0.85f; w.falloffStart = 10; w.falloffEnd = 26; w.minDamageFactor = 0.55f;
                     w.rpm = 880; w.magSize = 32; w.reserveAmmo = 160; w.reloadTime = 2.25f; w.reloadOutAt = 0.05f; w.reloadInAt = 1.01f; w.reloadChargeAt = 1.55f; w.equipTime = 0.35f; w.moveSpeedMultiplier = 1.0f;
                     w.hipSpread = 2.2f; w.adsSpread = 0.9f; w.moveSpreadAdd = 0.8f; w.airSpreadAdd = 2.5f; w.spreadPerShot = 0.16f; w.maxBloom = 2.4f; w.bloomRecovery = 9f;
@@ -249,7 +249,7 @@ namespace Salvo.EditorTools
                 W("W02_Ranger", 2, "Ranger", w =>
                 {
                     w.description = "All-round assault rifle. Controllable recoil and solid damage at every range.";
-                    w.category = "ASSAULT RIFLE"; w.slot = WeaponSlot.Primary; w.fireMode = FireMode.Auto; w.ownedByDefault = true;
+                    w.category = "ASSAULT RIFLE"; w.slot = WeaponSlot.Primary; w.fireMode = FireMode.Auto; w.starter = true;
                     w.damage = 24; w.headMultiplier = 1.6f; w.limbMultiplier = 0.85f; w.falloffStart = 25; w.falloffEnd = 60; w.minDamageFactor = 0.7f;
                     w.rpm = 640; w.magSize = 30; w.reserveAmmo = 120; w.reloadTime = 1.9f; w.reloadOutAt = 0.03f; w.reloadInAt = 0.84f; w.reloadChargeAt = 1.68f; w.equipTime = 0.45f; w.moveSpeedMultiplier = 0.95f;
                     w.hipSpread = 2.6f; w.adsSpread = 0.35f; w.moveSpreadAdd = 1.4f; w.airSpreadAdd = 4f; w.spreadPerShot = 0.22f; w.maxBloom = 2.8f; w.bloomRecovery = 7f;
@@ -262,7 +262,7 @@ namespace Salvo.EditorTools
                 W("W03_Bulldog", 3, "Bulldog", w =>
                 {
                     w.description = "Pump-action shotgun. Nine pellets of bad news inside ten metres.";
-                    w.category = "SHOTGUN"; w.slot = WeaponSlot.Primary; w.fireMode = FireMode.Pump; w.price = 1500; w.unlockLevel = 3;
+                    w.category = "SHOTGUN"; w.slot = WeaponSlot.Primary; w.fireMode = FireMode.Pump;
                     w.damage = 13; w.pellets = 9; w.headMultiplier = 1.3f; w.limbMultiplier = 0.9f; w.falloffStart = 7; w.falloffEnd = 20; w.minDamageFactor = 0.3f; w.range = 60;
                     w.rpm = 72; w.magSize = 6; w.reserveAmmo = 30; w.reloadTime = 0.45f; w.reloadPerShell = true; w.equipTime = 0.5f; w.moveSpeedMultiplier = 0.95f;
                     w.hipSpread = 4.8f; w.adsSpread = 3.6f; w.moveSpreadAdd = 0.5f; w.airSpreadAdd = 1.5f; w.spreadPerShot = 0f; w.maxBloom = 0f;
@@ -276,7 +276,7 @@ namespace Salvo.EditorTools
                 W("W04_Longbow", 4, "Longbow", w =>
                 {
                     w.description = "Bolt-action sniper rifle. One clean headshot ends the argument.";
-                    w.category = "SNIPER"; w.slot = WeaponSlot.Primary; w.fireMode = FireMode.Bolt; w.price = 2500; w.unlockLevel = 5;
+                    w.category = "SNIPER"; w.slot = WeaponSlot.Primary; w.fireMode = FireMode.Bolt;
                     w.damage = 95; w.headMultiplier = 2.2f; w.limbMultiplier = 0.8f; w.falloffStart = 200; w.falloffEnd = 300; w.minDamageFactor = 1f; w.range = 400;
                     w.rpm = 46; w.magSize = 5; w.reserveAmmo = 25; w.reloadTime = 3.45f; w.reloadOutAt = 0.53f; w.reloadInAt = 1.35f; w.reloadChargeAt = 2.91f; w.equipTime = 0.6f; w.moveSpeedMultiplier = 0.9f;
                     w.hipSpread = 7f; w.adsSpread = 0f; w.moveSpreadAdd = 3f; w.airSpreadAdd = 8f; w.spreadPerShot = 0f; w.maxBloom = 0f;
@@ -289,7 +289,7 @@ namespace Salvo.EditorTools
                 W("W05_Fang", 5, "Fang", w =>
                 {
                     w.description = "Combat knife. Fast slashes; strike from behind for an instant takedown.";
-                    w.category = "MELEE"; w.slot = WeaponSlot.Melee; w.fireMode = FireMode.Melee; w.ownedByDefault = true; w.supportGrip = SupportGrip.None;
+                    w.category = "MELEE"; w.slot = WeaponSlot.Melee; w.fireMode = FireMode.Melee; w.starter = true; w.supportGrip = SupportGrip.None;
                     w.damage = 55; w.headMultiplier = 1f; w.limbMultiplier = 1f; w.range = 2.3f; w.rpm = 110; w.magSize = 1; w.reserveAmmo = 0;
                     w.equipTime = 0.25f; w.moveSpeedMultiplier = 1.08f; w.hipSpread = 0; w.adsSpread = 0;
                     w.hipPosition = new Vector3(0.22f, -0.25f, 0.5f); w.hipEuler = new Vector3(-42, -22, 18); w.sightDistance = 0.3f;

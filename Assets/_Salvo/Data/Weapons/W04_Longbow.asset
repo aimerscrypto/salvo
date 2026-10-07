@@ -18,9 +18,7 @@ MonoBehaviour:
   slot: 0
   fireMode: 3
   category: SNIPER
-  price: 2500
-  unlockLevel: 5
-  ownedByDefault: 0
+  starter: 0
   damage: 95
   headMultiplier: 2.2
   limbMultiplier: 0.8

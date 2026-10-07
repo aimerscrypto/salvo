@@ -30,7 +30,7 @@ weapon handling, footsteps and impacts are CC0 field recordings from Freesound
 - **Bots:** NavMesh pathing, line-of-sight perception, reaction time and human-like aim error,
   strafing, seeking health when hurt. Easy / Normal / Hard.
 - **Progression & economy:** XP and levels (1–60), coins from kills/headshots/assists/wins,
-  level-up bonuses, daily login streak, weapon unlocks, 11 weapon finishes (rarities, camo patterns),
+  level-up bonuses, daily login streak, every gun free from the start, 11 purchasable weapon finishes (rarities, camo patterns),
   squad colors, career stats. Local profile is HMAC-signed against casual tampering.
 - **Audio:** recorded gunshots with a punchy close layer plus an outdoor or indoor reverb tail
   (picked by whether the shooter is under a roof / between walls); full recorded reload

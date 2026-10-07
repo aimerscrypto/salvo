@@ -214,10 +214,6 @@
                 </ui:VisualElement>
                 <ui:Button name="btn-shop-back" text="BACK" class="btn secondary" />
             </ui:VisualElement>
-            <ui:VisualElement class="tabs">
-                <ui:Button name="tab-weapons" text="WEAPONS" class="tab active" />
-                <ui:Button name="tab-skins" text="FINISHES" class="tab" />
-            </ui:VisualElement>
             <ui:ScrollView name="shop-scroll" class="grow">
                 <ui:VisualElement name="shop-grid" class="row" style="flex-wrap: wrap; align-items: flex-start;" />
             </ui:ScrollView>

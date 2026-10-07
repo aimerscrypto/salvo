@@ -18,9 +18,7 @@ MonoBehaviour:
   slot: 1
   fireMode: 1
   category: PISTOL
-  price: 0
-  unlockLevel: 1
-  ownedByDefault: 1
+  starter: 1
   damage: 27
   headMultiplier: 1.8
   limbMultiplier: 0.85
