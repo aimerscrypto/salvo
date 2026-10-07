@@ -170,10 +170,13 @@ def gunshot(name, close_len, sub_hz, sub_gain, drive, seed, at=0.0, natural_tail
     dry = dry - np.mean(dry)
     # transient: emphasize the first 25 ms (the crack) a little
     n = len(dry); t = np.arange(n) / SR
-    dry = dry * (1 + 0.6 * np.exp(-t / 0.02))
-    body = thump(sub_hz * 2.2, sub_hz, close_len + 0.6, 0.07) * sub_gain * np.max(np.abs(dry))
-    close = saturate(dry / np.max(np.abs(dry)) + body / np.max(np.abs(dry)), drive)
-    env = np.ones(n); fo = int(close_len * SR)
+    if drive > 0:
+        dry = dry * (1 + 0.6 * np.exp(-t / 0.02))
+        body = thump(sub_hz * 2.2, sub_hz, close_len + 0.6, 0.07) * sub_gain * np.max(np.abs(dry))
+        close = saturate(dry / np.max(np.abs(dry)) + body / np.max(np.abs(dry)), drive)
+    else:
+        close = dry / np.max(np.abs(dry))   # already a designed game sound: keep it as is
+    env = np.ones(n); fo = min(n, int(close_len * SR))
     env[fo:] = 0; ramp = int(0.08 * SR)
     env[fo - ramp:fo] = np.linspace(1, 0, ramp) ** 2
     close = level(tidy((close * env)[:fo], 0.02, -60), 0.98)
@@ -311,8 +314,8 @@ def build():
             ("viper_fire", "Viper", 0.42, 70, 0.35, 1.8, 0.0, 0.0),
             ("hornet_fire", "Hornet", 0.26, 75, 0.3, 1.9, 0.0, 0.0),
             ("ranger_fire", "Ranger", 0.34, 62, 0.4, 2.0, 0.0, 0.0),
-            ("shotgun_12ga", "Bulldog", 0.45, 52, 0.45, 1.2, 0.78, 0.0),     # 12-gauge, second of four shots
-            ("rifle_308", "Longbow", 0.6, 48, 0.4, 1.2, 8.5, 0.0))):        # .308 bolt rifle (its own echo is under wind noise)
+            ("shotgun_shot", "Bulldog", 0.68, 0, 0, 0, 0.0, 0.0),            # designed game shotgun (LeMudCrab)
+            ("sniper_shot_bolt", "Longbow", 0.96, 0, 0, 0, 0.0, 0.0))):      # designed sniper shot, bolt cut off (deathnsorrow)
         close, tail_out, tail_in = gunshot(name, close_len, sub_hz, sub_gain, drive, 11 + i, at, natural_tail)
         save(W + out + "_Fire", loudness(close, SHOT_DB[out], 0.98))
         save(W + out + "_TailOut", tail_out)
@@ -322,18 +325,16 @@ def build():
     # mag-out / mag-in / charging-handle moments are set to this recording (SalvoContentBuilder).
     save(W + "Ranger_Reload", whole("rifle_reload_game", 0.0, 1.87))      # out 0.03, seated 0.84, charge 1.68
     save(W + "Viper_Reload", whole("pistol_reload_full", 0.0, 1.5))       # out 0.02, in 0.62, slide 1.28
-    # bolt rifle: work the bolt open, swap the magazine, run the bolt home
-    save(W + "Longbow_Reload", chain([("bolt_cycle", 5.70, 6.25),            # lift + back (0.07, 0.35)
-                                      ("rifle_reload_game", 0.0, 1.0),       # mag out 0.55, seated 1.36
-                                      ("bolt_cycle", 6.30, 6.95)]))          # forward + down (1.60, 1.99)
+    # sniper: mag out 0.01, seated 0.64, bolt worked 1.32-1.9 (MaximBomba "Rifle-or-shotgun-reload")
+    save(W + "Longbow_Reload", loudness(whole_raw("sniper_reload_full", 0.0, 2.05), RELOAD_DB))
     # the Uzi take has two long pauses (hand to pouch, hand to bolt): shorten the pauses only
     save(W + "Hornet_Reload", tighten("smg_reload", [(0.0, 0.6), (1.45, 2.3), (2.9, 3.75)]))  # out 0.05, in 1.1, charge 1.61
-    # one shell pushed into the tube (shell against the lifter, then the click past the latch)
-    save(W + "Shell_Load", loudness(whole_raw("shell_insert_a", 0.55, 1.12), RELOAD_DB + 1))
-    # one pump stroke: back (0.11) and forward (0.36) in time with the view-model pump
-    save(W + "Pump_Action", loudness(whole_raw("pump_cycle", 3.30, 3.98), RELOAD_DB + 1))
-    # one bolt cycle after a shot: lift, back, forward, down (~1.1 s)
-    save(W + "Bolt_Action", loudness(whole_raw("bolt_cycle", 5.70, 6.95), RELOAD_DB + 1))
+    # one shell pushed into the tube, from a full shotgun reload take (lensflare8642)
+    save(W + "Shell_Load", loudness(whole_raw("shotgun_reload_full", 1.22, 1.72), RELOAD_DB + 5))
+    # one pump stroke (Paul368): back 0.12, forward 0.41, in time with the view-model pump
+    save(W + "Pump_Action", loudness(whole_raw("shotgun_pump", 0.04, 0.95), RELOAD_DB + 2))
+    # the bolt after a shot, cut from the sniper recording itself: back 0.07, forward 0.42
+    save(W + "Bolt_Action", loudness(whole_raw("sniper_shot_bolt", 0.95, 1.53), RELOAD_DB + 2))
     # body foley
     P = "Player/"
     save(P + "Land", loudness(whole_raw("jump_gravel", 0.27, 0.95), -14))
@@ -343,6 +344,7 @@ def build():
     save(P + "Death", loudness(resample(whole_raw("grunt", 0.0, 0.32), 0.82), -13))
     save(W + "Knife_Swing", loudness(whole_raw("knife_whoosh", 0.42, 0.74), -16))
     save(W + "Knife_Hit", loudness(whole_raw("knife_stab", 0.26, 0.47), -13))
+    save("Feedback/Headshot", loudness(whole_raw("headshot", 0.0, 0.44), -12))
     for k, r in enumerate((0.9, 1.0, 1.12)):
         save(f"Surfaces/Impact_Wood_{k}", loudness(resample(whole_raw("wood_hit", 0.16, 0.38), r), -15))
     # draw / handling rattle

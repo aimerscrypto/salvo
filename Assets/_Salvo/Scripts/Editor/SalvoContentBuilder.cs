@@ -264,7 +264,7 @@ namespace Salvo.EditorTools
                     w.description = "Pump-action shotgun. Nine pellets of bad news inside ten metres.";
                     w.category = "SHOTGUN"; w.slot = WeaponSlot.Primary; w.fireMode = FireMode.Pump;
                     w.damage = 13; w.pellets = 9; w.headMultiplier = 1.3f; w.limbMultiplier = 0.9f; w.falloffStart = 7; w.falloffEnd = 20; w.minDamageFactor = 0.3f; w.range = 60;
-                    w.rpm = 72; w.magSize = 6; w.reserveAmmo = 30; w.reloadTime = 0.45f; w.reloadPerShell = true; w.equipTime = 0.5f; w.moveSpeedMultiplier = 0.95f;
+                    w.rpm = 72; w.magSize = 6; w.reserveAmmo = 30; w.reloadTime = 0.53f; w.reloadPerShell = true; // shell rhythm of the recording w.equipTime = 0.5f; w.moveSpeedMultiplier = 0.95f;
                     w.hipSpread = 4.8f; w.adsSpread = 3.6f; w.moveSpreadAdd = 0.5f; w.airSpreadAdd = 1.5f; w.spreadPerShot = 0f; w.maxBloom = 0f;
                     w.recoilPitch = 4.5f; w.recoilYaw = 1.2f; w.recoilRecovery = 7f; w.kickBack = 0.09f; w.kickRotation = 12f;
                     w.adsFov = 68; w.adsTime = 0.18f; w.adsMoveMultiplier = 0.85f;
@@ -278,7 +278,7 @@ namespace Salvo.EditorTools
                     w.description = "Bolt-action sniper rifle. One clean headshot ends the argument.";
                     w.category = "SNIPER"; w.slot = WeaponSlot.Primary; w.fireMode = FireMode.Bolt;
                     w.damage = 95; w.headMultiplier = 2.2f; w.limbMultiplier = 0.8f; w.falloffStart = 200; w.falloffEnd = 300; w.minDamageFactor = 1f; w.range = 400;
-                    w.rpm = 40; w.magSize = 5; w.reserveAmmo = 25; w.reloadTime = 2.2f; w.reloadOutAt = 0.55f; w.reloadInAt = 1.36f; w.reloadChargeAt = 1.55f; w.equipTime = 0.6f; w.moveSpeedMultiplier = 0.9f;
+                    w.rpm = 46; w.magSize = 5; w.reserveAmmo = 25; w.reloadTime = 2.05f; w.reloadOutAt = 0.01f; w.reloadInAt = 0.64f; w.reloadChargeAt = 1.32f; w.equipTime = 0.6f; w.moveSpeedMultiplier = 0.9f;
                     w.hipSpread = 7f; w.adsSpread = 0f; w.moveSpreadAdd = 3f; w.airSpreadAdd = 8f; w.spreadPerShot = 0f; w.maxBloom = 0f;
                     w.recoilPitch = 5.5f; w.recoilYaw = 0.8f; w.recoilRecovery = 6f; w.kickBack = 0.1f; w.kickRotation = 10f;
                     w.adsFov = 22; w.adsTime = 0.24f; w.scoped = true; w.adsSensitivity = 0.75f; w.adsMoveMultiplier = 0.6f;

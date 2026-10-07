@@ -217,8 +217,6 @@
 .nameplate-fill { height: 100%; border-radius: 2px; background-color: var(--c-good); }
 .center-hint { position: absolute; left: 0; right: 0; top: 58%; align-items: center; }
 .hint { -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/LilitaOne-Regular SDF.asset"); font-size: 20px; color: var(--c-text); background-color: rgba(24,31,46,0.75); border-radius: 8px; padding: 4px 14px; }
-.reload-bar { width: 120px; height: 6px; border-radius: 3px; background-color: rgba(0,0,0,0.4); margin-top: 6px; overflow: hidden; }
-.reload-fill { height: 100%; background-color: var(--c-accent); }
 .fps { position: absolute; left: 10px; top: 8px; -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/Rubik-Medium SDF.asset"); font-size: 14px; color: rgba(255,255,255,0.7); }
 .code-chip { position: absolute; left: 26px; top: 22px; -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/LilitaOne-Regular SDF.asset"); font-size: 18px; color: var(--c-muted); background-color: rgba(24,31,46,0.75); border-radius: 8px; padding: 4px 12px; }
 .spawn-shield { -unity-font-definition: url("/Assets/_Salvo/UI/Fonts/LilitaOne-Regular SDF.asset"); font-size: 16px; color: var(--c-teal); margin-bottom: 6px; }

@@ -41,9 +41,6 @@
             </ui:VisualElement>
             <ui:VisualElement class="center-hint" picking-mode="Ignore">
                 <ui:Label name="hint" text="" class="hint hidden" picking-mode="Ignore" />
-                <ui:VisualElement name="reload-bar" class="reload-bar hidden" picking-mode="Ignore">
-                    <ui:VisualElement name="reload-fill" class="reload-fill" picking-mode="Ignore" />
-                </ui:VisualElement>
             </ui:VisualElement>
 
             <ui:VisualElement class="hud-bottom-left" picking-mode="Ignore">

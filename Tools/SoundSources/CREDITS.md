@@ -26,13 +26,19 @@ provides the synthesized UI sounds, music, ambience and remaining placeholders).
 | impact_sand.mp3 | [Sticks in dirt 2](https://freesound.org/people/worthahep88/sounds/319214/) | worthahep88 | bullet hits on sand |
 | impact_stone.mp3 | [ricochet](https://freesound.org/people/cedarstudios/sounds/148840/) | cedarstudios | bullet hits on stone |
 | impact_metal.mp3 | [bullet impacts](https://freesound.org/people/pushkin/sounds/144444/) | pushkin | bullet hits on metal |
-| shotgun_12ga.mp3 | [Shot Gun - 12 Gauge - Fire Four Shots Quickly](https://freesound.org/people/mrrap4food/sounds/619041/) | mrrap4food | Bulldog fire |
+| sniper_shot_bolt.mp3 | [shot and reload](https://freesound.org/people/deathnsorrow/sounds/149177/) | deathnsorrow | Longbow fire + bolt |
+| sniper_reload_full.mp3 | [Rifle-or-shotgun-reload.wav](https://freesound.org/people/MaximBomba/sounds/432141/) | MaximBomba | Longbow reload |
+| shotgun_shot.mp3 | [Shotgun Shot](https://freesound.org/people/LeMudCrab/sounds/163455/) | LeMudCrab | Bulldog fire |
+| shotgun_pump.mp3 | [Shotgun Cock Reload Layered (Powerful)](https://freesound.org/people/Paul368/sounds/200966/) | Paul368 | Bulldog pump |
+| shotgun_reload_full.mp3 | [shotgun sounds](https://freesound.org/people/lensflare8642/sounds/145209/) | lensflare8642 | Bulldog shell insert |
+| headshot.mp3 | [Headshot sound](https://freesound.org/people/MadPanCake/sounds/660769/) | MadPanCake | headshot hit |
+| shotgun_12ga.mp3 | [Shot Gun - 12 Gauge - Fire Four Shots Quickly](https://freesound.org/people/mrrap4food/sounds/619041/) | mrrap4food | (replaced) |
 | shotgun_mossberg.mp3 | [Mossberg 500A - 1 shot and pump](https://freesound.org/people/AnthonyChan0/sounds/159710/) | AnthonyChan0 | (spare: recording clips) |
-| pump_cycle.mp3 | [Pump Action Shotgun Cycle](https://freesound.org/people/Zott820/sounds/370344/) | Zott820 | Bulldog pump |
-| shell_insert_a.mp3 | [load_gun_slow.ogg](https://freesound.org/people/mchrpt/sounds/660975/) | mchrpt | Bulldog shell insert |
+| pump_cycle.mp3 | [Pump Action Shotgun Cycle](https://freesound.org/people/Zott820/sounds/370344/) | Zott820 | (replaced) |
+| shell_insert_a.mp3 | [load_gun_slow.ogg](https://freesound.org/people/mchrpt/sounds/660975/) | mchrpt | (replaced) |
 | shell_insert_b.mp3 | [Loading Shotgun](https://freesound.org/people/Dentrabert/sounds/673317/) | Dentrabert | (spare) |
-| rifle_308.mp3 | [308. calliber gun shots](https://freesound.org/people/Christian.Combrinck/sounds/764954/) | Christian.Combrinck | Longbow fire |
-| bolt_cycle.mp3 | [Mosin Nagant Bolt Action Cycle](https://freesound.org/people/Zott820/sounds/370345/) | Zott820 | Longbow bolt + reload bolt |
+| rifle_308.mp3 | [308. calliber gun shots](https://freesound.org/people/Christian.Combrinck/sounds/764954/) | Christian.Combrinck | (replaced) |
+| bolt_cycle.mp3 | [Mosin Nagant Bolt Action Cycle](https://freesound.org/people/Zott820/sounds/370345/) | Zott820 | (replaced) |
 | bolt_reload.mp3 | [Bolt Action Rifle Reload](https://freesound.org/people/AugustSandberg/sounds/508747/) | AugustSandberg | (spare) |
 | land.mp3 | [Human Impact on Ground](https://freesound.org/people/alegemaate/sounds/364690/) | alegemaate | light landing |
 | jump_gravel.mp3 | [Human jumping down to gravel w/ impact](https://freesound.org/people/DeqstersLab/sounds/819656/) | DeqstersLab | heavy landing |

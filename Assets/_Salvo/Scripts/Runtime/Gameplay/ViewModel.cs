@@ -314,11 +314,8 @@ namespace Salvo
                     pos += new Vector3(0f, 0.006f * slap, -0.014f * charge);
                     if (d.fireMode == FireMode.Bolt)
                     {
-                        // bolt rifle: bolt opened at the start (lift 0.07 s, back 0.35 s), held open over the
-                        // mag swap, run home at reloadChargeAt (forward, then down ~0.4 s later)
-                        float c0 = d.reloadChargeAt;
-                        boltLift = Mathf.SmoothStep(0, 1, Mathf.Clamp01(t / 0.1f)) * (1f - Mathf.SmoothStep(0, 1, Mathf.Clamp01((t - c0 - 0.38f) / 0.1f)));
-                        boltBack = Mathf.SmoothStep(0, 1, Mathf.Clamp01((t - 0.2f) / 0.17f)) * (1f - Mathf.SmoothStep(0, 1, Mathf.Clamp01((t - c0) / 0.1f)));
+                        // bolt rifle: after the mag swap the bolt is worked once, with the sound (reloadChargeAt)
+                        BoltPose((t - d.reloadChargeAt) / 0.6f);
                         charge = 0f;
                     }
                     armLOffset = new Vector3(0.0f, -0.12f, -0.12f) * magOut + new Vector3(0, -0.02f, 0) * tilt
@@ -332,17 +329,12 @@ namespace Salvo
             shellBump = Mathf.MoveTowards(shellBump, 0f, dt * 5f);
             pos += new Vector3(0, 0.01f, 0.01f) * shellBump;
 
-            // --- pump / bolt, timed to their recordings: pump back 0.11 s / forward 0.36 s;
-            // bolt lift 0.07, back 0.35, forward 0.72, down 1.1 s
-            float actionLen = d.fireMode == FireMode.Bolt ? BoltCycle : 0.38f;
+            // --- pump / bolt, timed to their recordings: pump back 0.12 s / forward 0.41 s;
+            // bolt back 0.07 s / forward 0.42 s
+            float actionLen = d.fireMode == FireMode.Bolt ? BoltCycle : 0.44f;
             actionT = Mathf.MoveTowards(actionT, 1f, dt / actionLen);
             float act = Mathf.Sin(Mathf.Clamp01(actionT) * Mathf.PI);
-            if (d.fireMode == FireMode.Bolt && !w.Reloading)
-            {
-                float u = Mathf.Clamp01(actionT) * BoltCycle;
-                boltLift = Mathf.SmoothStep(0, 1, Mathf.Clamp01(u / 0.1f)) * (1f - Mathf.SmoothStep(0, 1, Mathf.Clamp01((u - 0.98f) / 0.12f)));
-                boltBack = Mathf.SmoothStep(0, 1, Mathf.Clamp01((u - 0.2f) / 0.17f)) * (1f - Mathf.SmoothStep(0, 1, Mathf.Clamp01((u - 0.62f) / 0.12f)));
-            }
+            if (d.fireMode == FireMode.Bolt && !w.Reloading) BoltPose(actionT);
             if (cur.action != null)
             {
                 if (d.fireMode == FireMode.Pump) cur.action.localPosition = cur.actionBase + Node(0, 0, -0.09f) * act;
@@ -382,8 +374,16 @@ namespace Salvo
             if (cur.flash != null && cur.muzzle != null) cur.flash.transform.position = cur.muzzle.position;
         }
 
-        const float BoltCycle = 1.15f;   // length of the bolt recording
+        const float BoltCycle = 0.58f;   // length of the bolt recording
         float boltLift, boltBack;
+
+        /// <summary>Bolt handle at cycle phase u (0..1 over BoltCycle): up, back, forward, down.</summary>
+        void BoltPose(float u)
+        {
+            float s = Mathf.Clamp01(u) * BoltCycle;
+            boltLift = Mathf.SmoothStep(0, 1, Mathf.Clamp01(s / 0.05f)) * (1f - Mathf.SmoothStep(0, 1, Mathf.Clamp01((s - 0.45f) / 0.1f)));
+            boltBack = Mathf.SmoothStep(0, 1, Mathf.Clamp01((s - 0.03f) / 0.06f)) * (1f - Mathf.SmoothStep(0, 1, Mathf.Clamp01((s - 0.36f) / 0.07f)));
+        }
 
         // recoil springs: a velocity impulse v peaks at v * exp(-z/sqrt(1-z^2) * atan(sqrt(1-z^2)/z)) / w,
         // so the gains below turn "peak units / degrees" into impulses

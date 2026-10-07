@@ -28,7 +28,7 @@ namespace Salvo
         UIRoot ui;
         Combatant me;
         VisualElement crosshair, chTop, chBottom, chLeft, chRight, chDot, hitmarker, healthFill, healthGhost, killfeed, killBanner, dmgLayer,
-            hitNumbers, nameplates, respawn, scope, reloadBar, reloadFill, sbList, endBoard, endRewards;
+            hitNumbers, nameplates, respawn, scope, sbList, endBoard, endRewards;
         Label healthNum, ammoMag, ammoRes, weaponName, timer, scoreRed, scoreBlue, ffaInfo, bannerText, bannerSub, streakLabel, hint,
             respawnKiller, respawnTimer, respawnTitle, fps, codeChip, spawnShield;
         readonly Label[] slots = new Label[3];
@@ -60,7 +60,7 @@ namespace Salvo
             bannerText = ui.Q<Label>("kill-banner-text"); bannerSub = ui.Q<Label>("kill-banner-sub"); streakLabel = ui.Q<Label>("streak");
             dmgLayer = ui.Q("dmg-layer"); hitNumbers = ui.Q("hit-numbers"); nameplates = ui.Q("nameplates");
             respawn = ui.Q("respawn"); respawnKiller = ui.Q<Label>("respawn-killer"); respawnTimer = ui.Q<Label>("respawn-timer"); respawnTitle = ui.Q<Label>("respawn-title");
-            scope = ui.Q("scope"); hint = ui.Q<Label>("hint"); reloadBar = ui.Q("reload-bar"); reloadFill = ui.Q("reload-fill");
+            scope = ui.Q("scope"); hint = ui.Q<Label>("hint");
             fps = ui.Q<Label>("fps"); codeChip = ui.Q<Label>("code-chip"); spawnShield = ui.Q<Label>("spawn-shield");
             for (int i = 0; i < 3; i++) slots[i] = ui.Q<Label>("slot-" + i);
             sbList = ui.Q("sb-list"); endBoard = ui.Q("end-board"); endRewards = ui.Q("end-rewards");
@@ -182,7 +182,7 @@ namespace Salvo
             hitmarker.style.scale = new Scale(Vector3.one * (kill ? 1.5f : 1f));
             var bank = AudioManager.Bank;
             if (kill) AudioManager.Play2D(bank?.killConfirm, 0.9f);
-            else AudioManager.Play2D(zone == HitZone.Head ? bank?.headshot : bank?.hitmarker, 0.7f, Random.Range(0.97f, 1.05f));
+            else AudioManager.Play2D(zone == HitZone.Head ? bank?.headshot : bank?.hitmarker, zone == HitZone.Head ? 1f : 0.7f, Random.Range(0.97f, 1.05f));
             if (Settings.Data.damageNumbers)
             {
                 var l = UIRoot.Lbl(dmg.ToString(), zone == HitZone.Head ? "hit-number head" : "hit-number");
@@ -409,11 +409,9 @@ namespace Salvo
                     ammoRes.text = melee ? "" : "/ " + st.reserve;
                 }
                 ammoMag.style.color = !melee && st.mag <= Mathf.Max(1, def.magSize / 4) ? new Color(0.89f, 0.38f, 0.31f) : new Color(0.96f, 0.94f, 0.9f);
-                bool needReload = !melee && st.mag == 0 && !w.Reloading;
-                hint.EnableInClassList("hidden", !(needReload || w.Reloading));
-                hint.text = w.Reloading ? "RELOADING" : st.reserve > 0 ? "PRESS R TO RELOAD" : "NO AMMO";
-                reloadBar.EnableInClassList("hidden", !w.Reloading);
-                reloadFill.style.width = Length.Percent(w.ReloadProgress * 100f);
+                // no reload prompts or progress bar: the animation and sound say it; only warn when dry
+                hint.EnableInClassList("hidden", melee || st.mag > 0 || st.reserve > 0);
+                hint.text = "NO AMMO";
             }
 
             // crosshair

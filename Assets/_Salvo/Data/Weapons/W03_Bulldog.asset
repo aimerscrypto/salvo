@@ -30,7 +30,7 @@ MonoBehaviour:
   rpm: 72
   magSize: 6
   reserveAmmo: 30
-  reloadTime: 0.45
+  reloadTime: 0.53
   reloadPerShell: 1
   reloadOutAt: 0.3
   reloadInAt: 1.4
