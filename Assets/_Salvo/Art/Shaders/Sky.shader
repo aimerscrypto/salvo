@@ -52,6 +52,9 @@ Shader "Salvo/Sky"
 
             half4 frag(V i) : SV_Target
             {
+                float scope = SalvoScope(i.positionCS);
+                UNITY_BRANCH
+                if (scope <= 0.0) return half4(0, 0, 0, 1);
                 float3 d = normalize(i.dir);
                 half up = d.y;
                 half t = saturate(pow(saturate(up), 1.0 / _HorizonSharpness));
@@ -71,7 +74,7 @@ Shader "Salvo/Sky"
                 half disc = smoothstep(_SunSize, _SunSize + 0.0003, s);
                 half halo = pow(saturate(s), 64.0) * _SunHalo;
                 sky += _SunColor.rgb * (disc * (1.0 - cover * band) * 0.6 + halo);
-                return half4(SalvoGrade(sky, i.positionCS), 1);
+                return half4(SalvoGrade(sky, i.positionCS) * scope, 1);
             }
             ENDHLSL
         }

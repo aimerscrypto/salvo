@@ -7,7 +7,7 @@ PRESET=$1; SECS=$2; shift 2
 for v in "$@"; do
   label=${v%%|*}; spec=${v#*|}
   log="split_${label}.log"
-  ./Windows-Dev/SALVO.exe -salvo-practice -salvo-map ${MAP:-Outpost} -salvo-preset "$PRESET" -salvo-gfx "${spec:-none=0}" -logFile "$log" &
+  ./Windows-Dev/SALVO.exe -salvo-practice -salvo-map ${MAP:-Outpost} -salvo-preset "$PRESET" ${PRIMARY:+-salvo-primary $PRIMARY} -salvo-gfx "${spec:-none=0}" -logFile "$log" &
   sleep "$SECS"; taskkill //F //IM SALVO.exe >/dev/null 2>&1; sleep 3
   echo "== $label ($spec)"
   # skip the first two samples (loading + warm-up), average the rest field by field

@@ -80,6 +80,7 @@ namespace Salvo
         void OnDestroy()
         {
             ScopeResolution(false);
+            ShaderGrade.Scope = false;
             MatchManager.OnKill -= OnKill;
             MatchManager.OnMatchEnded -= OnMatchEnded;
             MatchManager.OnMatchStarted -= OnMatchStarted;
@@ -484,6 +485,7 @@ namespace Salvo
             // scope
             bool scoped = def != null && def.scoped && w.AimT > 0.92f && me.Alive;
             scope.EnableInClassList("hidden", !scoped);
+            ShaderGrade.Scope = scoped;
             ScopeResolution(scoped);
             crosshair.style.display = scoped || !me.Alive ? DisplayStyle.None : DisplayStyle.Flex;
 

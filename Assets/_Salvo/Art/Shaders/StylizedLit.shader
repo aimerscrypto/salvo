@@ -133,6 +133,9 @@ Shader "Salvo/StylizedLit"
             half4 frag(Varyings i) : SV_Target
             {
                 UNITY_SETUP_INSTANCE_ID(i);
+                float scope = SalvoScope(i.positionCS);
+                UNITY_BRANCH
+                if (scope <= 0.0) return half4(0, 0, 0, 1);
                 float3 n = normalize(i.normalWS);
                 half3 albedo = i.color.rgb * _BaseColor.rgb * SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, i.uv).rgb;
 
@@ -173,7 +176,7 @@ Shader "Salvo/StylizedLit"
 
                 half3 col = albedo * (ambient + direct) + mainLight.color * spec + _Emission.rgb;
                 col = MixFog(col, i.detailPos.w);
-                return half4(SalvoGrade(col, i.positionCS), 1.0h);
+                return half4(SalvoGrade(col, i.positionCS) * scope, 1.0h);
             }
             ENDHLSL
         }

@@ -19,6 +19,9 @@ namespace Salvo
         public static float Hurt;
         /// <summary>0..1 low-health desaturation, set by the HUD.</summary>
         public static float Desaturate;
+        /// <summary>Sniper scope up (the HUD): the shaders draw the black eyepiece around the lens.</summary>
+        public static bool Scope;
+        public const float ScopeRadius = 0.475f;   // fraction of screen height; ScopeView draws the reticle to match
         /// <summary>Profiling: skip the grade entirely (dev -salvo-gfx grade=0).</summary>
         public static bool DevDisabled;
 
@@ -27,7 +30,8 @@ namespace Salvo
 
         static readonly int Grade = Shader.PropertyToID("_SalvoGrade"), Lut = Shader.PropertyToID("_SalvoLut"),
             LutParams = Shader.PropertyToID("_SalvoLutParams"), Vig = Shader.PropertyToID("_SalvoVignette"),
-            VigColor = Shader.PropertyToID("_SalvoVignetteColor"), Sat = Shader.PropertyToID("_SalvoSaturation");
+            VigColor = Shader.PropertyToID("_SalvoVignetteColor"), Sat = Shader.PropertyToID("_SalvoSaturation"),
+            ScopeId = Shader.PropertyToID("_SalvoScope");
 
         UniversalAdditionalCameraData camData;
         Volume volume;
@@ -36,13 +40,14 @@ namespace Salvo
 
         void Awake() => camData = GetComponent<UniversalAdditionalCameraData>();
 
-        void OnDisable() => Shader.SetGlobalFloat(Grade, 0f);
+        void OnDisable() { Shader.SetGlobalFloat(Grade, 0f); Shader.SetGlobalVector(ScopeId, Vector4.zero); }
 
         void OnDestroy() { if (lut != null) Destroy(lut); }
 
         void LateUpdate()
         {
             if (camData != null && camData.renderPostProcessing) camData.renderPostProcessing = false;
+            Shader.SetGlobalVector(ScopeId, new Vector4(Scope ? 1f : 0f, ScopeRadius, 2.5f / Mathf.Max(1f, Screen.height * ScopeRadius), 0f));
             if (volume == null || !volume.isActiveAndEnabled) volume = FindVolume();
             var p = volume != null ? volume.sharedProfile : null;
             if (p == null || DevDisabled) { Shader.SetGlobalFloat(Grade, 0f); return; }

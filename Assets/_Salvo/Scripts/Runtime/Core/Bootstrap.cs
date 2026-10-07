@@ -51,6 +51,7 @@ namespace Salvo
             {
                 if (args[i] == "-salvo-bots") int.TryParse(args[i + 1], out bots);
                 if (args[i] == "-salvo-map") map = args[i + 1];
+                if (args[i] == "-salvo-primary" && int.TryParse(args[i + 1], out int prim)) Profile.Data.primary = prim; // session test hook
             }
             for (int i = 0; i < args.Length; i++)
             {
@@ -94,6 +95,7 @@ namespace Salvo
                     case "shadows": if (RenderSettings.sun != null) RenderSettings.sun.shadows = v <= 0 ? LightShadows.None : v < 2 ? LightShadows.Hard : LightShadows.Soft; break;
                     case "post": if (camData != null) camData.renderPostProcessing = v > 0; break;
                     case "grade": ShaderGrade.DevDisabled = v <= 0; break;
+                    case "aim": WeaponController.DebugForceAim = v > 0; break;
                 }
             }
             Debug.Log("[SALVO] dev gfx " + spec + $" (scale {urp.renderScale}, msaa {urp.msaaSampleCount}, hdr {urp.supportsHDR}, cascades {urp.shadowCascadeCount}, res {urp.mainLightShadowmapResolution})");

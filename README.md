@@ -68,6 +68,9 @@ Built and tuned on an Intel Celeron + UHD integrated GPU:
   math) and applied with one texture fetch at the end of the Salvo shaders, together with the
   vignette and the damage / low-health effects. URP's post pass cost ~7 ms per frame at 1080p on
   the UHD laptop; this costs ~1.7 ms.
+- The sniper scope's black eyepiece is drawn by the same shaders, which skip all lighting outside
+  the lens, so scoping in is cheaper than not (6.5 vs 9.3 ms GPU). Drawn as a full-screen UI
+  vector shape it had cost ~3.7 ms; the UI now only draws the thin reticle.
 - Custom `Salvo/StylizedLit` shader: albedo from vertex colors, ambient occlusion **baked into
   vertex alpha** in Blender (zero runtime cost), soft light ramp, optional triplanar grain.
   One shared material for the whole world → SRP Batcher + static batching.

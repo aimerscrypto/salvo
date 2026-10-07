@@ -61,6 +61,7 @@ Shader "Salvo/FxUnlit"
                 half4 c = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, i.uv) * i.color;
                 c.rgb = lerp(c.rgb, MixFog(c.rgb, i.fog), _FogAmount);
                 c.rgb = SalvoGrade(c.rgb, i.positionCS);
+                c *= SalvoScope(i.positionCS);   // nothing draws over the black eyepiece
                 return c;
             }
             ENDHLSL
