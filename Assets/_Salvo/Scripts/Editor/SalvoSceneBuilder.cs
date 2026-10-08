@@ -112,13 +112,15 @@ namespace Salvo.EditorTools
             public Color sun = new Color(1f, 0.94f, 0.84f), ambSky, ambEquator, ambGround, fog;
             public float sunIntensity = 1.45f, fogStart = 55f, fogEnd = 260f, killHeight = GameRules.KillHeight, shadowStrength = 0.82f;
             public Vector3 sunEuler = new Vector3(47f, -38f, 0f);
+            /// <summary>Half size (x, z) of the walled play area: invisible player-only walls rise above it. Zero = none.</summary>
+            public Vector2 clipHalf;
         }
 
         public static readonly Theme[] Themes =
         {
             new Theme
             {
-                name = "Outpost", display = "Outpost",
+                name = "Outpost", display = "Outpost", clipHalf = new Vector2(31f, 37f),
                 ambSky = new Color(0.64f, 0.72f, 0.86f), ambEquator = new Color(0.74f, 0.70f, 0.64f), ambGround = new Color(0.52f, 0.44f, 0.36f),
                 fog = new Color(0.80f, 0.86f, 0.89f),
             },
@@ -130,6 +132,29 @@ namespace Salvo.EditorTools
                 fog = new Color(0.78f, 0.87f, 0.94f), fogStart = 70f, fogEnd = 320f,
             },
         };
+
+        /// <summary>
+        /// Invisible walls on the perimeter line, 60 m tall, that only players collide with (bullets,
+        /// grenades and camera checks ignore the PlayerClip layer), so a run-and-jump off a roof can't
+        /// carry anyone over the perimeter wall.
+        /// </summary>
+        static void PlayerClip(Vector2 half, Transform parent)
+        {
+            var root = new GameObject("PlayerClip").transform;
+            root.SetParent(parent, false);
+            const float H = 60f, T = 1f;
+            void Wall(string n, Vector3 center, Vector3 size)
+            {
+                var go = new GameObject(n) { layer = Layers.PlayerClip };
+                go.transform.SetParent(root, false);
+                go.transform.position = center;
+                go.AddComponent<BoxCollider>().size = size;
+            }
+            Wall("ClipE", new Vector3(half.x, H / 2, 0), new Vector3(T, H, half.y * 2 + T));
+            Wall("ClipW", new Vector3(-half.x, H / 2, 0), new Vector3(T, H, half.y * 2 + T));
+            Wall("ClipN", new Vector3(0, H / 2, half.y), new Vector3(half.x * 2 + T, H, T));
+            Wall("ClipS", new Vector3(0, H / 2, -half.y), new Vector3(half.x * 2 + T, H, T));
+        }
 
         static void BuildMap(Theme theme, System.Text.StringBuilder log)
         {
@@ -208,6 +233,7 @@ namespace Salvo.EditorTools
                 }
             }
             cams.Sort((a, b) => string.CompareOrdinal(a.name, b.name));
+            if (theme.clipHalf != Vector2.zero) PlayerClip(theme.clipHalf, gameplay);
             foreach (var s in spFfa.Concat(spRed).Concat(spBlue)) s.tag = "SpawnPoint";
 
             // ---- lighting

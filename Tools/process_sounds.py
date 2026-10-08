@@ -103,7 +103,7 @@ RNG = np.random.default_rng(7)
 
 # mix targets (active loudness, dB full scale, before the game's own volume): bigger guns are
 # louder, and a reload sits ~9 dB under a rifle shot so it reads clearly between bursts
-SHOT_DB = {"Viper": -7.5, "Hornet": -7.5, "Ranger": -7.0, "Bulldog": -8.0, "Longbow": -8.0}
+SHOT_DB = {"Viper": -7.5, "Hornet": -6.0, "Ranger": -7.0, "Bulldog": -4.0, "Longbow": -8.0}
 RELOAD_DB = -14.0
 
 

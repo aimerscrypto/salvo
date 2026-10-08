@@ -244,7 +244,7 @@ namespace Salvo.EditorTools
                     w.adsFov = 66; w.adsTime = 0.14f; w.adsMoveMultiplier = 0.85f;
                     w.hipPosition = new Vector3(0.2f, -0.23f, 0.46f); w.hipEuler = new Vector3(0, -1, 0); w.sightDistance = 0.24f;
                     w.tracerColor = new Color(1f, 0.9f, 0.6f); w.shakeOnFire = 0.05f;
-                    Sounds(w, "Hornet"); w.equipSound = equip;
+                    Sounds(w, "Hornet"); w.shotVolume = 1.35f; w.equipSound = equip;
                 }),
                 W("W02_Ranger", 2, "Ranger", w =>
                 {

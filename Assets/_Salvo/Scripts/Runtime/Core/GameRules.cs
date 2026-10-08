@@ -4,7 +4,7 @@ namespace Salvo
     public static class GameRules
     {
         public const string Version = "1.0.0";
-        public const string NetVersion = "salvo-2";   // 2: Relay over secure WebSockets (web players)
+        public const string NetVersion = "salvo-3";   // 2: Relay over secure WebSockets (web players); 3: rebuilt prefabs/scenes (map clip walls)
         public const ushort DefaultPort = 7777;
 
         // health
