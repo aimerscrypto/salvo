@@ -334,7 +334,6 @@ def stairs(F, name, x, y, z0, width, rise, direction_rz, step_h=0.25, step_d=0.3
             parts.append(G.box("rail", (0.2, step_d, 0.9), (ox, step_d * i + step_d / 2, sh * (i + 1) + 0.45), "sand", bev=0.03))
         parts.append(G.box("rail_l", (0.2, landing + 0.2, 0.9), (ox, run + landing / 2 + 0.1, rise + 0.45), "sand", bev=0.03))
         parts.append(G.box("rail_e", (width + 0.4, 0.2, 0.9), (0, run + landing + 0.1, rise + 0.45), "sand", bev=0.03))
-        parts.append(G.box("cap", (0.26, run + landing + 0.2, 0.08), (ox, (run + landing + 0.2) / 2, rise + 0.94), "cream", bev=0.02))
     return prop(name, parts)
 
 
