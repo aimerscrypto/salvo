@@ -140,7 +140,7 @@ namespace Salvo
             {
                 if (slideTimer > 0f)
                 {
-                    ApplyFriction(0.9f, dt);
+                    ApplyFriction(GameRules.SlideFriction, dt);
                     Accelerate(wish, maxSpeed * wishMag, GameRules.GroundAccel * 0.15f, dt);
                 }
                 else

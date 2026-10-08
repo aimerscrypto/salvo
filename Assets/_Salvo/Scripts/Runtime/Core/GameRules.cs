@@ -25,9 +25,10 @@ namespace Salvo
         public const float Friction = 9f;
         public const float Gravity = 21f;
         public const float JumpVelocity = 7.1f;
-        public const float SlideBoost = 11.5f;
-        public const float SlideDuration = 0.85f;
-        public const float SlideCooldown = 1.05f;   // from the start of a slide
+        public const float SlideBoost = 14.4f;      // 25% faster than the first tuning (11.5)
+        public const float SlideDuration = 0.56f;
+        public const float SlideFriction = 1.37f;  // ~5.7 m per slide
+        public const float SlideCooldown = 0.9f;    // from the start of a slide
         public const float StandHeight = 1.8f;
         public const float CrouchHeight = 1.2f;
         public const float StandEye = 1.62f;
