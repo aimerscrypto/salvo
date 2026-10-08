@@ -136,6 +136,15 @@ budget every 10 s - CPU main / render thread, GPU, scripts, physics, UI, audio, 
 triangles, shadow casters - and accept `-salvo-gfx "grade=0,msaa=1,shadows=1,scale=0.8,..."` for
 cost experiments (`Tools/perfsplit.sh` runs variants and prints the split).
 
+## Web version
+
+`SALVO → Build → WebGL (Browser)` makes a browser build in `Builds/WebGL`; see
+[PUBLISH_WEB.md](PUBLISH_WEB.md) for uploading it to itch.io. Online matches use Relay over secure
+WebSockets on every platform, so browser and Windows players share matches. Offline practice
+runs on NGO's single-player transport (browsers can't open a socket to host). LAN / direct
+connect and Quit are hidden in the browser. Test hooks work as URL query parameters there,
+e.g. `index.html?salvo-practice&salvo-perflog`.
+
 ## Verified
 
 - Performance on an Intel Celeron 5205U + UHD Graphics at **1920x1080** (dev build, 6-combatant

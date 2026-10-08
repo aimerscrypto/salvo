@@ -41,10 +41,46 @@ namespace Salvo
 
         bool autoStarted;
 
+        /// <summary>-salvo-perflog: log the average frame rate every 10 s in any build (web testing).</summary>
+        static bool PerfLog;
+        float plTimer; int plFrames;
+
+        void LateUpdate()
+        {
+            if (!PerfLog) return;
+            plTimer += Time.unscaledDeltaTime; plFrames++;
+            if (plTimer < 10f) return;
+            Debug.Log($"[SALVO/FPS] {plFrames / plTimer:0.0} fps at {Screen.width}x{Screen.height}, scene {UnityEngine.SceneManagement.SceneManager.GetActiveScene().name}, combatants {Combatant.All.Count}");
+            plTimer = 0f; plFrames = 0;
+        }
+
+        /// <summary>
+        /// Browsers have no command line: the page URL's query stands in for it, e.g.
+        /// index.html?salvo-practice&salvo-primary=4 -> "-salvo-practice", "-salvo-primary", "4".
+        /// </summary>
+        static string[] WebArgs()
+        {
+            var list = new System.Collections.Generic.List<string> { "salvo" };
+            string url = Application.absoluteURL ?? "";
+            int q = url.IndexOf('?');
+            if (q < 0) return list.ToArray();
+            foreach (var part in url.Substring(q + 1).Split('&', '#'))
+            {
+                if (string.IsNullOrEmpty(part)) continue;
+                var kv = part.Split(new[] { '=' }, 2);
+                list.Add("-" + System.Uri.UnescapeDataString(kv[0]));
+                if (kv.Length > 1) list.Add(System.Uri.UnescapeDataString(kv[1]));
+            }
+            return list.ToArray();
+        }
+
         /// <summary>Headless test hooks: -salvo-host / -salvo-join ip / -salvo-practice.</summary>
         void ParseCommandLine()
         {
             var args = System.Environment.GetCommandLineArgs();
+#if UNITY_WEBGL && !UNITY_EDITOR
+            args = WebArgs();
+#endif
             int bots = 4;
             string map = "Outpost";
             for (int i = 0; i < args.Length - 1; i++)
@@ -61,6 +97,7 @@ namespace Salvo
 #if DEVELOPMENT_BUILD
                     case "-salvo-gfx" when i + 1 < args.Length: StartCoroutine(DevGraphics(args[i + 1])); break;
 #endif
+                    case "-salvo-perflog": PerfLog = true; break;
                     case "-salvo-name" when i + 1 < args.Length: NetSession.NameOverride = NetSession.SanitizeName(args[i + 1]); break;
                     case "-salvo-host": autoStarted = true; GameFlow.StartLocal(new MatchSettings { fillWithBots = bots, map = map, rotateMaps = false }, true); break;
                     case "-salvo-practice": autoStarted = true; GameFlow.StartLocal(new MatchSettings { fillWithBots = 6, offline = true, map = map, rotateMaps = false }, false); break;

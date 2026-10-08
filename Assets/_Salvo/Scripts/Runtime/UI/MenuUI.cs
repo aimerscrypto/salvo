@@ -45,6 +45,11 @@ namespace Salvo
             ui.Q<Button>("btn-practice").clicked += () => { ui.SetConnecting("Starting practice..."); GameFlow.StartLocal(Clone(play, true), false); };
             ui.Q<Button>("btn-lan-host").clicked += () => { ui.SetConnecting("Hosting LAN match..."); GameFlow.StartLocal(Clone(play, false), true); };
             ui.Q<Button>("btn-lan-join").clicked += () => { ui.SetConnecting("Connecting..."); GameFlow.JoinDirect(ui.Q<TextField>("lan-address").value); };
+#if UNITY_WEBGL
+            // a browser can't open sockets for LAN, and quitting is closing the tab
+            ui.Q<Button>("btn-lan-host").parent.parent.style.display = DisplayStyle.None;
+            ui.Q<Button>("btn-quit").style.display = DisplayStyle.None;
+#endif
 
             // loadout / shop / profile / settings
             ui.Q<Button>("btn-loadout-back").clicked += Back;

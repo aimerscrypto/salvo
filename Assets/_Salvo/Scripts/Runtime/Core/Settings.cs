@@ -120,10 +120,15 @@ namespace Salvo
                 urp.supportsHDR = false;
             }
             ApplySun();
+#if UNITY_WEBGL
+            // the browser paces frames to the display; the page (itch.io) owns full screen
+            Application.targetFrameRate = -1;
+#else
             QualitySettings.vSyncCount = d.vsync ? 1 : 0;
             Application.targetFrameRate = d.vsync ? -1 : (d.fpsCap <= 0 ? -1 : d.fpsCap);
+#endif
 
-#if !UNITY_EDITOR
+#if !UNITY_EDITOR && !UNITY_WEBGL
             ApplyDisplay(d.fullscreen == 0 ? FullScreenMode.Windowed : d.fullscreen == 2 ? FullScreenMode.ExclusiveFullScreen : FullScreenMode.FullScreenWindow);
 #endif
             AudioListener.volume = d.master;

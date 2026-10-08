@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Unity.Netcode;
+using Unity.Netcode.Transports.SinglePlayer;
 using Unity.Netcode.Transports.UTP;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
@@ -84,6 +85,22 @@ namespace Salvo
         static NetworkManager NM => NetworkManager.Singleton;
         static UnityTransport Transport => NM.GetComponent<UnityTransport>();
 
+        /// <summary>
+        /// Offline practice runs on NGO's in-process single-player transport (no socket; browsers can't
+        /// open one to host); LAN and online put Unity Transport back.
+        /// </summary>
+        static void UseTransport(bool offline)
+        {
+            NetworkTransport t = Transport;
+            if (offline)
+            {
+                var sp = NM.GetComponent<SinglePlayerTransport>();
+                if (sp == null) sp = NM.gameObject.AddComponent<SinglePlayerTransport>();
+                t = sp;
+            }
+            NM.NetworkConfig.NetworkTransport = t;
+        }
+
         static void Hook()
         {
             if (hooked || NM == null) return;
@@ -105,6 +122,8 @@ namespace Salvo
         static void PreparePayload()
         {
             Hook();
+            UseTransport(false);   // Unity Transport unless offline practice switches it
+            Transport.UseWebSockets = true;   // online (Relay over WSS); LAN / direct turn it off
             var json = JsonUtility.ToJson(ConnectionPayload.FromProfile());
             NM.NetworkConfig.ConnectionData = Encoding.UTF8.GetBytes(json);
         }
@@ -207,7 +226,9 @@ namespace Salvo
                     { "map", new SessionProperty(s.map, VisibilityPropertyOptions.Public) }
                 }
             };
-            return o.WithRelayNetwork();
+            // secure WebSockets: the only Relay protocol browsers can speak, and joiners use whatever
+            // the host picked - so every host uses it and desktop and web players can share a match
+            return o.WithRelayNetwork(new RelayNetworkOptions(RelayProtocol.WSS));
         }
 
         // ------------------------------------------------------------------ public API
@@ -293,7 +314,9 @@ namespace Salvo
             Settings = s;
             s.offline = !lan;
             PreparePayload();
-            Transport.SetConnectionData(lan ? "0.0.0.0" : "127.0.0.1", GameRules.DefaultPort, lan ? "0.0.0.0" : "127.0.0.1");
+            UseTransport(!lan);
+            Transport.UseWebSockets = false;
+            if (lan) Transport.SetConnectionData("0.0.0.0", GameRules.DefaultPort, "0.0.0.0");
             if (!NM.StartHost())
             {
                 Fail(lan ? "Could not open port " + GameRules.DefaultPort + " for LAN hosting." : "Could not start practice match.");
@@ -312,6 +335,8 @@ namespace Salvo
             if (colon > 0 && ushort.TryParse(address.Substring(colon + 1), out var p)) { port = p; address = address.Substring(0, colon); }
             Busy = true;
             PreparePayload();
+            UseTransport(false);
+            Transport.UseWebSockets = false;
             Transport.SetConnectionData(address, port);
             Report($"Connecting to {address}:{port}...");
             if (!NM.StartClient()) { Fail("Could not start client."); return; }

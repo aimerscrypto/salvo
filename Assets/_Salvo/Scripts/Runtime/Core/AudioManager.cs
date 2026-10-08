@@ -42,10 +42,13 @@ namespace Salvo
                 s.SetCustomCurve(AudioSourceCurveType.CustomRolloff, rolloff);
                 s.spread = 30f;
                 pool[i] = s;
+#if !UNITY_WEBGL
+                // browsers' Web Audio backend has no per-source filters: muffling falls back to volume
                 var lp = go.AddComponent<AudioLowPassFilter>();
                 lp.lowpassResonanceQ = 1f;
                 lp.enabled = false;
                 filters[i] = lp;
+#endif
             }
             music = gameObject.AddComponent<AudioSource>();
             music.loop = true;
@@ -63,11 +66,11 @@ namespace Salvo
             for (int k = 0; k < PoolSize; k++)
             {
                 int i = (next + k) % PoolSize;
-                if (!pool[i].isPlaying) { next = (i + 1) % PoolSize; lastIndex = i; filters[i].enabled = false; return pool[i]; }
+                if (!pool[i].isPlaying) { next = (i + 1) % PoolSize; lastIndex = i; if (filters[i] != null) filters[i].enabled = false; return pool[i]; }
             }
             lastIndex = next;
             next = (next + 1) % PoolSize;
-            filters[lastIndex].enabled = false;
+            if (filters[lastIndex] != null) filters[lastIndex].enabled = false;
             return pool[lastIndex];
         }
 
@@ -122,8 +125,8 @@ namespace Salvo
             cutoff = Mathf.Min(cutoff, maxCutoff);
             var s = I.Next();
             var lp = I.filters[I.lastIndex];
-            lp.cutoffFrequency = cutoff;
-            lp.enabled = cutoff < 20000f;
+            if (lp != null) { lp.cutoffFrequency = cutoff; lp.enabled = cutoff < 20000f; }
+            else volume *= Mathf.Lerp(0.55f, 1f, Mathf.InverseLerp(1000f, 12000f, cutoff)); // no filters (web)
             s.transform.position = pos;
             s.spatialBlend = 1f;
             s.minDistance = 1f;

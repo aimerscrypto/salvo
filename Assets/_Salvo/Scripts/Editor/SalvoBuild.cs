@@ -68,5 +68,48 @@ namespace Salvo.EditorTools
             Debug.Log(msg);
             return msg;
         }
+
+        /// <summary>
+        /// Browser build for itch.io and similar hosts: Builds/WebGL (zip its contents and upload as
+        /// an HTML5 game). Gzip with a decompression fallback works on hosts that don't send
+        /// Content-Encoding headers; the build switches the active target, so switch back afterwards.
+        /// </summary>
+        [MenuItem("SALVO/Build/WebGL (Browser)")]
+        public static string BuildWebGL()
+        {
+            var target = NamedBuildTarget.WebGL;
+            PlayerSettings.bundleVersion = GameRules.Version;
+            PlayerSettings.SetScriptingBackend(target, ScriptingImplementation.IL2CPP);
+            PlayerSettings.SetIl2CppCompilerConfiguration(target, Il2CppCompilerConfiguration.Release);
+            PlayerSettings.WebGL.compressionFormat = WebGLCompressionFormat.Gzip;
+            PlayerSettings.WebGL.decompressionFallback = true;
+            PlayerSettings.WebGL.dataCaching = true;
+            PlayerSettings.WebGL.exceptionSupport = WebGLExceptionSupport.ExplicitlyThrownExceptionsOnly;
+            PlayerSettings.WebGL.memoryGrowthMode = WebGLMemoryGrowthMode.Geometric;
+            PlayerSettings.WebGL.initialMemorySize = 256;
+            PlayerSettings.WebGL.maximumMemorySize = 2048;
+            PlayerSettings.WebGL.template = "APPLICATION:Default";
+            PlayerSettings.WebGL.nameFilesAsHashes = false;
+            PlayerSettings.SetManagedStrippingLevel(target, ManagedStrippingLevel.Minimal);
+            PlayerSettings.enableFrameTimingStats = false;
+            PlayerSettings.defaultWebScreenWidth = 1280;
+            PlayerSettings.defaultWebScreenHeight = 720;
+            PlayerSettings.runInBackground = true;   // keep a hosted match ticking in a background tab
+            string dir = Path.GetFullPath(Path.Combine(Application.dataPath, "..", "Builds", "WebGL"));
+            if (Directory.Exists(dir)) Directory.Delete(dir, true);
+            Directory.CreateDirectory(dir);
+            var opts = new BuildPlayerOptions
+            {
+                scenes = System.Array.ConvertAll(System.Array.FindAll(EditorBuildSettings.scenes, sc => sc.enabled), sc => sc.path),
+                locationPathName = dir,
+                target = BuildTarget.WebGL,
+                options = BuildOptions.None,
+            };
+            var report = BuildPipeline.BuildPlayer(opts);
+            var s = report.summary;
+            string msg = $"[SALVO] WebGL build {s.result}: {s.outputPath} {s.totalSize / (1024 * 1024)} MB in {s.totalTime.TotalMinutes:0.0} min, {s.totalErrors} errors";
+            Debug.Log(msg);
+            return msg;
+        }
     }
 }
