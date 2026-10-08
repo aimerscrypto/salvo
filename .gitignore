@@ -59,3 +59,6 @@ __pycache__/
 /Assets/Temp*
 /Assets/Resources/PerformanceTestRun*
 /Assets/Resources.meta
+
+# WebGL build leftovers (Burst)
+/Data/
