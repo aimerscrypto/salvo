@@ -16,6 +16,7 @@ namespace Salvo
             public Vector2 move;
             public bool jump;      // pressed (buffered)
             public bool crouch;    // held
+            public bool slide;     // pressed (buffered)
             public float yaw, pitch;
         }
 
@@ -36,7 +37,7 @@ namespace Salvo
 
         CharacterController cc;
         Combatant owner;
-        float coyote, jumpBuffer, slideTimer, slideCooldown, stepDistance, height = GameRules.StandHeight, airTime;
+        float coyote, jumpBuffer, slideBuffer, slideTimer, slideCooldown, stepDistance, height = GameRules.StandHeight, airTime;
         bool jumpConsumed;
 
         void Awake()
@@ -102,13 +103,16 @@ namespace Salvo
             Grounded = cc.isGrounded || (Velocity.y <= 0.01f && Probe());
             if (Grounded) { coyote = 0.11f; airTime = 0f; } else { coyote -= dt; airTime += dt; }
             if (Input.jump) { jumpBuffer = 0.13f; Input.jump = false; } else jumpBuffer -= dt;
+            if (Input.slide) { slideBuffer = 0.15f; Input.slide = false; } else slideBuffer -= dt;
             slideCooldown -= dt;
 
             // ---- crouch / slide
             Vector3 hv = new Vector3(Velocity.x, 0, Velocity.z);
             bool wantCrouch = Input.crouch;
-            if (wantCrouch && !Crouching && Grounded && slideCooldown <= 0f && hv.magnitude > GameRules.RunSpeed * 0.75f)
+            // slide has its own key: a tap runs the whole slide (crouch alone never slides)
+            if (slideBuffer > 0f && slideTimer <= 0f && Grounded && slideCooldown <= 0f && hv.magnitude > GameRules.RunSpeed * 0.75f)
             {
+                slideBuffer = 0f;
                 slideTimer = GameRules.SlideDuration;
                 slideCooldown = GameRules.SlideCooldown;
                 Vector3 dir = hv.normalized;
@@ -116,7 +120,7 @@ namespace Salvo
                 Velocity.x = hv.x; Velocity.z = hv.z;
                 SlideStarted?.Invoke();
             }
-            if (slideTimer > 0f) { slideTimer -= dt; if (!wantCrouch || !Grounded && airTime > 0.2f) slideTimer = Mathf.Min(slideTimer, 0f); }
+            if (slideTimer > 0f) { slideTimer -= dt; if (!Grounded && airTime > 0.2f || hv.magnitude < GameRules.CrouchSpeed) slideTimer = Mathf.Min(slideTimer, 0f); }
 
             bool crouchNow = wantCrouch || slideTimer > 0f;
             if (!crouchNow && Crouching && CeilingBlocked()) crouchNow = true;
@@ -136,7 +140,7 @@ namespace Salvo
             {
                 if (slideTimer > 0f)
                 {
-                    ApplyFriction(1.2f, dt);
+                    ApplyFriction(0.9f, dt);
                     Accelerate(wish, maxSpeed * wishMag, GameRules.GroundAccel * 0.15f, dt);
                 }
                 else

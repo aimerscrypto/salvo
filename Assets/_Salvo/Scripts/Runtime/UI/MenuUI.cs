@@ -460,7 +460,7 @@ namespace Salvo
                     box.Add(UIRoot.Row("Crouch mode", UIRoot.Cycler(new[] { "HOLD", "TOGGLE" }, () => d.toggleCrouch ? 1 : 0, v => { d.toggleCrouch = v == 1; apply(); })));
                     var rebind = UIRoot.Lbl("KEY BINDINGS  -  click a key, then press the new one", "section-title");
                     box.Add(rebind);
-                    foreach (var a in new[] { SalvoInput.Jump, SalvoInput.Crouch, SalvoInput.Reload, SalvoInput.Melee, SalvoInput.Slot1, SalvoInput.Slot2, SalvoInput.Slot3, SalvoInput.LastWeapon, SalvoInput.Scoreboard })
+                    foreach (var a in new[] { SalvoInput.Jump, SalvoInput.Crouch, SalvoInput.Slide, SalvoInput.Reload, SalvoInput.Melee, SalvoInput.Slot1, SalvoInput.Slot2, SalvoInput.Slot3, SalvoInput.LastWeapon, SalvoInput.Scoreboard })
                         box.Add(UIRoot.Row(a.name, KeyButton(a)));
                     break;
                 case 2:

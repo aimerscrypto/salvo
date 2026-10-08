@@ -41,6 +41,7 @@ namespace Salvo
             // ---- move
             motor.Input.move = active ? Vector2.ClampMagnitude(SalvoInput.Move.ReadValue<Vector2>(), 1f) : Vector2.zero;
             if (active && SalvoInput.Jump.WasPressedThisFrame()) motor.Input.jump = true;
+            if (active && SalvoInput.Slide.WasPressedThisFrame()) motor.Input.slide = true;
             if (Settings.Data.toggleCrouch)
             {
                 if (active && SalvoInput.Crouch.WasPressedThisFrame()) crouchToggled = !crouchToggled;

@@ -10,7 +10,7 @@ namespace Salvo
     public static class SalvoInput
     {
         public static InputActionMap Map { get; private set; }
-        public static InputAction Move, Look, Fire, Aim, Jump, Crouch, Reload, Slot1, Slot2, Slot3, NextWeapon,
+        public static InputAction Move, Look, Fire, Aim, Jump, Crouch, Slide, Reload, Slot1, Slot2, Slot3, NextWeapon,
             LastWeapon, Melee, Scoreboard, Pause;
 
         const string OverridesKey = "salvo.bindings.v1";
@@ -36,9 +36,11 @@ namespace Salvo
             Aim.AddBinding("<Gamepad>/leftTrigger");
             Jump = Map.AddAction("Jump", InputActionType.Button, "<Keyboard>/space");
             Jump.AddBinding("<Gamepad>/buttonSouth");
-            Crouch = Map.AddAction("Crouch", InputActionType.Button, "<Keyboard>/leftCtrl");
-            Crouch.AddBinding("<Keyboard>/c");
+            Crouch = Map.AddAction("Crouch", InputActionType.Button, "<Keyboard>/c");
+            Crouch.AddBinding("<Keyboard>/leftCtrl");
             Crouch.AddBinding("<Gamepad>/buttonEast");
+            Slide = Map.AddAction("Slide", InputActionType.Button, "<Keyboard>/leftShift");
+            Slide.AddBinding("<Gamepad>/leftStickPress");
             Reload = Map.AddAction("Reload", InputActionType.Button, "<Keyboard>/r");
             Reload.AddBinding("<Gamepad>/buttonWest");
             Slot1 = Map.AddAction("Primary", InputActionType.Button, "<Keyboard>/1");

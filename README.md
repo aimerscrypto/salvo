@@ -52,7 +52,8 @@ weapon handling, footsteps and impacts are CC0 field recordings from Freesound
 | Move / Look | WASD / Mouse | Left / Right stick |
 | Fire / Aim | LMB / RMB | RT / LT |
 | Jump | Space | A |
-| Crouch / Slide (while running) | Ctrl or C | B |
+| Crouch | C or Ctrl | B |
+| Slide (while running) | Shift | Left stick click |
 | Reload | R | X |
 | Weapons | 1 / 2 / 3, wheel, Q (last) | Y (last) |
 | Knife | V | R3 |

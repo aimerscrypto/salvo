@@ -133,7 +133,7 @@ namespace Salvo
             {
                 Profile.Data.firstRun = false;
                 Profile.Save();
-                Modal("WELCOME, RECRUIT", "WASD move  -  SPACE jump  -  CTRL crouch / slide\nMOUSE aim & fire  -  R reload  -  1/2/3 weapons  -  V knife\n\nEarn coins and XP every match. Spend them in the Shop.", "LET'S GO", null);
+                Modal("WELCOME, RECRUIT", "WASD move  -  SPACE jump  -  C crouch  -  SHIFT slide\nMOUSE aim & fire  -  R reload  -  1/2/3 weapons  -  V knife\n\nEarn coins and XP every match. Spend them in the Shop.", "LET'S GO", null);
             }
             AudioManager.Music(AudioManager.Bank?.menuMusic, 0.5f);
         }

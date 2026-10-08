@@ -26,8 +26,8 @@ namespace Salvo
         public const float Gravity = 21f;
         public const float JumpVelocity = 7.1f;
         public const float SlideBoost = 11.5f;
-        public const float SlideDuration = 0.65f;
-        public const float SlideCooldown = 0.9f;
+        public const float SlideDuration = 0.85f;
+        public const float SlideCooldown = 1.05f;   // from the start of a slide
         public const float StandHeight = 1.8f;
         public const float CrouchHeight = 1.2f;
         public const float StandEye = 1.62f;
