@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no">
+    <title>{{{ PRODUCT_NAME }}}</title>
+    <style>
+      /* the game fills whatever frame it's given (itch.io embed, full screen, a plain tab) */
+      html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #1c1f26; }
+      #game { position: fixed; inset: 0; }
+      #unity-canvas { width: 100%; height: 100%; display: block; background: #1c1f26; outline: none; }
+      #loading { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+                 font: 600 15px/1.4 system-ui, sans-serif; color: #c9ced8; letter-spacing: 1px; }
+      #loading h1 { font: 900 64px/1 system-ui, sans-serif; color: #f2b632; margin: 0 0 22px 0; letter-spacing: 6px; }
+      #bar { width: 280px; height: 8px; border-radius: 4px; background: #2d323d; overflow: hidden; }
+      #fill { width: 0%; height: 100%; background: #f2b632; transition: width 0.2s; }
+      #status { margin-top: 12px; opacity: 0.8; }
+      #error { display: none; position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); max-width: 80%;
+               background: #3a1f22; border: 2px solid #e2584a; border-radius: 10px; padding: 18px 22px;
+               font: 15px/1.5 system-ui, sans-serif; color: #f4d9d6; white-space: pre-wrap; }
+    </style>
+  </head>
+  <body>
+    <div id="game"><canvas id="unity-canvas" tabindex="-1"></canvas></div>
+    <div id="loading">
+      <h1>{{{ PRODUCT_NAME }}}</h1>
+      <div id="bar"><div id="fill"></div></div>
+      <div id="status">LOADING</div>
+    </div>
+    <div id="error"></div>
+    <script>
+      var canvas = document.querySelector("#unity-canvas");
+      var errorBox = document.querySelector("#error");
+      // problems show on screen instead of leaving a blank page
+      function showError(msg) {
+        document.querySelector("#loading").style.display = "none";
+        errorBox.style.display = "block";
+        errorBox.textContent = "SALVO could not start:\n" + msg +
+          "\n\nTry Chrome or Edge with hardware acceleration on, then reload the page.";
+      }
+      function showBanner(msg, type) {
+        if (type == "error") showError(msg);
+        else console.warn(msg);
+      }
+      var buildUrl = "Build";
+      var config = {
+        arguments: [],
+        dataUrl: buildUrl + "/{{{ DATA_FILENAME }}}",
+        frameworkUrl: buildUrl + "/{{{ FRAMEWORK_FILENAME }}}",
+#if USE_THREADS
+        workerUrl: buildUrl + "/{{{ WORKER_FILENAME }}}",
+#endif
+#if USE_WASM
+        codeUrl: buildUrl + "/{{{ CODE_FILENAME }}}",
+#endif
+#if SYMBOLS_FILENAME
+        symbolsUrl: buildUrl + "/{{{ SYMBOLS_FILENAME }}}",
+#endif
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: {{{ JSON.stringify(COMPANY_NAME) }}},
+        productName: {{{ JSON.stringify(PRODUCT_NAME) }}},
+        productVersion: {{{ JSON.stringify(PRODUCT_VERSION) }}},
+        showBanner: showBanner,
+        // level, coins and finishes are saved to persistentDataPath: keep them between visits
+        autoSyncPersistentDataPath: true,
+      };
+      var script = document.createElement("script");
+      script.src = buildUrl + "/{{{ LOADER_FILENAME }}}";
+      script.onload = function () {
+        createUnityInstance(canvas, config, function (progress) {
+          document.querySelector("#fill").style.width = Math.round(progress * 100) + "%";
+          document.querySelector("#status").textContent = progress < 0.9 ? "LOADING " + Math.round(progress * 100) + "%" : "STARTING";
+        }).then(function (instance) {
+          document.querySelector("#loading").style.display = "none";
+          window.salvo = instance;
+        }).catch(function (message) {
+          showError(message);
+        });
+      };
+      script.onerror = function () { showError("The game files could not be downloaded (" + script.src + ")."); };
+      document.body.appendChild(script);
+    </script>
+  </body>
+</html>

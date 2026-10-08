@@ -88,7 +88,7 @@ namespace Salvo.EditorTools
             PlayerSettings.WebGL.memoryGrowthMode = WebGLMemoryGrowthMode.Geometric;
             PlayerSettings.WebGL.initialMemorySize = 256;
             PlayerSettings.WebGL.maximumMemorySize = 2048;
-            PlayerSettings.WebGL.template = "APPLICATION:Default";
+            PlayerSettings.WebGL.template = "PROJECT:Salvo";   // Assets/WebGLTemplates/Salvo: fills the frame, saves progress
             PlayerSettings.WebGL.nameFilesAsHashes = false;
             PlayerSettings.SetManagedStrippingLevel(target, ManagedStrippingLevel.Minimal);
             PlayerSettings.enableFrameTimingStats = false;

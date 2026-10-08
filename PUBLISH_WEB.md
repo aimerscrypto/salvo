@@ -26,7 +26,8 @@ SALVO Windows build menu items do this automatically).
 4. **Embed options:**
    - Viewport: **1280 × 720**
    - Tick **Fullscreen button**
-   - Tick **SharedArrayBuffer support** (needed by some Unity features in browsers)
+   - Leave **SharedArrayBuffer support** OFF: SALVO doesn't use it, and it turns on cross-origin
+     isolation in itch.io's frame, which can leave the game on a blank white screen
    - **Mobile friendly:** leave unticked (keyboard and mouse game).
 5. **Visibility:** *Draft* first. Open the page, click Play, and check a practice match and an
    online match. Then set it to **Public** (or **Restricted** with a password to share only with

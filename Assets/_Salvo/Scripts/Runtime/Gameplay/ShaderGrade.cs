@@ -38,7 +38,17 @@ namespace Salvo
         Texture3D lut;
         int lutHash;
 
-        void Awake() => camData = GetComponent<UniversalAdditionalCameraData>();
+        void Awake()
+        {
+            camData = GetComponent<UniversalAdditionalCameraData>();
+            // the shaders always declare the LUT sampler: WebGL refuses to draw while a 3D slot holds
+            // Unity's default 2D texture, so bind a tiny 3D one until the real LUT is baked
+            if (placeholder == null)
+                placeholder = new Texture3D(2, 2, 2, TextureFormat.RGBAHalf, false) { name = "SalvoLutPlaceholder" };
+            Shader.SetGlobalTexture(Lut, placeholder);
+        }
+
+        static Texture3D placeholder;
 
         void OnDisable() { Shader.SetGlobalFloat(Grade, 0f); Shader.SetGlobalVector(ScopeId, Vector4.zero); }
 
